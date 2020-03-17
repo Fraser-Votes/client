@@ -27,6 +27,20 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
+    {
+      resolve: "gatsby-plugin-firebase",
+      options: {
+        credentials: {
+          apiKey: "AIzaSyAG_hZqQAeQ93odYHcGxwrk8FjDX_T7Ces",
+          authDomain: "fraser-votes.firebaseapp.com",
+          databaseURL: "https://fraser-votes.firebaseio.com",
+          projectId: "fraser-votes",
+          storageBucket: "fraser-votes.appspot.com",
+          messagingSenderId: "642408625180",
+          appId: "1:642408625180:web:205e80a956aab8b1379bd9"
+        }
+      }
+    },
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
