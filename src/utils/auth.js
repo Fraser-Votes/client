@@ -8,16 +8,19 @@ export const getUser = () =>
 export const setUser = user =>
   isBrowser() && window.localStorage.setItem("user", JSON.stringify(user))
 
-  export const isLoggedIn = () => {
+export const isLoggedIn = () => {
   const user = getUser()
   return !!user.email
 }
 
-export const logout = (firebase) => {
+export const logout = firebase => {
   return new Promise(resolve => {
-    firebase.auth().signOut().then(function() {
-      setUser({});
-      resolve();
-    });
+    firebase
+      .auth()
+      .signOut()
+      .then(function() {
+        setUser({})
+        resolve()
+      })
   })
 }
