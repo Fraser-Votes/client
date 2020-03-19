@@ -10,9 +10,9 @@ const TestComponent = () => <button onClick={() => logout(firebase)}>This is a t
 
 const App = () => (
   <div>
-    <Router>
-      <PrivateRoute path="/app/profile" component={TestComponent} />
-      <Login path="/app/login" />
+    <Router basepath="/app">
+      <PrivateRoute path="/profile" component={TestComponent} />
+      <Login path="/login" />
     </Router>
   </div>
 )
