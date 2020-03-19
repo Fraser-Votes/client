@@ -1,3 +1,5 @@
+import { navigate } from "@reach/router"
+
 export const isBrowser = () => typeof window !== "undefined"
 
 export const getUser = () =>
@@ -20,6 +22,7 @@ export const logout = firebase => {
       .signOut()
       .then(function() {
         setUser({})
+        navigate(`/app/login`)
         resolve()
       })
   })

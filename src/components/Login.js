@@ -3,17 +3,18 @@ import { navigate } from "@reach/router"
 import { useState } from "react"
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth"
 import { setUser, isLoggedIn } from "../utils/auth"
-import { useFirebase } from "gatsby-plugin-firebase"
+import firebase from "gatsby-plugin-firebase"
 
 const Login = () => {
-  const [firebase, setFirebase] = useState()
+  // const [firebase, setFirebase] = useState()
 
-  useFirebase(firebase => {
-    setFirebase(firebase)
-  }, [])
+  // setFirebase(firebase)
+
+  console.log(firebase)
 
   if (isLoggedIn()) {
     navigate(`/app/profile`)
+    return null
   }
 
   function getUiConfig(auth) {
@@ -21,7 +22,7 @@ const Login = () => {
       signInFlow: "popup",
       signInOptions: [
         auth.GoogleAuthProvider.PROVIDER_ID,
-        auth.EmailAuthProvider.PROVIDER_ID,
+        // auth.EmailAuthProvider.PROVIDER_ID,
       ],
       // signInSuccessUrl: '/app/profile',
       callbacks: {
