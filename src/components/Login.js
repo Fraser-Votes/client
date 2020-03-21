@@ -1,38 +1,27 @@
 import React from "react"
 import { navigate } from "@reach/router"
-import { useState } from "react"
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth"
 import { setUser, isLoggedIn } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
-import { Button, theme } from "@chakra-ui/core"
+import { Button } from "@chakra-ui/core"
 
 const Login = () => {
-  // const [firebase, setFirebase] = useState()
-
-  // setFirebase(firebase)
-
-  console.log(firebase)
+  var provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({
+    'login_hint': '000000@pdsb.net'
+  })
 
   if (isLoggedIn()) {
     navigate(`/app/profile`)
     return null
   }
 
-  function getUiConfig(auth) {
-    return {
-      signInFlow: "popup",
-      signInOptions: [
-        auth.GoogleAuthProvider.PROVIDER_ID,
-        // auth.EmailAuthProvider.PROVIDER_ID,
-      ],
-      // signInSuccessUrl: '/app/profile',
-      callbacks: {
-        signInSuccessWithAuthResult: result => {
-          setUser(result.user)
-          navigate("/app/profile")
-        },
-      },
-    }
+  const googleAuth = () => {
+    firebase.auth().signInWithPopup(provider).then(res => {
+      setUser(res.user)
+      navigate('/app/profile')
+    }).catch(err => {
+      console.warn("Something went wrong with authentication: " + err)
+    })
   }
 
   return (
@@ -42,16 +31,9 @@ const Login = () => {
       </div>
       <div>
         <p>Please sign-in to access to the private route:</p>
-        {/* {firebase && (
-          <StyledFirebaseAuth
-            uiConfig={getUiConfig(firebase.auth)}
-            firebaseAuth={firebase.auth()}
-          />
-        )} */}
-      <Button width="100%" variantColor="primary" size="lg">
-        Continue
-      </Button>
-
+        <Button onClick={googleAuth} width="100%" variantColor="primary" size="lg">
+          Continue
+        </Button>
       </div>
     </div>
   )
