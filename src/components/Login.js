@@ -4,6 +4,7 @@ import { useState } from "react"
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth"
 import { setUser, isLoggedIn } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
+import { Button, theme } from "@chakra-ui/core"
 
 const Login = () => {
   // const [firebase, setFirebase] = useState()
@@ -36,13 +37,22 @@ const Login = () => {
 
   return (
     <div>
-      <p>Please sign-in to access to the private route:</p>
-      {firebase && (
-        <StyledFirebaseAuth
-          uiConfig={getUiConfig(firebase.auth)}
-          firebaseAuth={firebase.auth()}
-        />
-      )}
+      <div>
+
+      </div>
+      <div>
+        <p>Please sign-in to access to the private route:</p>
+        {/* {firebase && (
+          <StyledFirebaseAuth
+            uiConfig={getUiConfig(firebase.auth)}
+            firebaseAuth={firebase.auth()}
+          />
+        )} */}
+      <Button width="100%" variantColor="primary" size="lg">
+        Continue
+      </Button>
+
+      </div>
     </div>
   )
 }

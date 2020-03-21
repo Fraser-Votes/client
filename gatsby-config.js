@@ -52,8 +52,16 @@ module.exports = {
       resolve: "gatsby-plugin-chakra-ui",
       options: {
         isResettingCSS: true,
-        isUsingColorMode: true,
       }
+    },
+    {
+      resolve: "gatsby-plugin-web-font-loader",
+      options: {
+        custom: {
+          families: ["Averta Std"],
+          urls: ["/fonts/fonts.css"],
+        },
+      },
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
