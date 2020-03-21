@@ -7,6 +7,10 @@ export default {
         heading: "Averta Std",
         body: "Averta Std"
     },
+    letterSpacings: {
+        ...theme.letterSpacings,
+        normal: "0.015em"
+    },
     colors: {
         ...theme.colors,
         black: "#102A43",
