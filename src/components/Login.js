@@ -40,13 +40,17 @@ const Login = () => {
         backgroundColor="primary.500" 
         h="100vh"
       />
-      <Box h="100vh" textAlign="center">
-        <Text fontWeight="bold" fontSize="48px">JFSS Voting Platform</Text>
-        <Text>Student Activity Council Elections 2020</Text>
-        <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
-          Continue
-        </Button>
-        <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
+      <Box display="flex" justifyContent="space-between" flexDirection="column" px={10} py="25vh" h="100vh" textAlign="center">
+        <Box>
+          <Text fontWeight="bold" color="blueGray.900" fontSize="4xl">JFSS Voting Platform</Text>
+          <Text fontWeight="600" color="blueGray.600" fontSize="lg">Student Activity Council Elections 2020</Text>
+        </Box>
+        <Box>
+          <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
+            Continue
+          </Button>
+          <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
+        </Box>
       </Box>
     </Grid>
   )
