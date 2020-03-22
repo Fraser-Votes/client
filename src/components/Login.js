@@ -40,7 +40,7 @@ const Login = () => {
         backgroundColor="primary.500" 
         h="100vh"
       />
-      <Box display="flex" justifyContent="space-between" flexDirection="column" px={10} py="25vh" h="100vh" textAlign="center">
+      <Box display="flex" justifyContent="space-between" flexDirection="column" py="25vh" h="100vh" textAlign="center">
         <Box>
           <Text fontWeight="bold" color="blueGray.900" fontSize="4xl">JFSS Voting Platform</Text>
           <Text fontWeight="600" color="blueGray.600" fontSize="lg">Student Activity Council Elections 2020</Text>
