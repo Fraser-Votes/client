@@ -1,4 +1,5 @@
 import { navigate } from "@reach/router"
+import firebase from "gatsby-plugin-firebase"
 
 export const isBrowser = () => typeof window !== "undefined"
 

@@ -4,7 +4,7 @@ import { setUser, isLoggedIn } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
 import { Button, Box, Grid, Text } from "@chakra-ui/core"
 import loginIllustration from "../images/loginIllustration.svg"
-import { Desktop, Mobile } from "../utils/mediaQueries"
+import { Desktop, Mobile, IsMobile } from "../utils/mediaQueries"
 
 const Login = () => {
 
@@ -12,39 +12,53 @@ const Login = () => {
 
   var provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({
-    'login_hint': '000000@pdsb.net'
+    'login_hint': '000000@pdsb.net',
+    'hd': "pdsb.net" // only takes users with the GSuite domain of pdsb.net
   })
 
   if (isLoggedIn()) {
-    navigate('/app/profile')
+    navigate('/app/candidates')
     return null
   }
 
   const googleAuth = () => {
     setAuthLoading(true)
-    firebase.auth().signInWithPopup(provider).then(res => {
-      setUser(res.user)
-      navigate('/app/profile')
-    }).catch(err => {
-      setAuthLoading(false)
-      console.warn("Something went wrong with authentication: " + err)
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+      firebase.auth().signInWithPopup(provider).then(res => {
+        setUser(res.user)
+        navigate('/app/candidates')
+      }).catch(err => {
+        setAuthLoading(false)
+        console.warn("Something went wrong with authentication: " + err)
+      })
     })
+
   }
 
   const LoginSection = () => {
     return (
-      <Box display="flex" justifyContent="space-between" flexDirection="column" py="24vh" h="100vh" textAlign="center">
-      <Box>
-        <Text fontWeight="bold" color="blueGray.900" fontSize="4xl">JFSS Voting Platform</Text>
-        <Text fontWeight="600" color="blueGray.600" fontSize="lg">Student Activity Council Elections 2020</Text>
+      <Box display="flex" justifyContent="space-between" flexDirection="column" px={IsMobile() ? "5vw" : 0} py={IsMobile() ? "12vh" : "24vh"} h="100vh" textAlign="center">
+        <Box>
+          <Text fontWeight="bold" color="blueGray.900" fontSize={IsMobile() ? "3xl" : "4xl"}>JFSS Voting Platform</Text>
+          <Text fontWeight="600" color="blueGray.600" fontSize={IsMobile() ? "md" : "lg"}>Student Activity Council Elections 2020</Text>
+        </Box>
+        <Mobile>
+          <Box 
+            backgroundPosition="center center" 
+            backgroundRepeat="no-repeat"  
+            backgroundSize="contain"
+            backgroundImage={`url("${loginIllustration}")`} 
+            height="100%"
+            my="6.5vh"
+          />
+        </Mobile>
+        <Box>
+          <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
+            Continue
+          </Button>
+          <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
+        </Box>
       </Box>
-      <Box>
-        <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
-          Continue
-        </Button>
-        <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
-      </Box>
-    </Box>
     )
   }
 

@@ -9,3 +9,13 @@ export const Mobile = ({ children }) => {
   const isMobile = useMediaQuery({ maxWidth: 960 })
   return isMobile ? children : null
 }
+
+export const IsDesktop = () => { 
+  const desktop = useMediaQuery({ minWidth: 961 })
+  return desktop
+}
+
+export const IsMobile = () => { 
+  const mobile = useMediaQuery({ maxWidth: 960 }) 
+  return mobile
+}

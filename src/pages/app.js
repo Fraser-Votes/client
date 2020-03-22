@@ -12,7 +12,7 @@ const App = () => (
   <LightMode>
   <div>
     <Router basepath="/app">
-      <PrivateRoute path="/profile" component={TestComponent} />
+      <PrivateRoute path="/candidates" component={TestComponent} />
       <Login path="/login" />
     </Router>
   </div>
