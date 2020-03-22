@@ -5,6 +5,7 @@ import Login from "../components/Login"
 import { logout } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
 import { LightMode } from "@chakra-ui/core"
+import Candidates from "../components/Candidates"
 
 const TestComponent = () => <button onClick={() => logout(firebase)}>This is a test!</button>
 
@@ -12,7 +13,7 @@ const App = () => (
   <LightMode>
   <div>
     <Router basepath="/app">
-      <PrivateRoute path="/candidates" component={TestComponent} />
+      <PrivateRoute path="/candidates" component={Candidates} />
       <Login path="/login" />
     </Router>
   </div>
