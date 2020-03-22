@@ -31,6 +31,23 @@ const Login = () => {
     })
   }
 
+  const LoginSection = () => {
+    return (
+      <Box display="flex" justifyContent="space-between" flexDirection="column" py="24vh" h="100vh" textAlign="center">
+      <Box>
+        <Text fontWeight="bold" color="blueGray.900" fontSize="4xl">JFSS Voting Platform</Text>
+        <Text fontWeight="600" color="blueGray.600" fontSize="lg">Student Activity Council Elections 2020</Text>
+      </Box>
+      <Box>
+        <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
+          Continue
+        </Button>
+        <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
+      </Box>
+    </Box>
+    )
+  }
+
   return (
     <Fragment>
       <Desktop>
@@ -43,33 +60,11 @@ const Login = () => {
             backgroundColor="primary.500" 
             h="100vh"
           />
-          <Box display="flex" justifyContent="space-between" flexDirection="column" py="25vh" h="100vh" textAlign="center">
-            <Box>
-              <Text fontWeight="bold" color="blueGray.900" fontSize="4xl">JFSS Voting Platform</Text>
-              <Text fontWeight="600" color="blueGray.600" fontSize="lg">Student Activity Council Elections 2020</Text>
-            </Box>
-            <Box>
-              <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
-                Continue
-              </Button>
-              <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
-            </Box>
-          </Box>
+          <LoginSection/>
         </Grid>
       </Desktop>
       <Mobile>
-        <Box display="flex" justifyContent="space-between" flexDirection="column" py="25vh" h="100vh" textAlign="center">
-            <Box>
-              <Text fontWeight="bold" color="blueGray.900" fontSize="4xl">JFSS Voting Platform</Text>
-              <Text fontWeight="600" color="blueGray.600" fontSize="lg">Student Activity Council Elections 2020</Text>
-            </Box>
-            <Box>
-              <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
-                Continue
-              </Button>
-              <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
-            </Box>
-          </Box>
+        <LoginSection/>
       </Mobile>
     </Fragment>
   )
