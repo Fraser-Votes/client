@@ -1,4 +1,5 @@
 import { theme } from "@chakra-ui/core";
+import customIcons from "../../static/icons/icons"
 
 export default {
     ...theme,
@@ -10,6 +11,10 @@ export default {
     letterSpacings: {
         ...theme.letterSpacings,
         normal: "0.015em"
+    },
+    icons: {
+        ...theme.icons,
+        ...customIcons,
     },
     colors: {
         ...theme.colors,
@@ -86,6 +91,5 @@ export default {
             800: "#780A0A",
             900: "#610404"
         }
-
     }
 }
