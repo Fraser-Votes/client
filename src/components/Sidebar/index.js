@@ -10,7 +10,7 @@ const NavItem = ({title, iconName}) => {
         <Box 
             as="button"
             h="40px" 
-            w="272px"
+            w="252px"
             textAlign="center"
             backgroundColor={isActive ? "blue.50" : ""} 
             mb="18px"
@@ -27,10 +27,12 @@ const NavItem = ({title, iconName}) => {
                 color={isActive ? "blue.700" : "blueGray.500"} 
                 w={iconName === "candidates" ? "23.33px" : iconName=== "results" ? "18px" : "18px"} 
                 h={iconName === "candidates" ? "18.67px" : iconName=== "results" ? "16px" : "18px"}
+                mt={iconName !== "candidates" ? "3px" : 0}
+                ml={iconName !== "candidates" ? "4px" : 0}
                 name={iconName}
             />
             <Text
-                ml= {iconName=== "candidates" ? "52px" : "56px"}
+                ml= {iconName=== "candidates" ? "45px" : "47px"}
                 lineHeight="40px"
                 fontWeight="bold"
                 color= {isActive ? "blue.700" : "blueGray.500"}
@@ -44,7 +46,7 @@ const NavItem = ({title, iconName}) => {
 
 const Sidebar = () => {
     return (
-        <Box w="320px">
+        <Box w="300px">
             <NavItem title="Candidates" iconName="candidates"/>
             <NavItem title="Voting" iconName="voting" />
             <NavItem title="Results" iconName="results" />
