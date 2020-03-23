@@ -1,8 +1,11 @@
 import React from 'react'
 import { Text, Box, Icon } from '@chakra-ui/core'
+import { navigate } from 'gatsby';
 
+const NavItem = ({title, iconName}) => {
+    var isActive = null;
+    window.location.pathname === `/app/${title.toLowerCase()}` ? isActive = true : isActive = false
 
-const NavItem = ({title, iconName, isActive}) => {
     return (
         <Box 
             as="button"
@@ -16,6 +19,9 @@ const NavItem = ({title, iconName, isActive}) => {
             alignItems="center"
             px="20px"
             borderRadius="8px"
+            onClick={() => {
+                navigate(`/app/${title.toLowerCase()}`)
+            }}
         >
             <Icon 
                 color={isActive ? "blue.700" : "blueGray.500"} 
@@ -39,7 +45,7 @@ const NavItem = ({title, iconName, isActive}) => {
 const Sidebar = () => {
     return (
         <Box w="320px">
-            <NavItem title="Candidates" iconName="candidates" isActive={true}/>
+            <NavItem title="Candidates" iconName="candidates"/>
             <NavItem title="Voting" iconName="voting" />
             <NavItem title="Results" iconName="results" />
         </Box>

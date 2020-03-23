@@ -14,6 +14,8 @@ const App = () => (
   <div>
     <Router basepath="/app">
       <PrivateRoute path="/candidates" component={Candidates} />
+      <PrivateRoute path="/voting" component={Candidates} />
+      <PrivateRoute path="/results" component={Candidates} />
       <Login path="/login" />
     </Router>
   </div>
