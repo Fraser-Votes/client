@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react"
+import React, { useState, Fragment, useEffect } from "react"
 import { navigate } from "@reach/router"
 import { setUser, isLoggedIn } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
@@ -9,8 +9,9 @@ import { Desktop, Mobile, IsMobile } from "../utils/mediaQueries"
 const Login = () => {
 
   const [authLoading, setAuthLoading] = useState(false)
+  var googleAuth = null
 
-  if (typeof window !== 'undefined') {
+  useEffect(() => {
     var provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({
       'login_hint': '000000@pdsb.net',
@@ -23,7 +24,7 @@ const Login = () => {
     }
   
 
-    const googleAuth = () => {
+    googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
         firebase.auth().signInWithPopup(provider).then(res => {
@@ -35,7 +36,8 @@ const Login = () => {
         })
       })
     }
-  }
+  })
+    
 
   const LoginSection = () => {
     return (
@@ -55,7 +57,7 @@ const Login = () => {
           />
         </Mobile>
         <Box>
-          <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={googleAuth} variantColor="primary">
+          <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={() => {googleAuth()}} variantColor="primary">
             Continue
           </Button>
           <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
