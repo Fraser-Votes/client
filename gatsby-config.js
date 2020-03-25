@@ -1,11 +1,11 @@
 require("dotenv").config({
-  path: `.env`,
+  path: `.env.${process.env.NODE_ENV}`,
 })
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    title: `FraserVotes`,
+    description: `A voting tool for JFSS`,
+    author: `FraserVotes Team`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -15,6 +15,10 @@ module.exports = {
         name: `images`,
         path: `${__dirname}/src/images`,
       },
+    },
+    {
+      resolve: `gatsby-plugin-create-client-paths`,
+      options: { prefixes: [`/app/*`] }
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
@@ -43,6 +47,22 @@ module.exports = {
           appId: process.env.appId
         }
       }
+    },
+    {
+      resolve: "gatsby-plugin-chakra-ui",
+      options: {
+        isResettingCSS: true,
+        isUsingColorMode: false
+      }
+    },
+    {
+      resolve: "gatsby-plugin-web-font-loader",
+      options: {
+        custom: {
+          families: ["Averta Std"],
+          urls: ["/fonts/fonts.css"],
+        },
+      },
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
