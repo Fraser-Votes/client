@@ -2,6 +2,8 @@ import React from 'react'
 import { Text, Box, Icon } from '@chakra-ui/core'
 import { navigate } from 'gatsby';
 
+const Profile
+
 const NavItem = ({title, iconName}) => {
     var isActive = null;
     window.location.pathname === `/app/${title.toLowerCase()}` ? isActive = true : isActive = false
@@ -33,7 +35,7 @@ const NavItem = ({title, iconName}) => {
             />
             <Text
                 ml= {iconName=== "candidates" ? "35px" : "37px"}
-                lineHeight="40px"
+                lineHeight="38px"
                 fontWeight="bold"
                 color= {isActive ? "blue.700" : "blueGray.500"}
                 fontSize="16px"

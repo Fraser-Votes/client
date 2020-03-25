@@ -1,45 +1,28 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- *
- * See: https://www.gatsbyjs.org/docs/use-static-query/
- */
-
 import React from "react"
 import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
-
-import Header from "../Header"
+import { Desktop, IsDesktop } from "../../utils/mediaQueries"
+import Sidebar from "../Sidebar"
+import { Grid, Box } from "@chakra-ui/core"
 
 const Layout = ({ children }) => {
-  const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-    }
-  `)
 
   return (
-    <>
-      <Header siteTitle={data.site.siteMetadata.title} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
-        }}
+    <Grid
+      templateColumns= {IsDesktop() ? "290px 1fr" : "1fr" }
+      templateRows="1fr"
+    >
+      <Desktop>
+        <Sidebar/>
+      </Desktop>
+      <Box
+        h="100%"
+        w="100%"
+        bg="blueGray.50"
+        px="40px"
       >
-        <main>{children}</main>
-        <footer>
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.org">Gatsby</a>
-        </footer>
-      </div>
-    </>
+        {children}
+      </Box>
+    </Grid>
   )
 }
 
