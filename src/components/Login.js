@@ -10,29 +10,31 @@ const Login = () => {
 
   const [authLoading, setAuthLoading] = useState(false)
 
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({
-    'login_hint': '000000@pdsb.net',
-    'hd': "pdsb.net" // only takes users with the GSuite domain of pdsb.net
-  })
-
-  if (isLoggedIn()) {
-    navigate('/app/candidates')
-    return null
-  }
-
-  const googleAuth = () => {
-    setAuthLoading(true)
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-      firebase.auth().signInWithPopup(provider).then(res => {
-        setUser(res.user)
-        navigate('/app/candidates')
-      }).catch(err => {
-        setAuthLoading(false)
-        console.warn("Something went wrong with authentication: " + err)
-      })
+  if (typeof window !== 'undefined') {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({
+      'login_hint': '000000@pdsb.net',
+      'hd': "pdsb.net" // only takes users with the GSuite domain of pdsb.net
     })
 
+    if (isLoggedIn()) {
+      navigate('/app/candidates')
+      return null
+    }
+  
+
+    const googleAuth = () => {
+      setAuthLoading(true)
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+        firebase.auth().signInWithPopup(provider).then(res => {
+          setUser(res.user)
+          navigate('/app/candidates')
+        }).catch(err => {
+          setAuthLoading(false)
+          console.warn("Something went wrong with authentication: " + err)
+        })
+      })
+    }
   }
 
   const LoginSection = () => {
