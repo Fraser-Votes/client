@@ -84,7 +84,7 @@ const Sidebar = () => {
                         my="20px"
                         ml="22px"
                     >
-                        SAC Elections
+                        Fraser Votes
                     </Text>
                 </Box>
                 <NavItem title="Candidates" iconName="candidates"/>
