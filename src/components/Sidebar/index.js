@@ -52,16 +52,16 @@ const ProfileBar = () => {
     return (
         <Menu>
             <MenuButton py="16px" display="flex" flexDirection="row" justifyContent="center" alignItems="center" width="100%">
-                <Avatar name={user.displayName} ml="32px" size="sm" src={user.photoURL}/>
+                <Avatar name={user.displayName} ml="34px" size="sm" src={user.photoURL}/>
                 <Box ml="12px" textAlign="left">
-                    <Text mb="2px" lineHeight="14px" mr="14px" fontSize="sm" maxWidth="148px" isTruncated fontWeight="bold" color="blue.700">
+                    <Text mb="2px" lineHeight="14px" mr="14px" fontSize="sm" maxWidth="144px" isTruncated fontWeight="bold" color="blue.700">
                         {user.displayName}
                     </Text>
                     <Text mt="2px" lineHeight="0.875rem" fontSize="sm" color="gray.600" fontWeight="600">
                         {user.email.split("@")[0]}
                     </Text>
                 </Box>
-                <Icon size="20px" color="blue.900" mr="33px" name="chevron-down"/>
+                <Icon size="20px" color="blue.900" mr="35px" name="chevron-down"/>
             </MenuButton>
             <MenuList>
                 <MenuItem as="button" onClick={() => logout(firebase)}>
@@ -76,13 +76,13 @@ const Sidebar = () => {
     return (
         <Box h="100vh" w="290px" display="flex" alignItems="center" justifyContent="space-between" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
             <Box>
-                <Box w="252px">
+                <Box w="242px">
                     <Text
                         fontWeight="bold"
                         fontSize="2xl"
                         color="blue.900"
                         my="20px"
-                        ml="26px"
+                        ml="22px"
                     >
                         SAC Elections
                     </Text>
