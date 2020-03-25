@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import { Text, Box } from '@chakra-ui/core'
-import Header from "./Header"
 import Layout from './Layout'
-
-const CandidateCard = ({name, grade, position, id}) => {
-        
-}
+import Header from './Header'
 
 const CandidateRow = ({position, candidates}) => {
     return (
@@ -18,12 +14,12 @@ const CandidateRow = ({position, candidates}) => {
         </Text>
     )
 }
-export default class Candidates extends Component {
 
+export default class Candidates extends Component {
     render() {
         return (
             <Layout>    
-                <Header title="Candidates"/>
+                <Header title="Voting"/>
                 <CandidateRow position="President" />
             </Layout>
         )

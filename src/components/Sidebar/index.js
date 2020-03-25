@@ -63,8 +63,8 @@ const ProfileBar = () => {
                 </Box>
                 <Icon size="20px" color="blue.900" mr="35px" name="chevron-down"/>
             </MenuButton>
-            <MenuList>
-                <MenuItem as="button" onClick={() => logout(firebase)}>
+            <MenuList borderRadius="8px">
+                <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => logout(firebase)}>
                     Log out
                 </MenuItem>
             </MenuList>
