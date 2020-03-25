@@ -9,11 +9,11 @@ const NavItem = ({title, iconName}) => {
     return (
         <Box 
             as="button"
-            h="40px" 
-            w="252px"
+            h="38px" 
+            w="242px"
             textAlign="center"
             backgroundColor={isActive ? "blue.50" : ""} 
-            mb="18px"
+            mb="16px"
             display="flex"
             justifyContent="stretch"
             alignItems="center"
@@ -27,12 +27,12 @@ const NavItem = ({title, iconName}) => {
                 color={isActive ? "blue.700" : "blueGray.500"} 
                 w={iconName === "candidates" ? "23.33px" : iconName=== "results" ? "18px" : "18px"} 
                 h={iconName === "candidates" ? "18.67px" : iconName=== "results" ? "16px" : "18px"}
-                mt={iconName !== "candidates" ? "3px" : 0}
+                mt={iconName !== "candidates" ? "4px" : 0}
                 ml={iconName !== "candidates" ? "4px" : 0}
                 name={iconName}
             />
             <Text
-                ml= {iconName=== "candidates" ? "45px" : "47px"}
+                ml= {iconName=== "candidates" ? "35px" : "37px"}
                 lineHeight="40px"
                 fontWeight="bold"
                 color= {isActive ? "blue.700" : "blueGray.500"}
@@ -46,7 +46,18 @@ const NavItem = ({title, iconName}) => {
 
 const Sidebar = () => {
     return (
-        <Box w="300px">
+        <Box h="100vh" w="290px" display="flex" alignItems="center" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
+            <Box w="252px">
+                <Text
+                    fontWeight="bold"
+                    fontSize="2xl"
+                    color="blue.900"
+                    my="22px"
+                    ml="26px"
+                >
+                    SAC Elections
+                </Text>
+            </Box>
             <NavItem title="Candidates" iconName="candidates"/>
             <NavItem title="Voting" iconName="voting" />
             <NavItem title="Results" iconName="results" />
