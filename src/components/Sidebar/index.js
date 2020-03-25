@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Box, Icon, Image, MenuButton, Menu, MenuList, MenuItem } from '@chakra-ui/core'
+import { Text, Box, Icon, MenuButton, Menu, MenuList, MenuItem, Avatar } from '@chakra-ui/core'
 import { navigate } from 'gatsby';
 import { getUser, logout } from '../../utils/auth';
 import firebase from "gatsby-plugin-firebase"
@@ -52,7 +52,7 @@ const ProfileBar = () => {
     return (
         <Menu>
             <MenuButton py="16px" display="flex" flexDirection="row" justifyContent="center" alignItems="center" width="100%">
-                <Image ml="32px" size="34px" rounded="full" src={user.photoURL}/>
+                <Avatar name={user.displayName} ml="32px" size="sm" src={user.photoURL}/>
                 <Box ml="12px" textAlign="left">
                     <Text mb="2px" lineHeight="14px" mr="14px" fontSize="sm" maxWidth="148px" isTruncated fontWeight="bold" color="blue.700">
                         {user.displayName}
@@ -61,7 +61,7 @@ const ProfileBar = () => {
                         {user.email.split("@")[0]}
                     </Text>
                 </Box>
-                <Icon size="20px" color="blue.900" mr="32px" name="chevron-down"/>
+                <Icon size="20px" color="blue.900" mr="33px" name="chevron-down"/>
             </MenuButton>
             <MenuList>
                 <MenuItem as="button" onClick={() => logout(firebase)}>
