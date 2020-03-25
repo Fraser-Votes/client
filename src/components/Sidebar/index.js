@@ -2,8 +2,6 @@ import React from 'react'
 import { Text, Box, Icon } from '@chakra-ui/core'
 import { navigate } from 'gatsby';
 
-const Profile
-
 const NavItem = ({title, iconName}) => {
     var isActive = null;
     window.location.pathname === `/app/${title.toLowerCase()}` ? isActive = true : isActive = false
