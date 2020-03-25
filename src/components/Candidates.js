@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { Text, Box } from '@chakra-ui/core'
 import Layout from './Layout'
 
-const CandidateCard = () => {
-    
+const CandidateCard = ({name, grade, position, id}) => {
+        
 }
 
 const CandidateRow = ({position, candidates}) => {
@@ -25,7 +25,6 @@ const PageHeader = () => {
             display="flex"
             flexDirection="row"
             alignItems="center"
-            mb="4px"
         >
             <Text
                 fontSize="2xl"

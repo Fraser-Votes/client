@@ -1,6 +1,8 @@
 import React from 'react'
-import { Text, Box, Icon } from '@chakra-ui/core'
+import { Text, Box, Icon, Image, MenuButton, Menu, MenuList, MenuItem } from '@chakra-ui/core'
 import { navigate } from 'gatsby';
+import { getUser, logout } from '../../utils/auth';
+import firebase from "gatsby-plugin-firebase"
 
 const NavItem = ({title, iconName}) => {
     var isActive = null;
@@ -44,23 +46,54 @@ const NavItem = ({title, iconName}) => {
     )
 }
 
+const ProfileBar = () => {
+    const user = getUser()
+
+    return (
+        <Menu>
+            <MenuButton py="16px" display="flex" flexDirection="row" justifyContent="center" alignItems="center" width="100%">
+                <Image ml="32px" size="34px" rounded="full" src={user.photoURL}/>
+                <Box ml="12px" textAlign="left">
+                    <Text mb="2px" lineHeight="14px" mr="14px" fontSize="sm" maxWidth="148px" isTruncated fontWeight="bold" color="blue.700">
+                        {user.displayName}
+                    </Text>
+                    <Text mt="2px" lineHeight="0.875rem" fontSize="sm" color="gray.600" fontWeight="600">
+                        {user.email.split("@")[0]}
+                    </Text>
+                </Box>
+                <Icon size="20px" color="blue.900" mr="32px" name="chevron-down"/>
+            </MenuButton>
+            <MenuList>
+                <MenuItem as="button" onClick={() => logout(firebase)}>
+                    Log out
+                </MenuItem>
+            </MenuList>
+        </Menu>
+   )
+}
+
 const Sidebar = () => {
     return (
-        <Box h="100vh" w="290px" display="flex" alignItems="center" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
-            <Box w="252px">
-                <Text
-                    fontWeight="bold"
-                    fontSize="2xl"
-                    color="blue.900"
-                    my="22px"
-                    ml="26px"
-                >
-                    SAC Elections
-                </Text>
+        <Box h="100vh" w="290px" display="flex" alignItems="center" justifyContent="space-between" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
+            <Box>
+                <Box w="252px">
+                    <Text
+                        fontWeight="bold"
+                        fontSize="2xl"
+                        color="blue.900"
+                        my="20px"
+                        ml="26px"
+                    >
+                        SAC Elections
+                    </Text>
+                </Box>
+                <NavItem title="Candidates" iconName="candidates"/>
+                <NavItem title="Voting" iconName="voting" />
+                <NavItem title="Results" iconName="results" />
             </Box>
-            <NavItem title="Candidates" iconName="candidates"/>
-            <NavItem title="Voting" iconName="voting" />
-            <NavItem title="Results" iconName="results" />
+            <Box w="100%">
+                <ProfileBar/>
+            </Box>
         </Box>
     )
 }
