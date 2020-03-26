@@ -21,36 +21,42 @@ const CandidateRow = ({position, candidates}) => {
 
 export default class Candidates extends Component {
 
-    constuctor(props) {
+    constructor(props) {
         super(props)
 
         this.state = {
             candidates: null,
-            dataLoading: false
+            dataLoading: true,
+            positions: [
+                {display: "President", raw: "president"},
+                {display: "Vice President", raw:"vice-president"}
+            ],
         }
-
     }
 
-    async componentDidMount() {
-        const candidates = await getCandidates()
+    componentDidMount() {
+        const candidates = getCandidates()
         this.setState({
-            candidates: candidates
+            candidates: candidates,
         })
-        console.log(this.state.candidates)
-    }
-
-    createCandidateRows = () => {
-        this.state.candidates.forEach(position => {
-            return <CandidateRow position={position.key()}/>
+        this.setState({
+            dataLoading: false
         })
+        console.log(this.state)   
     }
-
 
     render() {
         return (
             <Layout>    
                 <Header title="Candidates"/>
-                {this.createCandidateRows()}
+                {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
+                    var candidates = this.state.candidates
+                    console.log(candidates)
+                    candidates[position.raw].map((candidate) => {
+                        console.log(candidate)
+                        return <CandidateRow position={position.display}/>
+                    })
+                })}
             </Layout>
         )
     }
@@ -58,7 +64,7 @@ export default class Candidates extends Component {
 
 const getCandidates = () => {
 
-    var candidates = {}
+    const candidates = {}
 
     db.collection("positions").get().then(res => {
         res.forEach(position => {
