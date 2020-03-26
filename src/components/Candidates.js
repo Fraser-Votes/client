@@ -7,14 +7,14 @@ import firebase from "gatsby-plugin-firebase"
 const db = firebase.firestore()
 const candidateRef = db.collection("candidates")
 
-const CandidateRow = ({position, candidates}) => {
+const CandidateRow = ({position, candidate}) => {
     return (
         <Text
             fontSize="xl"
             fontWeight="bold"
             color="blueGray.900"
         >
-            {position}
+            {position} - {candidate.first} {candidate.last}
         </Text>
     )
 }
@@ -35,14 +35,15 @@ export default class Candidates extends Component {
     }
 
     componentDidMount() {
-        const candidates = getCandidates()
-        this.setState({
-            candidates: candidates,
+        getCandidates().then(candidates => {
+            this.setState({
+                candidates: candidates,
+            })
+            this.setState({
+                dataLoading: false
+            })
+            console.log(this.state)
         })
-        this.setState({
-            dataLoading: false
-        })
-        console.log(this.state)   
     }
 
     render() {
@@ -51,11 +52,9 @@ export default class Candidates extends Component {
                 <Header title="Candidates"/>
                 {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
                     var candidates = this.state.candidates
-                    console.log(candidates)
-                    candidates[position.raw].map((candidate) => {
-                        console.log(candidate)
-                        return <CandidateRow position={position.display}/>
-                    })
+                    return <>{candidates[position.raw].map((candidate) => {
+                        return <CandidateRow position={position.display} candidate={candidate} />
+                    })}</>
                 })}
             </Layout>
         )
@@ -66,17 +65,16 @@ const getCandidates = () => {
 
     const candidates = {}
 
-    db.collection("positions").get().then(res => {
-        res.forEach(position => {
+    return db.collection("positions").get().then(res =>
+        Promise.all(res.forEach(position => {
             candidates[position.id] = []
             var positionDocRef = db.collection("positions").doc(position.id)
-            candidateRef.where("position", "==", positionDocRef).get().then(res => {
+            return candidateRef.where("position", "==", positionDocRef).get().then(res => {
                 res.forEach(doc => {
                     candidates[position.id].push(doc.data())
                 })
-            }).catch(err => console.log(err)) 
-        })
-    })
+            }).catch(err => console.log(err))
+        }))
+    ).then(() => candidates)
 
-    return candidates
 }
