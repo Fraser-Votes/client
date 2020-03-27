@@ -1,11 +1,20 @@
 import React, { Component } from 'react'
-import { Text, Box } from '@chakra-ui/core'
+import { Text, Box, Image } from '@chakra-ui/core'
 import Header from "./Header"
 import Layout from './Layout'
 import firebase from "gatsby-plugin-firebase"
 
-const db = firebase.firestore()
-const candidateRef = db.collection("candidates")
+const CandidateCard = ({first, last, grade, photoURL}) => {
+    return (
+        <Box display="flex" flexDirection="column">
+            <Image src={photoURL} />
+            <Box>
+                <Text>{first} {last}</Text>
+                <Text>Grade {grade}</Text>
+            </Box>
+        </Box>
+    )
+}
 
 const CandidateRow = ({position, candidate}) => {
     return (
@@ -62,7 +71,8 @@ export default class Candidates extends Component {
 }
 
 const getCandidates = () => {
-
+    const db = firebase.firestore()
+    const candidateRef = db.collection("candidates")
     const candidates = {}
 
     return db.collection("positions").get().then(res =>
