@@ -45,6 +45,7 @@ export default class Candidates extends Component {
 
     componentDidMount() {
         getCandidates().then(candidates => {
+            console.log(candidates)
             this.setState({
                 candidates: candidates,
             })
@@ -75,8 +76,9 @@ const getCandidates = () => {
     const candidateRef = db.collection("candidates")
     const candidates = {}
 
-    return db.collection("positions").get().then(res =>
-        Promise.all(res.forEach(position => {
+    return db.collection("positions").get().then(res => {
+        console.log(res.docs)
+        Promise.all(res.docs.forEach(position => {
             candidates[position.id] = []
             var positionDocRef = db.collection("positions").doc(position.id)
             return candidateRef.where("position", "==", positionDocRef).get().then(res => {
@@ -85,6 +87,6 @@ const getCandidates = () => {
                 })
             }).catch(err => console.log(err))
         }))
-    ).then(() => candidates)
+    }).then(() => candidates).catch(err => console.log(err))
 
 }
