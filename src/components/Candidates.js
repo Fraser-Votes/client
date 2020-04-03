@@ -72,7 +72,7 @@ export default class Candidates extends Component {
         const candidateRef = db.collection("candidates")
         const candidates = {}
     
-        await db.collection("positions").get().then(res => {
+        db.collection("positions").get().then(res => {
             res.docs.forEach(position => {
                 candidates[position.id] = []
                 var positionDocRef = db.collection("positions").doc(position.id)
@@ -87,7 +87,6 @@ export default class Candidates extends Component {
                 candidates: candidates,                
             },() => {
                 setTimeout(() => {this.setState({dataLoading: false})}, 500)
-                console.log(this.state)
             })
         })    
         return true
