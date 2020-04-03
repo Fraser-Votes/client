@@ -16,15 +16,20 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
     )
 }
 
-const CandidateRow = ({position, candidate}) => {
+const CandidateRow = ({position, children}) => {
     return (
-        <Text
-            fontSize="xl"
-            fontWeight="bold"
-            color="blueGray.900"
-        >
-            {position} - {candidate.first} {candidate.last}
-        </Text>
+        <Box>
+            <Text
+                fontSize="xl"
+                fontWeight="bold"
+                color="blueGray.900"
+            >
+                {position}
+            </Text>
+            <Box>
+                {children}
+            </Box>
+        </Box>
     )
 }
 
@@ -52,11 +57,11 @@ export default class Candidates extends Component {
             <Layout>    
                 <Header title="Candidates"/>
                 {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
-                    console.log(this.state["candidates"][position.raw][0] + "asdf")
-                    return <>{this.state["candidates"][position.raw].map((candidate) => {
-                        console.log(candidate + "asf")
-                        return <CandidateRow position={position.display} candidate={candidate}/>
-                    })}</>
+                    return <CandidateRow position={position.display}>
+                        {this.state["candidates"][position.raw].map(candidate => {
+                            return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} />
+                        })}
+                    </CandidateRow>
                 })}
             </Layout>
         )

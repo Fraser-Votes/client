@@ -19,6 +19,8 @@ const Layout = ({ children }) => {
         w="100%"
         bg="blueGray.50"
         px="40px"
+        maxHeight="100vh"
+        overflowY="auto"
       >
         {children}
       </Box>
