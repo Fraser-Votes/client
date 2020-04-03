@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, Box, Image } from '@chakra-ui/core'
+import { Text, Box, Image, Icon } from '@chakra-ui/core'
 import Header from "./Header"
 import Layout from './Layout'
 import firebase from "gatsby-plugin-firebase"
@@ -44,16 +44,7 @@ export default class Candidates extends Component {
     }
 
     componentDidMount() {
-        getCandidates().then(candidates => {
-            console.log(candidates)
-            this.setState({
-                candidates: candidates,
-            })
-            this.setState({
-                dataLoading: false
-            })
-            console.log(this.state)
-        })
+        this.getCandidates()
     }
 
     render() {
@@ -61,32 +52,39 @@ export default class Candidates extends Component {
             <Layout>    
                 <Header title="Candidates"/>
                 {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
-                    var candidates = this.state.candidates
-                    return <>{candidates[position.raw].map((candidate) => {
-                        return <CandidateRow position={position.display} candidate={candidate} />
+                    console.log(this.state["candidates"][position.raw][0] + "asdf")
+                    return <>{this.state["candidates"][position.raw].map((candidate) => {
+                        console.log(candidate + "asf")
+                        return <CandidateRow position={position.display} candidate={candidate}/>
                     })}</>
                 })}
             </Layout>
         )
     }
-}
 
-const getCandidates = () => {
-    const db = firebase.firestore()
-    const candidateRef = db.collection("candidates")
-    const candidates = {}
-
-    return db.collection("positions").get().then(res => {
-        console.log(res.docs)
-        Promise.all(res.docs.forEach(position => {
-            candidates[position.id] = []
-            var positionDocRef = db.collection("positions").doc(position.id)
-            return candidateRef.where("position", "==", positionDocRef).get().then(res => {
-                res.forEach(doc => {
-                    candidates[position.id].push(doc.data())
-                })
-            }).catch(err => console.log(err))
-        }))
-    }).then(() => candidates).catch(err => console.log(err))
-
+    getCandidates = async () => {
+        const db = firebase.firestore()
+        const candidateRef = db.collection("candidates")
+        const candidates = {}
+    
+        await db.collection("positions").get().then(res => {
+            res.docs.forEach(position => {
+                candidates[position.id] = []
+                var positionDocRef = db.collection("positions").doc(position.id)
+                candidateRef.where("position", "==", positionDocRef).get().then(res => {
+                    res.forEach(doc => {
+                        candidates[position.id].push(doc.data())
+                    })
+                }).catch(err => console.log(err))
+            })
+        }).then(() => {
+            this.setState({
+                candidates: candidates,                
+            },() => {
+                setTimeout(() => {this.setState({dataLoading: false})}, 500)
+                console.log(this.state)
+            })
+        })    
+        return true
+    }
 }
