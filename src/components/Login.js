@@ -4,7 +4,7 @@ import { setUser, isLoggedIn } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
 import { Button, Box, Grid, Text } from "@chakra-ui/core"
 import loginIllustration from "../images/loginIllustration.svg"
-import { Desktop, Mobile, IsMobile } from "../utils/mediaQueries"
+import { Desktop, Mobile, IsMobile, IsDesktop } from "../utils/mediaQueries"
 
 const Login = () => {
 
@@ -27,7 +27,16 @@ const Login = () => {
     googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-        firebase.auth().signInWithPopup(provider).then(res => {
+        IsDesktop() ?
+          firebase.auth().signInWithPopup(provider).then(res => {
+            setUser(res.user)
+            navigate('/app/candidates')
+          }).catch(err => {
+            setAuthLoading(false)
+            console.warn("Something went wrong with authentication: " + err)
+          })
+        :
+        firebase.auth().signInWithRedirect(provider).then(res => {
           setUser(res.user)
           navigate('/app/candidates')
         }).catch(err => {
