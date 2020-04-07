@@ -9,5 +9,9 @@ export default {
     },
     results: {
         path: <path d="M8 9h4M3 5h14H3zm0 0a2 2 0 1 1 0-4h14a2 2 0 0 1 0 4H3zm0 0v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5H3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{fill: "transparent"}}/>
+    },
+    forward: {
+        path: <path d="M13 3.99998H1M10.3333 1.33331L13 3.99998L10.3333 1.33331ZM13 3.99998L10.3333 6.66665L13 3.99998Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{fill: "transparent"}}/>,
+        viewBox: "0 0 14 8"
     }
 }
