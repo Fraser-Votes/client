@@ -8,8 +8,8 @@ const Header = ({title}) => {
           display="flex"
           flexDirection="row"
           alignItems="center"
-          mb="4px"
-      >
+          mb="4px"  
+        >
           <Text
               fontSize="2xl"
               fontWeight="bold"

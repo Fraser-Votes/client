@@ -4,6 +4,8 @@ import Header from "./Header"
 import Layout from './Layout'
 import firebase from "gatsby-plugin-firebase"
 import { navigate } from 'gatsby'
+import 'react-perfect-scrollbar/dist/css/styles.css';
+import PerfectScrollbar from 'react-perfect-scrollbar'
 
 const CandidateCard = ({first, last, grade, photoURL}) => {
     return (
@@ -73,15 +75,15 @@ export default class Candidates extends Component {
 
     render() {
         return (
-            <Layout>    
-                <Header title="Candidates"/>
-                {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
-                    return <CandidateRow position={position.display}>
-                        {this.state["candidates"][position.raw].map(candidate => {
-                            return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} />
-                        })}
-                    </CandidateRow>
-                })}
+            <Layout>
+                    <Header title="Candidates"/>
+                    {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
+                        return <CandidateRow position={position.display}>
+                            {this.state["candidates"][position.raw].map(candidate => {
+                                return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} />
+                            })}
+                        </CandidateRow>
+                    })}
             </Layout>
         )
     }
