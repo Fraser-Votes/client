@@ -27,7 +27,6 @@ const Login = () => {
     googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-        window.innerWidth < 1024 ?
           firebase.auth().signInWithPopup(provider).then(res => {
             setUser(res.user)
             navigate('/app/candidates')
@@ -35,14 +34,6 @@ const Login = () => {
             setAuthLoading(false)
             console.warn("Something went wrong with authentication: " + err)
           })
-        :
-        firebase.auth().signInWithRedirect(provider).then(res => {
-          setUser(res.user)
-          navigate('/app/candidates')
-        }).catch(err => {
-          setAuthLoading(false)
-          console.warn("Something went wrong with authentication: " + err)
-        })
       })
     }
   })
