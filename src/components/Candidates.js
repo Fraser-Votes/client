@@ -4,8 +4,6 @@ import Header from "./Header"
 import Layout from './Layout'
 import firebase from "gatsby-plugin-firebase"
 import { navigate } from 'gatsby'
-import 'react-perfect-scrollbar/dist/css/styles.css';
-import PerfectScrollbar from 'react-perfect-scrollbar'
 
 const CandidateCard = ({first, last, grade, photoURL}) => {
     return (
