@@ -27,7 +27,7 @@ const Login = () => {
     googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-        IsDesktop() ?
+        window.innerWidth < 1024 ?
           firebase.auth().signInWithPopup(provider).then(res => {
             setUser(res.user)
             navigate('/app/candidates')
