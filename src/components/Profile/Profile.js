@@ -1,7 +1,58 @@
 import React, { Component } from 'react'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon } from '@chakra-ui/core'
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Link } from '@chakra-ui/core'
 import firebase from "gatsby-plugin-firebase"
-import { Link } from 'gatsby'
+import { Link as GatsbyLink } from 'gatsby'
+
+const ProfileNav = ({first, last}) => {
+    return (
+        <Box
+            ml="59px"
+            h="60px"
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+        >
+            <Link href="/app/candidates">
+                <Icon size="20px" color="blueGray.400" name="back"/>
+            </Link>
+            <Breadcrumb
+                ml="40px"
+                spacing="4px"
+                separator={<Icon color="blueGray.400" size="18px" name="chevron-right" />}
+            >
+                <BreadcrumbItem>
+                    <BreadcrumbLink 
+                        fontSize="16px" 
+                        fontWeight="600" 
+                        color="blueGray.400"
+                        as={GatsbyLink} 
+                        to="/app/candidates">
+                            Candidates
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem isCurrentPage>
+                    <BreadcrumbLink
+                      fontSize="16px" 
+                      fontWeight="600" 
+                      color="blueGray.400"                        
+                    >
+                        {first} {last}
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+            </Breadcrumb>
+        </Box>
+    )
+}
+
+const ProfileHeader = ({first, last, displayPosition, instagram, facebook, snapchat, email, grade}) => {
+    return (
+        <Box
+            ml="120px"
+        >
+            Asdf
+        </Box>
+    )
+}
 
 export default class Profile extends Component {
     
@@ -25,16 +76,10 @@ export default class Profile extends Component {
                 {
                     !this.state.dataLoaded ? "Loading..." 
                     :
-                    <Breadcrumb
-                        separator={<Icon color="gray.300" name="chevron-right" />}
-                    >
-                        <BreadcrumbItem>
-                            <BreadcrumbLink as={Link} to="/app/candidates">Candidates</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbItem isCurrentPage>
-                            <BreadcrumbLink>{this.state.candidate.first} {this.state.candidate.last}</BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </Breadcrumb>
+                    <>
+                        <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
+                        <ProfileHeader />
+                    </>
                 }
             </Box>
         )

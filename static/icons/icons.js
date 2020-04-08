@@ -13,5 +13,9 @@ export default {
     forward: {
         path: <path d="M13 3.99998H1M10.3333 1.33331L13 3.99998L10.3333 1.33331ZM13 3.99998L10.3333 6.66665L13 3.99998Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{fill: "transparent"}}/>,
         viewBox: "0 0 14 8"
+    },
+    back: {
+        path: <path d="M8.5 14.4922L1 8.10639M1 8.10639L8.5 1.72058M1 8.10639H23.375" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>,
+        viewBox: "0 0 25 16"
     }
 }
