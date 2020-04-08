@@ -12,7 +12,7 @@ const ProfileNav = ({first, last}) => {
             flexDirection="row"
             alignItems="center"
         >
-            <Link href="/app/candidates">
+            <Link h="26px" href="/app/candidates">
                 <Icon size="20px" color="blueGray.400" name="back"/>
             </Link>
             <Breadcrumb
