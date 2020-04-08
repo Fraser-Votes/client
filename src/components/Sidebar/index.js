@@ -75,14 +75,15 @@ const ProfileBar = () => {
 const Sidebar = () => {
     return (
         <Box h="100vh" w="290px" display="flex" alignItems="center" justifyContent="space-between" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
-            <Box>
-                <Box w="242px">
+            <Box
+                textAlign="center"
+            >
+                <Box>
                     <Text
                         fontWeight="bold"
                         fontSize="2xl"
                         color="blue.900"
                         my="20px"
-                        ml="22px"
                     >
                         Fraser Votes
                     </Text>
