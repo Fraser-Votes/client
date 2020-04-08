@@ -19,12 +19,27 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
         boxShadow="0px -0.193708px 3.7358px rgba(0, 0, 0, 0.0112458), 0px -0.465507px 8.97764px rgba(0, 0, 0, 0.0161557), 0px -0.876509px 16.9041px rgba(0, 0, 0, 0.02), 0px -1.56354px 30.154px rgba(0, 0, 0, 0.0238443), 0px -2.92443px 56.3998px rgba(0, 0, 0, 0.0287542), 0px -7px 135px rgba(0, 0, 0, 0.04);"
         >
             <Image fallbackSrc="https://via.placeholder.com/500" objectFit="cover" h={IsDesktop() ? "130px" : "30vh"} w="100%" src={photoURL} />
-            <Box alignItems="center" mx="14px" justifyContent="space-between" h="35px" flexDirection="row" display="flex">
+            <Box 
+                alignItems="center" 
+                mx="14px" 
+                justifyContent="space-between" 
+                h="35px" 
+                flexDirection="row" 
+                display="flex"
+            >
                 <Text fontWeight="bold" fontSize="14px" color="blueGray.800">{first} {last}</Text>
                 <Text fontWeight="bold" fontSize="12px" color="blueGray.500">Grade {grade}</Text>
             </Box>
             <Divider my="0px" color="#F0F4F8" borderWidth="1.5px"/>
-            <Box as="button" onClick={() => {navigate(`/app/candidates/${first}-${last}`)}} mx="14px" display="flex" flexDirection="row" alignItems="center" h="35px">
+            <Box 
+                as="button" 
+                onClick={() => {navigate(`/app/candidates/${first}-${last}`)}} 
+                mx="14px" 
+                display="flex" 
+                flexDirection="row" 
+                alignItems="center" 
+                h="35px"
+            >
                 <Text fontWeight="bold" fontSize="12px" color="blue.800">View Profile</Text>
                 <Icon ml="8px" color="blue.800" name="forward" />
             </Box>
@@ -59,6 +74,7 @@ export default class Candidates extends Component {
             candidates: null,
             dataLoading: true,
             positions: [
+                // slightly ghetto - but for now, it works. This will be replaced with a server-side solution later
                 {display: "President", raw: "president"},
                 {display: "Vice President", raw:"vice-president"},
                 {display: "Secretary", raw:"secretary"},

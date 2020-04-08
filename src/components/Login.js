@@ -41,7 +41,14 @@ const Login = () => {
 
   const LoginSection = () => {
     return (
-      <Box display="flex" justifyContent="space-between" flexDirection="column" px={IsMobile() ? "5vw" : 0} py={IsMobile() ? "12vh" : "24vh"} h="100vh" textAlign="center">
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        flexDirection="column" 
+        px={IsMobile() ? "5vw" : 0} py={IsMobile() ? "12vh" : "24vh"} 
+        h="100vh" 
+        textAlign="center"
+      >
         <Box>
           <Text fontWeight="bold" color="blueGray.900" fontSize={IsMobile() ? "3xl" : "4xl"}>Fraser Votes</Text>
           <Text fontWeight="600" color="blueGray.600" fontSize={IsMobile() ? "md" : "lg"}>Student Activity Council Elections 2020</Text>
