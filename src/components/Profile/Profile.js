@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Link } from '@chakra-ui/core'
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Link, Avatar, Text } from '@chakra-ui/core'
 import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
 
@@ -44,12 +44,41 @@ const ProfileNav = ({first, last}) => {
     )
 }
 
-const ProfileHeader = ({first, last, displayPosition, instagram, facebook, snapchat, email, grade}) => {
+const ProfileHeader = ({candidate}) => {
     return (
         <Box
             ml="120px"
+            mt="12px"
+            display="flex"
+            flexDirection="row"
+            maxWidth="40vw"
         >
-            Asdf
+            <Avatar src={candidate.photoURL} h="6.5vw" w="6.5vw" />
+            <Box 
+                ml="24px"
+            >
+                <Text lineHeight="30px" fontSize="24px" fontWeight="bold" color="blueGray.900">
+                    {candidate.first} {candidate.last}
+                </Text>
+                <Box
+                    display="flex"
+                    flexDirection="row"
+                    mt="4px"
+                >
+                    <Text color="blueGray.400" fontSize="16px" fontWeight="600" mr="12px">
+                        {candidate.displayPosition}
+                    </Text>
+                    <Text lineHeight="24px" fontSize="20px" color="blueGray.900" mr="12px">
+                        •
+                    </Text>
+                    <Text color="blueGray.400" fontSize="16px" fontWeight="600" >
+                        Grade {candidate.grade}
+                    </Text>
+                </Box>
+                <Text mt="4px" fontSize="16px" fontWeight="600" color="blueGray.400" lineHeight="1.3">
+                    {candidate.bio}
+                </Text>
+            </Box>
         </Box>
     )
 }
@@ -78,7 +107,7 @@ export default class Profile extends Component {
                     :
                     <>
                         <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
-                        <ProfileHeader />
+                        <ProfileHeader candidate={this.state.candidate}/>
                     </>
                 }
             </Box>
