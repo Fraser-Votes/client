@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator } from '@chakra-ui/core'
+import { AspectRatioBox, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator } from '@chakra-ui/core'
 import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
 import { IsDesktop } from '../../utils/mediaQueries'
@@ -124,6 +124,34 @@ const ProfileHeader = ({candidate}) => {
     )
 }
 
+const CandidateDescription = ({candidate}) => {
+
+    const isDesktop = IsDesktop()
+
+    return (
+        <AspectRatioBox 
+        borderRadius="24px" 
+        overflow="hidden" 
+        my={isDesktop ? "60px" : "40px"}
+        mx={isDesktop ? "120px" : "40px"} 
+        maxW={isDesktop ? "100%" : "100%"}
+        ratio={ isDesktop ? 16/8 : 16/12}
+    >
+        <Box 
+            as="iframe"
+            title={`${candidate.first} ${candidate.last}'s Campaign Video`}
+            src={candidate.videoURL.replace("watch?v=", "embed/") + "?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&"}
+            allowFullScreen
+            frameborde="0"
+            scrolling="no"
+            marginheight="0"
+            marginwidth="0"
+            type="text/html"
+        />
+    </AspectRatioBox>
+    )
+}
+
 export default class Profile extends Component {
     
     constructor(props) {
@@ -151,6 +179,7 @@ export default class Profile extends Component {
                             <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
                             <ProfileHeader candidate={this.state.candidate}/>
                         </Box>
+                        <CandidateDescription candidate={this.state.candidate}/>
                     </Box>
                 }
             </Box>
