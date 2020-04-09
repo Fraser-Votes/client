@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Link, Avatar, Text } from '@chakra-ui/core'
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator } from '@chakra-ui/core'
 import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
+import { IsDesktop } from '../../utils/mediaQueries'
 
 const ProfileNav = ({first, last}) => {
     return (
@@ -12,27 +13,30 @@ const ProfileNav = ({first, last}) => {
             flexDirection="row"
             alignItems="center"
         >
-            <Link h="26px" href="/app/candidates">
-                <Icon size="20px" color="blueGray.400" name="back"/>
-            </Link>
+            <GatsbyLink to="/app/candidates">
+                <Icon height="28px" size="20px" color="blueGray.400" name="back"/>
+            </GatsbyLink>
             <Breadcrumb
                 ml="40px"
                 spacing="4px"
-                separator={<Icon color="blueGray.400" size="18px" name="chevron-right" />}
+                addSeparator={false}
             >
                 <BreadcrumbItem>
                     <BreadcrumbLink 
-                        fontSize="16px" 
+                        fontSize="14px" 
                         fontWeight="600" 
                         color="blueGray.400"
                         as={GatsbyLink} 
                         to="/app/candidates">
                             Candidates
                     </BreadcrumbLink>
+                    <BreadcrumbSeparator h="26px">
+                        <Icon color="blueGray.400" size="18px" name="chevron-right" />
+                    </BreadcrumbSeparator>
                 </BreadcrumbItem>
                 <BreadcrumbItem isCurrentPage>
                     <BreadcrumbLink
-                      fontSize="16px" 
+                      fontSize="14px" 
                       fontWeight="600" 
                       color="blueGray.400"                        
                     >
@@ -45,17 +49,20 @@ const ProfileNav = ({first, last}) => {
 }
 
 const ProfileHeader = ({candidate}) => {
+
+    const isDesktop = IsDesktop()
+
     return (
         <Box
-            ml="120px"
+            mx={isDesktop ? "120px" : "40px"}
             mt="12px"
             display="flex"
-            flexDirection="row"
-            maxWidth="40vw"
+            flexDirection={isDesktop ? "row" : "column"}
+            maxWidth={isDesktop ? "775px" : "100%"} 
         >
-            <Avatar src={candidate.photoURL} h="6.5vw" w="6.5vw" />
+            <Avatar src={candidate.photoURL} h="120px" w="120px" />
             <Box 
-                ml="24px"
+                ml={isDesktop ? "24px" : 0}
             >
                 <Text lineHeight="30px" fontSize="24px" fontWeight="bold" color="blueGray.900">
                     {candidate.first} {candidate.last}
@@ -65,19 +72,49 @@ const ProfileHeader = ({candidate}) => {
                     flexDirection="row"
                     mt="4px"
                 >
-                    <Text color="blueGray.400" fontSize="16px" fontWeight="600" mr="12px">
+                    <Text color="blueGray.400" fontSize="14px" fontWeight="600" mr="12px">
                         {candidate.displayPosition}
                     </Text>
-                    <Text lineHeight="24px" fontSize="20px" color="blueGray.900" mr="12px">
+                    <Text lineHeight="20px" fontSize="20px" color="blueGray.900" mr="12px">
                         •
                     </Text>
-                    <Text color="blueGray.400" fontSize="16px" fontWeight="600" >
+                    <Text color="blueGray.400" fontSize="14px" fontWeight="600" >
                         Grade {candidate.grade}
                     </Text>
                 </Box>
-                <Text mt="4px" fontSize="16px" fontWeight="600" color="blueGray.400" lineHeight="1.3">
+                <Text overflow="hidden" style={{textOverflow: "ellipsis"}} height={isDesktop ? "auto" : "3.9em"} mt="8px" fontSize="14px" fontWeight="600" color="blueGray.400" lineHeight="1.3em">
                     {candidate.bio}
                 </Text>
+                <Box mt="20px" display="flex" flexDirection="row">
+                    {candidate.instagram ? 
+                        <Box as="a" target="_blank" href={`https://instagram.com/${candidate.instagram}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="blue.50" mr="20px">
+                            <Icon color="blue.500" w="20px" h="20px" name="instagram"/>
+                        </Box> 
+                        :
+                        <></>   
+                    }
+                    {candidate.facebook ? 
+                        <Box as="a" target="_blank" href={`https://facebook.com/${candidate.facebook}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="blue.50" mr="20px">
+                            <Icon color="blue.500" w="8.42px" h="16px" name="facebook"/>
+                        </Box> 
+                        :
+                        <></>   
+                    }
+                    {candidate.snapchat ? 
+                        <Box as="a" target="_blank" href={`https://snapchat.com/add/${candidate.snapchat}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="yellow.100" mr="20px">
+                            <Icon color="yellow.500" w="20px" h="19px" name="snapchat"/>
+                        </Box> 
+                        :
+                        <></>   
+                    }
+                    {candidate.email ? 
+                        <Box as="a" target="_blank" href={`mailto:${candidate.email}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="red.100" mr="20px">
+                            <Icon color="red.500" w="20px" h="16px" name="email"/>
+                        </Box> 
+                        :
+                        <></>   
+                    }
+                </Box>
             </Box>
         </Box>
     )
@@ -105,10 +142,12 @@ export default class Profile extends Component {
                 {
                     !this.state.dataLoaded ? "Loading..." 
                     :
-                    <>
-                        <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
-                        <ProfileHeader candidate={this.state.candidate}/>
-                    </>
+                    <Box backgroundColor="blueGray.50" minHeight="100vh">
+                        <Box backgroundColor="white" pb="36px">
+                            <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
+                            <ProfileHeader candidate={this.state.candidate}/>
+                        </Box>
+                    </Box>
                 }
             </Box>
         )
