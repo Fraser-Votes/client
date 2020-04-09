@@ -17,7 +17,7 @@ const App = () => (
         <PrivateRoute path="/voting" component={Voting} />
         <PrivateRoute path="/results" component={Candidates} />
         <PrivateRoute path="/candidates/:candidateID" component={Profile}/>
-      <Login path="/login" />
+        <Login path="/login" />
     </Router>
   </Box>
   </LightMode>

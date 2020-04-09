@@ -34,7 +34,7 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
             <Box 
                 as="button" 
                 onClick={() => {navigate(`/app/candidates/${first}-${last}`)}} 
-                mx="14px" 
+                px="14px" 
                 display="flex" 
                 flexDirection="row" 
                 alignItems="center" 
