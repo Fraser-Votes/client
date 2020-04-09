@@ -7,7 +7,7 @@ import { IsDesktop } from '../../utils/mediaQueries'
 const ProfileNav = ({first, last}) => {
     return (
         <Box
-            ml="59px"
+            ml={IsDesktop() ? "59px" : "12px"}
             h="60px"
             display="flex"
             flexDirection="row"
@@ -17,7 +17,7 @@ const ProfileNav = ({first, last}) => {
                 <Icon height="28px" size="20px" color="blueGray.400" name="back"/>
             </GatsbyLink>
             <Breadcrumb
-                ml="40px"
+                ml={IsDesktop() ? "40px" : "10px"}
                 spacing="4px"
                 addSeparator={false}
             >
@@ -55,14 +55,18 @@ const ProfileHeader = ({candidate}) => {
     return (
         <Box
             mx={isDesktop ? "120px" : "40px"}
-            mt="12px"
             display="flex"
             flexDirection={isDesktop ? "row" : "column"}
             maxWidth={isDesktop ? "775px" : "100%"} 
+            alignItems={isDesktop ? "" : "center"}
         >
             <Avatar src={candidate.photoURL} h="120px" w="120px" />
             <Box 
+                mt={isDesktop ? "" : "18px"}
                 ml={isDesktop ? "24px" : 0}
+                display={isDesktop ? "" : "flex"}
+                flexDirection="column"
+                alignItems="center"
             >
                 <Text lineHeight="30px" fontSize="24px" fontWeight="bold" color="blueGray.900">
                     {candidate.first} {candidate.last}
@@ -75,14 +79,14 @@ const ProfileHeader = ({candidate}) => {
                     <Text color="blueGray.400" fontSize="14px" fontWeight="600" mr="12px">
                         {candidate.displayPosition}
                     </Text>
-                    <Text lineHeight="20px" fontSize="20px" color="blueGray.900" mr="12px">
+                    <Text lineHeight="18px" fontSize="20px" color="blueGray.900" mr="12px">
                         •
                     </Text>
                     <Text color="blueGray.400" fontSize="14px" fontWeight="600" >
                         Grade {candidate.grade}
                     </Text>
                 </Box>
-                <Text overflow="hidden" style={{textOverflow: "ellipsis"}} height={isDesktop ? "auto" : "3.9em"} mt="8px" fontSize="14px" fontWeight="600" color="blueGray.400" lineHeight="1.3em">
+                <Text mt="8px" fontSize="14px" fontWeight="600" color="blueGray.400" lineHeight="1.3em">
                     {candidate.bio}
                 </Text>
                 <Box mt="20px" display="flex" flexDirection="row">

@@ -15,6 +15,7 @@ const Layout = ({ children }) => {
         <Sidebar/>
       </Desktop>
       <Box
+        minHeight="100vh"
         h="100%"
         w="100%"
         bg="blueGray.50"
