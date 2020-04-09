@@ -124,7 +124,7 @@ export default class Candidates extends Component {
                 candidates: candidates,                
             },() => {
                 // pretend this doesn't exist
-                setTimeout(() => {this.setState({dataLoading: false})}, 500)
+                setTimeout(() => {this.setState({dataLoading: false})}, 700)
             })
         })    
         return true
