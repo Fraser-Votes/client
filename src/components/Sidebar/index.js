@@ -6,7 +6,7 @@ import firebase from "gatsby-plugin-firebase"
 
 const NavItem = ({title, iconName}) => {
     var isActive = null;
-    window.location.pathname === `/app/${title.toLowerCase()}` ? isActive = true : isActive = false
+    window.location.pathname === `/app/${title.toLowerCase()}` || (window.location.pathname === "/app" || window.location.pathname === "/app/") && title === "Candidates" ? isActive = true : isActive = false
 
     return (
         <Box 

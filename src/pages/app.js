@@ -13,11 +13,12 @@ const App = () => (
   <Box>
     <Router basepath="/app">
         <NotFoundPage default/>
-        <PrivateRoute path="/candidates" component={Candidates} />
-        <PrivateRoute path="/voting" component={Voting} />
-        <PrivateRoute path="/results" component={Candidates} />
-        <PrivateRoute path="/candidates/:candidateID" component={Profile}/>
-        <Login path="/login" />
+        <PrivateRoute path="/" component={Candidates} />
+        <PrivateRoute path="candidates" component={Candidates} />
+        <PrivateRoute path="voting" component={Voting} />
+        <PrivateRoute path="results" component={Candidates} />
+        <PrivateRoute path="candidates/:candidateID" component={Profile}/>
+        <Login path="login" />
     </Router>
   </Box>
   </LightMode>
