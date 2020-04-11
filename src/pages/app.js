@@ -13,7 +13,7 @@ const App = () => (
   <Box>
     <Router basepath="/app">
         <NotFoundPage default/>
-        <PrivateRoute path="/" component={Candidates} />
+        {/* <PrivateRoute path="/" component={Candidates} /> */}
         <PrivateRoute path="candidates" component={Candidates} />
         <PrivateRoute path="voting" component={Voting} />
         <PrivateRoute path="results" component={Candidates} />
