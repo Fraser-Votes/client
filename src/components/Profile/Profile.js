@@ -3,6 +3,7 @@ import { AspectRatioBox, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, 
 import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
 import { IsDesktop } from '../../utils/mediaQueries'
+import SEO from '../seo'
 
 const ProfileNav = ({first, last}) => {
     return (
@@ -175,9 +176,14 @@ export default class Profile extends Component {
         return (
             <Box>
                 {
-                    !this.state.dataLoaded ? "Loading..." 
+                    !this.state.dataLoaded ? 
+                    <>
+                    <SEO title="Loading..."/>
+                    <Text>Loading...</Text>
+                    </>
                     :
                     <Box backgroundColor="blueGray.50" minHeight="100vh">
+                        <SEO title={this.state.candidate.first + " " + this.state.candidate.last}/>
                         <Box backgroundColor="white" pb="36px">
                             <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
                             <ProfileHeader candidate={this.state.candidate}/>

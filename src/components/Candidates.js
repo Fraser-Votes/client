@@ -5,6 +5,7 @@ import Layout from './Layout'
 import firebase from "gatsby-plugin-firebase"
 import { navigate } from 'gatsby'
 import { IsDesktop } from '../utils/mediaQueries'
+import SEO from './seo'
 
 const CandidateCard = ({first, last, grade, photoURL}) => {
     return (
@@ -92,6 +93,7 @@ export default class Candidates extends Component {
     render() {
         return (
             <Layout>
+                    <SEO title="Candidates" />
                     <Header title="Candidates"/>
                     {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
                         return <CandidateRow position={position.display}>

@@ -3,9 +3,9 @@ require("dotenv").config({
 })
 module.exports = {
   siteMetadata: {
-    title: `FraserVotes`,
-    description: `A voting tool for JFSS`,
-    author: `FraserVotes Team`,
+    title: `Fraser Votes`,
+    description: `An online voting platform for John Fraser Secondary School. Made by students for students.`,
+    author: `Fraser Votes Team`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
