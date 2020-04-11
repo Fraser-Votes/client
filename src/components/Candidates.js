@@ -58,7 +58,7 @@ const CandidateRow = ({position, children}) => {
             >
                 {position}
             </Text>
-            <Grid gridTemplateColumns={IsDesktop() ? "repeat(auto-fill, 210px)" : "1fr"} gridColumnGap="40px">
+            <Grid gridTemplateColumns={IsDesktop() ? "repeat(auto-fill, 210px)" : "1fr"} gridColumnGap="40px" gridRowGap="24px">
                 {children}
             </Grid>
         </Box>
