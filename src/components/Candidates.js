@@ -6,6 +6,7 @@ import firebase from "gatsby-plugin-firebase"
 import { navigate } from 'gatsby'
 import { IsDesktop } from '../utils/mediaQueries'
 import SEO from './seo'
+import PlaceholderImage from "../images/placeholder.jpg"
 
 const CandidateCard = ({first, last, grade, photoURL}) => {
     return (
@@ -19,7 +20,7 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
         flexDirection="column"
         boxShadow="0px -0.193708px 3.7358px rgba(0, 0, 0, 0.0112458), 0px -0.465507px 8.97764px rgba(0, 0, 0, 0.0161557), 0px -0.876509px 16.9041px rgba(0, 0, 0, 0.02), 0px -1.56354px 30.154px rgba(0, 0, 0, 0.0238443), 0px -2.92443px 56.3998px rgba(0, 0, 0, 0.0287542), 0px -7px 135px rgba(0, 0, 0, 0.04);"
         >
-            <Image fallbackSrc="https://via.placeholder.com/500" objectFit="cover" h={IsDesktop() ? "130px" : "30vh"} w="100%" src={photoURL} />
+            <Image fallbackSrc={PlaceholderImage} objectFit="cover" h={IsDesktop() ? "130px" : "30vh"} w="100%" src={photoURL} />
             <Box 
                 alignItems="center" 
                 mx="14px" 
