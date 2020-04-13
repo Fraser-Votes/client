@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { AspectRatioBox, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator } from '@chakra-ui/core'
+import { AspectRatioBox, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator, Skeleton } from '@chakra-ui/core'
 import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
 import { IsDesktop } from '../../utils/mediaQueries'
@@ -130,29 +130,29 @@ const CandidateDescription = ({candidate}) => {
     const isDesktop = IsDesktop()
 
     return (
-    <Box
-        py={isDesktop ? "60px" : "40px"}
-        mx={isDesktop ? "120px" : "40px"} 
-    >
-        <AspectRatioBox 
-            borderRadius="24px" 
-            overflow="hidden" 
-            maxW="100%"
-            ratio={ isDesktop ? 16/8 : 16/12}
+        <Box
+            py={isDesktop ? "60px" : "40px"}
+            mx={isDesktop ? "120px" : "40px"} 
         >
-            <Box 
-                as="iframe"
-                title={`${candidate.first} ${candidate.last}'s Campaign Video`}
-                src={candidate.videoURL.replace("watch?v=", "embed/") + "?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&"}
-                allowFullScreen
-                frameborde="0"
-                scrolling="no"
-                marginheight="0"
-                marginwidth="0"
-                type="text/html"
-            />
-        </AspectRatioBox>
-    </Box>
+            <AspectRatioBox 
+                borderRadius="24px" 
+                overflow="hidden" 
+                maxW="100%"
+                ratio={ isDesktop ? 16/8 : 16/12}
+            >
+                <Box 
+                    as="iframe"
+                    title={`${candidate.first} ${candidate.last}'s Campaign Video`}
+                    src={candidate.videoURL.replace("watch?v=", "embed/") + "?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&"}
+                    allowFullScreen
+                    frameborde="0"
+                    scrolling="no"
+                    marginheight="0"
+                    marginwidth="0"
+                    type="text/html"
+                />
+            </AspectRatioBox>
+        </Box>
     )
 }
 
@@ -167,6 +167,20 @@ export default class Profile extends Component {
         }
     }
 
+    defaultCanadidate = {
+        first: "John",
+        last: "Doe",
+        snapchat: "Snapchat",
+        instagram: "Instagram",
+        email: "test@test.com",
+        grade: 11,
+        photoURL: null,
+        facebook: "facebook",
+        displayPosition: "President",
+        bio: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+        videoURL: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    }
+
     componentDidMount() {
         console.log(this.props)
         this.getCandidate()
@@ -179,7 +193,16 @@ export default class Profile extends Component {
                     !this.state.dataLoaded ? 
                     <>
                     <SEO title="Loading..."/>
-                    <Text>Loading...</Text>
+                    <Skeleton>
+                        <Box backgroundColor="blueGray.50" minHeight="100vh">
+                            <SEO />
+                            <Box backgroundColor="white" pb="36px">
+                                <ProfileNav first={this.defaultCanadidate.first} last={this.defaultCanadidate.last}/>
+                                <ProfileHeader candidate={this.defaultCanadidate} />
+                            </Box>
+                            <CandidateDescription candidate={this.defaultCanadidate}/>
+                        </Box>
+                    </Skeleton>
                     </>
                     :
                     <Box backgroundColor="blueGray.50" minHeight="100vh">

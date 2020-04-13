@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, Box, Image, Icon, Grid, Divider } from '@chakra-ui/core'
+import { Text, Box, Image, Icon, Grid, Divider, Skeleton } from '@chakra-ui/core'
 import Header from "./Header"
 import Layout from './Layout'
 import firebase from "gatsby-plugin-firebase"
@@ -96,13 +96,17 @@ export default class Candidates extends Component {
             <Layout>
                     <SEO title="Candidates" />
                     <Header title="Candidates"/>
-                    {this.state.dataLoading ? "Loading" : this.state.positions.map((position) => {
-                        return <CandidateRow position={position.display}>
-                            {this.state["candidates"][position.raw].map(candidate => {
-                                return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} />
-                            })}
-                        </CandidateRow>
-                    })}
+                    {this.state.dataLoading ? 
+                        <Skeleton borderRadius="16px" h="200px" w="210px" />
+                    : 
+                        this.state.positions.map((position) => {
+                            return <CandidateRow position={position.display}>
+                                {this.state["candidates"][position.raw].map(candidate => {
+                                    return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} />
+                                })}
+                            </CandidateRow>
+                        })
+                    }
             </Layout>
         )
     }
