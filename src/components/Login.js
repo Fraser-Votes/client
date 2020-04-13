@@ -20,7 +20,6 @@ const Login = () => {
 
     if (isLoggedIn()) {
       navigate('/app/candidates')
-      return null
     }
   
 

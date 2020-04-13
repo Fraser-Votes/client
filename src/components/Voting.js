@@ -22,7 +22,7 @@ export default class Candidates extends Component {
             <Layout>    
                 <SEO title="Voting"/>
                 <Header title="Voting"/>
-                <CandidateRow position="President" />
+                
             </Layout>
         )
     }
