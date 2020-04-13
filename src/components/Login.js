@@ -4,7 +4,7 @@ import { setUser, isLoggedIn } from "../utils/auth"
 import firebase from "gatsby-plugin-firebase"
 import { Button, Box, Grid, Text } from "@chakra-ui/core"
 import loginIllustration from "../images/loginIllustration.svg"
-import { Desktop, Mobile, IsMobile } from "../utils/mediaQueries"
+import { Desktop, Mobile, IsMobile, IsDesktop } from "../utils/mediaQueries"
 
 const Login = () => {
 
@@ -27,13 +27,13 @@ const Login = () => {
     googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-        firebase.auth().signInWithPopup(provider).then(res => {
-          setUser(res.user)
-          navigate('/app/candidates')
-        }).catch(err => {
-          setAuthLoading(false)
-          console.warn("Something went wrong with authentication: " + err)
-        })
+          firebase.auth().signInWithPopup(provider).then(res => {
+            setUser(res.user)
+            navigate('/app/candidates')
+          }).catch(err => {
+            setAuthLoading(false)
+            console.warn("Something went wrong with authentication: " + err)
+          })
       })
     }
   })
@@ -41,7 +41,14 @@ const Login = () => {
 
   const LoginSection = () => {
     return (
-      <Box display="flex" justifyContent="space-between" flexDirection="column" px={IsMobile() ? "5vw" : 0} py={IsMobile() ? "12vh" : "24vh"} h="100vh" textAlign="center">
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        flexDirection="column" 
+        px={IsMobile() ? "5vw" : 0} py={IsMobile() ? "12vh" : "24vh"} 
+        h="100vh" 
+        textAlign="center"
+      >
         <Box>
           <Text fontWeight="bold" color="blueGray.900" fontSize={IsMobile() ? "3xl" : "4xl"}>Fraser Votes</Text>
           <Text fontWeight="600" color="blueGray.600" fontSize={IsMobile() ? "md" : "lg"}>Student Activity Council Elections 2020</Text>

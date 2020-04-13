@@ -6,7 +6,7 @@ import firebase from "gatsby-plugin-firebase"
 
 const NavItem = ({title, iconName}) => {
     var isActive = null;
-    window.location.pathname === `/app/${title.toLowerCase()}` ? isActive = true : isActive = false
+    window.location.pathname === `/app/${title.toLowerCase()}` || (window.location.pathname === "/app" || window.location.pathname === "/app/") && title === "Candidates" ? isActive = true : isActive = false
 
     return (
         <Box 
@@ -75,14 +75,15 @@ const ProfileBar = () => {
 const Sidebar = () => {
     return (
         <Box h="100vh" w="290px" display="flex" alignItems="center" justifyContent="space-between" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
-            <Box>
-                <Box w="242px">
+            <Box
+                textAlign="center"
+            >
+                <Box>
                     <Text
                         fontWeight="bold"
                         fontSize="2xl"
                         color="blue.900"
                         my="20px"
-                        ml="22px"
                     >
                         Fraser Votes
                     </Text>
