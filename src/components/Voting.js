@@ -46,6 +46,8 @@ const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, 
                 fontWeight="600"
                 fontSize="16px"
                 color="blueGray.700"
+                as="a"
+                href={`/app/candidates/${first}-${last}`}
             >
                 {first} {last}
             </Text>
@@ -88,6 +90,8 @@ const ModalCandidateCard = ({position, first, last, photoURL}) => {
                 fontWeight="600"
                 fontSize="16px"
                 color="blueGray.500"
+                as="a"
+                href={`/app/candidates/${first}-${last}`}
             >
                 {first} {last}
             </Text>
