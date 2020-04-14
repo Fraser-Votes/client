@@ -97,7 +97,15 @@ export default class Candidates extends Component {
                     <SEO title="Candidates" />
                     <Header title="Candidates"/>
                     {this.state.dataLoading ? 
-                        <Skeleton borderRadius="16px" h="200px" w="210px" />
+                        <>
+                        <Skeleton borderRadius="4px" h="28px" w="120px" mb="24px"/>
+                        <Grid gridTemplateColumns={window.innerWidth > 960 ? "repeat(auto-fill, 210px)" : "1fr"} gridColumnGap="40px" gridRowGap="24px">
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                        </Grid>
+                        </>
                     : 
                         this.state.positions.map((position) => {
                             return <CandidateRow position={position.display}>
