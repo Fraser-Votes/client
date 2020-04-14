@@ -173,7 +173,7 @@ export default class Candidates extends Component {
                 {this.state.dataLoading ? 
                     <>
                     <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
-                    <Grid gridTemplateColumns={window.innerHeight > 960 ? "repeat(auto-fill, 310px)" : "1fr"} gridColumnGap="24px" gridRowGap="24px">
+                    <Grid gridTemplateColumns={window.innerWidth > 960 ? "repeat(auto-fill, 310px)" : "1fr"} gridColumnGap="24px" gridRowGap="24px">
                         <Skeleton borderRadius="12px" width="100%" height="60px"/>
                         <Skeleton borderRadius="12px" width="100%" height="60px"/>
                         <Skeleton borderRadius="12px" width="100%" height="60px" marginBottom="24px"/>
