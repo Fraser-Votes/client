@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, Box, Skeleton, Grid, Checkbox, Image } from '@chakra-ui/core'
+import { Text, Box, Skeleton, Grid, Checkbox, Image, Button } from '@chakra-ui/core'
 import Layout from './Layout'
 import Header from './Header'
 import SEO from './seo'
@@ -119,22 +119,42 @@ export default class Candidates extends Component {
                 {this.state.dataLoading ? 
                     <>
                     <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
-                    <Box display="flex" flexDirection="row">
-                        <Skeleton borderRadius="12px" width="320px" mr="16px" height="60px"/>
-                        <Skeleton borderRadius="12px" width="320px" mr="16px" height="60px"/>
-                        <Skeleton borderRadius="12px" width="320px" height="60px"/>
-                    </Box>
+                    <Grid gridTemplateColumns={window.innerHeight > 960 ? "repeat(auto-fill, 310px)" : "1fr"} gridColumnGap="24px" gridRowGap="24px">
+                        <Skeleton borderRadius="12px" width="100%" height="60px"/>
+                        <Skeleton borderRadius="12px" width="100%" height="60px"/>
+                        <Skeleton borderRadius="12px" width="100%" height="60px" marginBottom="24px"/>
+                    </Grid>
                     </>
                     :
                     this.state.positions.map((position) => {
-                        return <CandidateRow position={position.display}>
-                            {this.state["candidates"][position.raw].map(candidate => {
-                                return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
-                            })}
-                        </CandidateRow>
+                        return ( 
+                            <>
+                            <CandidateRow position={position.display}>
+                                {this.state["candidates"][position.raw].map(candidate => {
+                                    return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
+                                })}
+                            </CandidateRow>
+                            </>
+                        )
                     })
                 }
-
+                {this.state.dataLoading ?
+                    <Skeleton margin="auto" width="140px" height="48px" borderRadius="12px"/>
+                :
+                    <Box width="100%" display="flex" alignItems="center">
+                        <Button
+                            margin="auto"
+                            size="lg"
+                            variantColor="teal"
+                            borderRadius="12px"
+                            px="64px"
+                            py="16px"
+                            marginBottom="24px"
+                        >
+                            Confirm
+                        </Button>
+                    </Box>
+                }
             </Layout>
         )
     }
