@@ -76,7 +76,7 @@ export default class Candidates extends Component {
             candidates: null,
             dataLoading: true,
             positions: [
-                // slightly ghetto - but for now, it works. This will be replaced with a server-side solution later
+                // slightly janky - but for now, it works. This will be replaced with a server-side solution later
                 {display: "President", raw: "president"},
                 {display: "Vice President", raw:"vice-president"},
                 {display: "Secretary", raw:"secretary"},
