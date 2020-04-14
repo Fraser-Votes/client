@@ -35,7 +35,7 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
             <Divider my="0px" color="#F0F4F8" borderWidth="1.5px"/>
             <Box 
                 as="button" 
-                onClick={() => {navigate(`/app/candidates/${first}-${last}`)}} 
+                onClick={() => {navigate(`/app/candidates/${first.toLowerCase()}-${last.toLowerCase()}`)}} 
                 px="14px" 
                 display="flex" 
                 flexDirection="row" 
