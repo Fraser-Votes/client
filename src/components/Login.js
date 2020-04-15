@@ -12,6 +12,7 @@ const Login = () => {
   var googleAuth = null
 
   useEffect(() => {
+    firebase.analytics().setCurrentScreen("Login")
     var provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({
       'login_hint': '000000@pdsb.net',
