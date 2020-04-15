@@ -1,8 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { Desktop, IsDesktop } from "../../utils/mediaQueries"
+import { Desktop, IsDesktop, Mobile } from "../../utils/mediaQueries"
 import Sidebar from "../Sidebar"
-import { Grid, Box } from "@chakra-ui/core"
+import { Grid, Box, Icon } from "@chakra-ui/core"
+import MobileHeader from "../MobileHeader"
 
 const Layout = ({ children }) => {
 
@@ -14,6 +15,9 @@ const Layout = ({ children }) => {
       <Desktop>
         <Sidebar/>
       </Desktop>
+      <Mobile>
+        <MobileHeader/>
+      </Mobile>
       <Box
         minHeight="100vh"
         h="100%"
