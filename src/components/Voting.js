@@ -173,7 +173,7 @@ export default class Candidates extends Component {
         return (
             <Layout>    
                 <SEO title="Voting"/>
-                <Header title="Voting" description="Please select the candidate that you want to vote for. "/>
+                <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
                 {this.state.dataLoading ? 
                     <>
                     <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
