@@ -6,7 +6,6 @@ import { Button, Box, Grid, Text } from "@chakra-ui/core"
 import loginIllustration from "../images/loginIllustration.svg"
 import { Desktop, Mobile, IsMobile, IsDesktop } from "../utils/mediaQueries"
 import SEO from "./seo"
-import { pageView } from "../utils/ga"
 
 const Login = () => {
 

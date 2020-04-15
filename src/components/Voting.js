@@ -6,7 +6,6 @@ import SEO from './seo'
 import firebase from "gatsby-plugin-firebase"
 import { IsDesktop } from '../utils/mediaQueries'
 import PlaceholderImage from "../images/placeholder.jpg"
-import { pageView } from '../utils/ga'
 
 const CandidateRow = ({position, children}) => {
     return (
