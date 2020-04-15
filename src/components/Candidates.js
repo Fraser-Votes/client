@@ -89,7 +89,6 @@ export default class Candidates extends Component {
     }
 
     componentDidMount() {
-        pageView("Candidates")
         this.getCandidates()
     }
 

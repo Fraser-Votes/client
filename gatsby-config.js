@@ -45,7 +45,6 @@ module.exports = {
           storageBucket: process.env.storageBucket,
           messagingSenderId: process.env.messagingSenderId,
           appId: process.env.appId,
-          measurementId: "G-GNRG9RZRXD"
         }
       }
     },

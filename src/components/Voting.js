@@ -167,7 +167,6 @@ export default class Candidates extends Component {
     }
 
     componentDidMount() {
-        pageView("Voting")
         this.getCandidates()
     }
 
