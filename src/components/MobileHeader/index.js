@@ -8,6 +8,7 @@ const MobileHeader = () => {
     return (
         <>
             <Box 
+                zIndex="100"
                 position="fixed" 
                 height="44px" 
                 backgroundColor="white"
