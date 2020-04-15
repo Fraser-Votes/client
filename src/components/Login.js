@@ -31,7 +31,11 @@ const Login = () => {
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
           firebase.auth().signInWithPopup(provider).then(res => {
             setUser(res.user)
-            firebase.analytics().logEvent('login')
+            try {
+              firebase.analytics().logEvent('login')
+            } catch(e) {
+              console.warn("Analytics blocked")
+            }
             navigate('/app/candidates')
           }).catch(err => {
             setAuthLoading(false)
