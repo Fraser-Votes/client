@@ -7,6 +7,7 @@ import { navigate } from 'gatsby'
 import { IsDesktop } from '../utils/mediaQueries'
 import SEO from './seo'
 import PlaceholderImage from "../images/placeholder.jpg"
+import { pageView } from '../utils/ga'
 
 const CandidateCard = ({first, last, grade, photoURL}) => {
     return (
@@ -88,6 +89,7 @@ export default class Candidates extends Component {
     }
 
     componentDidMount() {
+        pageView("Candidates")
         this.getCandidates()
     }
 
