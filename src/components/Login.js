@@ -29,7 +29,6 @@ const Login = () => {
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
           firebase.auth().signInWithPopup(provider).then(res => {
             setUser(res.user)
-            firebase.analytics().logEvent('login')
             navigate('/app/candidates')
           }).catch(err => {
             setAuthLoading(false)
