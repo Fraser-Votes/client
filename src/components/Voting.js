@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, Box, Skeleton, Grid, Checkbox, Image, Button, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, ModalFooter, ModalHeader } from '@chakra-ui/core'
+import { Text, Box, Skeleton, Grid, Checkbox, Image, Button, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, ModalFooter, ModalHeader, useToast } from '@chakra-ui/core'
 import Layout from './Layout'
 import Header from './Header'
 import SEO from './seo'
@@ -108,6 +108,9 @@ export default class Candidates extends Component {
             candidates: null,
             dataLoading:true,
             validated: false,
+            voteError: false,
+            voteSubmitting: false,
+            voteSuccessful: false,
             votes: {
                 "president": {
                     candidateID: null,
@@ -215,7 +218,12 @@ export default class Candidates extends Component {
                             Confirm
                         </Button>
                     </Box>
-                    <Modal isOpen={this.state.confirmationOpen} onClose={() => this.setState({confirmationOpen: false})}>
+                    <Modal isOpen={this.state.confirmationOpen} onClose={() => this.setState({
+                        confirmationOpen: false,
+                        voteError: false,
+                        voteSubmitting: false,
+                        voteSuccessful: false                        
+                    })}>
                         <ModalOverlay/>
                         <ModalContent backgroundColor="blueGray.50" maxHeight="85vh" borderRadius="12px">
                             <ModalHeader fontWeight="bold" color="blueGray.900">
@@ -223,14 +231,22 @@ export default class Candidates extends Component {
                             </ModalHeader>
                             <ModalCloseButton/>
                             <ModalBody overflowY="scroll">
-                                {this.createCandidateCards()}
+                                {this.state.voteSuccessful ? 
+                                    "Vote Successful"
+                                :
+                                    this.state.voteError ? 
+                                        "Error"
+                                    :
+                                    this.createCandidateCards()
+                                }
                             </ModalBody>
-
                             <ModalFooter display="flex" flexDir="row" alignItems="center" justifyContent="center">
                                 <Button
                                     variantColor="primary"
                                     borderRadius="12px"
                                     px="56px"
+                                    onClick={() => this.submitVote()}
+                                    isLoading={this.state.voteSubmitting}
                                 >
                                     Submit
                                 </Button>
@@ -295,6 +311,33 @@ export default class Candidates extends Component {
         }
 
         return true
+    }
+
+    submitVote = () => {
+        if (process.env.NODE_ENV == "development") {
+            firebase.functions().useFunctionsEmulator('http://localhost:5001') 
+        }
+        const functions = firebase.functions()
+        let addVote = functions.httpsCallable("vote")
+        let parsedVotes = {}
+        for (this.position in this.state.votes) {
+            parsedVotes[this.position] = this.state.votes[this.position].candidateID
+        }
+        this.setState({voteSubmitting: true})
+        addVote({votes: parsedVotes}).then((res) => {
+            console.log(res.data.voteSuccessful)
+            this.setState({
+                voteSuccessful: true,
+                voteSubmitting: false
+            })
+        }).catch((err) => {
+            console.error("error setting vote", err.code, err.message, err.details)
+            this.setState({
+                voteError: true,
+                voteSubmitting: false
+            })
+        })
+
     }
 
     getCandidates = async () => {
