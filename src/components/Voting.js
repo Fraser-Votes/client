@@ -314,14 +314,14 @@ export default class Candidates extends Component {
     }
 
     submitVote = () => {
-        if (process.env.NODE_ENV == "development") {
+        if (process.env.NODE_ENV === "development") {
             firebase.functions().useFunctionsEmulator('http://localhost:5001') 
         }
         const functions = firebase.functions()
         let addVote = functions.httpsCallable("vote")
         let parsedVotes = {}
         for (this.position in this.state.votes) {
-            parsedVotes[this.position] = this.state.votes[this.position].candidateID
+            parsedVotes[this.position] = this.state.votes[this.position].candidateID // instead of plaintext CandidateID - give encrypted ID
         }
         this.setState({voteSubmitting: true})
         addVote({votes: parsedVotes}).then((res) => {
