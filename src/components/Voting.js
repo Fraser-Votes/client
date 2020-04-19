@@ -6,7 +6,8 @@ import SEO from './seo'
 import firebase from "gatsby-plugin-firebase"
 import { IsDesktop } from '../utils/mediaQueries'
 import PlaceholderImage from "../images/placeholder.jpg"
-import * as openpgp from 'openpgp'
+import Helmet from 'react-helmet'
+import { withPrefix } from 'gatsby'
 
 const CandidateRow = ({position, children}) => {
     return (
@@ -176,6 +177,9 @@ export default class Candidates extends Component {
     render() {
         return (
             <Layout>    
+                <Helmet>
+                    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.6.2/openpgp.min.js"></script>
+                </Helmet>
                 <SEO title="Voting"/>
                 <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
                 {this.state.dataLoading ? 
@@ -314,11 +318,53 @@ export default class Candidates extends Component {
         return true
     }
 
-    encryptCanadidate = (candidateID) => {
-        openpgp.initWorker({path: '../../static/js/openpgp/openpgp.worker.js'})
-        firebase.storage().ref('public.asc').getDownloadURL().then((url) => {
-            // encrypt stuff with the key
+    encryptCandidate = async (candidateID) => {
+        let openpgp = window.openpgp
+        // await openpgp.initWorker({path: withPrefix('/js/openpgp.worker.min.js')})
+        // firebase.storage().ref('public.asc').getDownloadURL().then((url) => {
+        //     // encrypt stuff with the key
+        //     console.log(url)
+        // })
+        const publicKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
+        Version: OpenPGP.js v3.0.9
+        Comment: https://openpgpjs.org
+        
+        xsBNBF6btlMBCADCO0IAmCO1bdPf6/daU2T/Bl7suB9GJ0U7RqpAAjACFoR3
+        gtA4a1sBf8qQwFxKU1J/ow018YRVWDmO3nfzxpnF9vINEh9vIL+DIBZJiclC
+        e9NrmEOUngXVJUdsoCExPsOYw0RBw0adcS1mfw5Go/aA6w1j0cW1+Y35gm/d
+        mzatlLTrznG8kyPFsgLFkpM/e/QC5iVIVgUC/idiYZQtdlb4k61WM9qmpfAe
+        ECrLFkR5CrWytLX/umRx8EUod8GMUMwsJchlt/hXSD/hJB0xg1R2NQQiJUyb
+        fxPd/GrHIWj4oLbfUO9dNkzIVab04RK0tgWVLg0AnqYpiJjyYVvKdb+DABEB
+        AAHNI0ZyYXNlclZvdGVzIDxoZWxsb0BmcmFzZXJ2b3Rlcy5jb20+wsB1BBAB
+        CAApBQJem7ZTBgsJBwgDAgkQGCWUQz12jgoEFQgKAgMWAgECGQECGwMCHgEA
+        ACOsCACWFU2AQ8OqH8Q/+4Ea7K7utfad6d/sQiNLfiTDCO5soBk05+RJ7mE2
+        l4LYa5W2vGmmOACPflufv2chMUsNVSpGMxoMLZR9H9rQboJUjxX9tjlsltP6
+        QCsLuWy/2ykRzIA/+tidRcXvct2VuXLyDglYXk9HIj002D2V9O9sT0J+01ID
+        8/t/DNCfxD8D0/kXvbBCSuWm3GcvOrdnaqlpTWjHx/uiOA2HKzbioA5xQl7D
+        CmK6SrMNgC2WU2R3ukwZ5JS+/R9NXlJGBz8rgdva5UmqKQK7af0s9RRe5SAb
+        +L+jKQHalvC7yJOs0ciRPE5EHwV7PFiaVvMc37kkcHnAjyaIzsBNBF6btlMB
+        CACcndCABcwx7EkjYy8uBP9EHWi6AM4ZioGHC6K0ZW5TwOjUDvH3QOFyxhqY
+        EWFcqbERxyTs2dEFFOmzYBbZ6006qpf+MjnSwrb9Zk5tMQt6HodWoC/apE1t
+        Twn0r6AH9c5PTHvCtqhLF8LhPL6ucSr9E3pcSx7g3arVVpbUBaOoxkS4BzeV
+        rx0Nfzy0ZoUMEs/9AI3M0FBM4pznsEPbXbcCNM7IvFfegosEugzzjiTlttsq
+        qou0v0sBb44hHDFLpDpEZed/UNAuH7/uIGkW7ruSJKAKwa7ViqJSh4ChNuCy
+        zL0Wyb+rzA5UjNiRjThHrZmlwJdOKBY3tmYdTTEooAn3ABEBAAHCwF8EGAEI
+        ABMFAl6btlMJEBgllEM9do4KAhsMAACYjAf9HAsyfzP69WNPzJv8GBZ6Kpko
+        nMU8CXkofFFqCqqeSamkeLIq6mnhO3ts4T6jBexW3WPl5E9RwfdA5pltPr6K
+        F3FpSxdC//m7zNnQr/jTzouS8jdmi+X5k20wvbCU0M711YES9clyHNxeDD7v
+        ao7rMJnWVAW6NJyz83+aNt/EaKQBOmeXWBdNhyb53iIAgBOzRRWQ4oRnL2f8
+        h2eIfrln74bSp55fpMjvvr7THxRU3YsryMh5dTEkHkW5Sp+zM67YPf8gbHqX
+        2Nz9M/r/NTUudjD4yg8SA4ihlkGqSg018DaLI443sSayySWK+/cOIWGGlFDC
+        Ge1OBuePFv1+D2fTJA==
+        =MJhA
+        -----END PGP PUBLIC KEY BLOCK-----`
+        console.log(await openpgp.key.readArmored(publicKey))
+        const { data: encrypted } = await openpgp.encrypt({
+            message: openpgp.message.fromText(candidateID),
+            publicKeys: (await openpgp.key.readArmored(publicKey)).keys,
+            armor: false,
         })
+        console.log(encrypted)
     }
 
     submitVote = () => {
@@ -328,6 +374,7 @@ export default class Candidates extends Component {
         const functions = firebase.functions()
         let addVote = functions.httpsCallable("vote")
         let parsedVotes = {}
+        this.encryptCandidate("daniel-lupas")
         for (this.position in this.state.votes) {
             parsedVotes[this.position] = this.state.votes[this.position].candidateID // instead of plaintext CandidateID - give encrypted ID
         }
