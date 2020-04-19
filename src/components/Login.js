@@ -5,6 +5,7 @@ import firebase from "gatsby-plugin-firebase"
 import { Button, Box, Grid, Text } from "@chakra-ui/core"
 import loginIllustration from "../images/loginIllustration.svg"
 import { Desktop, Mobile, IsMobile, IsDesktop } from "../utils/mediaQueries"
+import SEO from "./seo"
 
 const Login = () => {
 
@@ -48,6 +49,7 @@ const Login = () => {
         h="100vh" 
         textAlign="center"
       >
+        <SEO title="Login"/>
         <Box>
           <Text fontWeight="bold" color="blueGray.900" fontSize={IsMobile() ? "3xl" : "4xl"}>Fraser Votes</Text>
           <Text fontWeight="600" color="blueGray.600" fontSize={IsMobile() ? "md" : "lg"}>Student Activity Council Elections 2020</Text>

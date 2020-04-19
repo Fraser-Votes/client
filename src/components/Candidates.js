@@ -35,7 +35,7 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
             <Divider my="0px" color="#F0F4F8" borderWidth="1.5px"/>
             <Box 
                 as="button" 
-                onClick={() => {navigate(`/app/candidates/${first}-${last}`)}} 
+                onClick={() => {navigate(`/app/candidates/${first.toLowerCase()}-${last.toLowerCase()}`)}} 
                 px="14px" 
                 display="flex" 
                 flexDirection="row" 
@@ -76,7 +76,7 @@ export default class Candidates extends Component {
             candidates: null,
             dataLoading: true,
             positions: [
-                // slightly ghetto - but for now, it works. This will be replaced with a server-side solution later
+                // slightly janky - but for now, it works. This will be replaced with a server-side solution later
                 {display: "President", raw: "president"},
                 {display: "Vice President", raw:"vice-president"},
                 {display: "Secretary", raw:"secretary"},
@@ -97,7 +97,15 @@ export default class Candidates extends Component {
                     <SEO title="Candidates" />
                     <Header title="Candidates"/>
                     {this.state.dataLoading ? 
-                        <Skeleton borderRadius="16px" h="200px" w="210px" />
+                        <>
+                        <Skeleton borderRadius="4px" h="28px" w="120px" mb="24px"/>
+                        <Grid gridTemplateColumns={window.innerWidth > 960 ? "repeat(auto-fill, 210px)" : "1fr"} gridColumnGap="40px" gridRowGap="24px">
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                        </Grid>
+                        </>
                     : 
                         this.state.positions.map((position) => {
                             return <CandidateRow position={position.display}>

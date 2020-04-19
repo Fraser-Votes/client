@@ -44,7 +44,7 @@ module.exports = {
           projectId: process.env.projectId,
           storageBucket: process.env.storageBucket,
           messagingSenderId: process.env.messagingSenderId,
-          appId: process.env.appId
+          appId: process.env.appId,
         }
       }
     },

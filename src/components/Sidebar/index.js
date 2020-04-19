@@ -72,9 +72,9 @@ const ProfileBar = () => {
    )
 }
 
-const Sidebar = () => {
+const Sidebar = ({isMobile}) => {
     return (
-        <Box h="100vh" w="290px" display="flex" alignItems="center" justifyContent="space-between" flexDirection="column" boxShadow="0px 1px 4px rgba(0, 0, 0, 0.1)">
+    <Box h="100vh" w="290px" display="flex" alignItems="center" justifyContent="space-between" flexDirection="column" boxShadow={isMobile ? "" : "0px 1px 4px rgba(0, 0, 0, 0.1)"}>
             <Box
                 textAlign="center"
             >

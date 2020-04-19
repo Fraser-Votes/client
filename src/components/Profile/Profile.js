@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { AspectRatioBox, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator, Skeleton } from '@chakra-ui/core'
+import { AspectRatioBox, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Icon, Avatar, Text, BreadcrumbSeparator, Skeleton, Grid } from '@chakra-ui/core'
 import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
 import { IsDesktop } from '../../utils/mediaQueries'
@@ -52,6 +52,23 @@ const ProfileNav = ({first, last}) => {
 const ProfileHeader = ({candidate}) => {
 
     const isDesktop = IsDesktop()
+    let socialCounts = 0
+
+    if (candidate.instagram) {
+        socialCounts++
+    }
+
+    if (candidate.email) {
+        socialCounts++
+    }
+
+    if (candidate.snapchat) {
+        socialCounts++
+    }
+
+    if (candidate.facebook) {
+        socialCounts++
+    }
 
     return (
         <Box
@@ -90,36 +107,36 @@ const ProfileHeader = ({candidate}) => {
                 <Text mt="8px" fontSize="14px" fontWeight="600" color="blueGray.400" lineHeight="1.3em">
                     {candidate.bio}
                 </Text>
-                <Box mt="20px" display="flex" flexDirection="row">
+                <Grid mt="20px" templateColumns={`repeat(${socialCounts},minmax(32px,32px))`} columnGap="20px" gridTemplateRows="1">
                     {candidate.instagram ? 
-                        <Box as="a" target="_blank" href={`https://instagram.com/${candidate.instagram}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="blue.50" mr="20px">
+                        <Box as="a" target="_blank" href={`https://instagram.com/${candidate.instagram}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="blue.50">
                             <Icon color="blue.500" w="20px" h="20px" name="instagram"/>
                         </Box> 
                         :
                         <></>   
                     }
                     {candidate.facebook ? 
-                        <Box as="a" target="_blank" href={`https://facebook.com/${candidate.facebook}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="blue.50" mr="20px">
+                        <Box as="a" target="_blank" href={`https://facebook.com/${candidate.facebook}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="blue.50">
                             <Icon color="blue.500" w="8.42px" h="16px" name="facebook"/>
                         </Box> 
                         :
                         <></>   
                     }
                     {candidate.snapchat ? 
-                        <Box as="a" target="_blank" href={`https://snapchat.com/add/${candidate.snapchat}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="yellow.100" mr="20px">
+                        <Box as="a" target="_blank" href={`https://snapchat.com/add/${candidate.snapchat}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="yellow.100">
                             <Icon color="yellow.500" w="20px" h="19px" name="snapchat"/>
                         </Box> 
                         :
                         <></>   
                     }
                     {candidate.email ? 
-                        <Box as="a" target="_blank" href={`mailto:${candidate.email}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="red.100" mr="20px">
+                        <Box as="a" target="_blank" href={`mailto:${candidate.email}`} display="flex" alignItems="center" justifyContent="center" w="32px" h="32px" borderRadius="8px" backgroundColor="red.100">
                             <Icon color="red.500" w="20px" h="16px" name="email"/>
                         </Box> 
                         :
                         <></>   
                     }
-                </Box>
+                </Grid>
             </Box>
         </Box>
     )

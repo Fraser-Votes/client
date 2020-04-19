@@ -1,13 +1,15 @@
 import React from "react"
 import { Box, Text } from "@chakra-ui/core"
+import { IsMobile } from "../../utils/mediaQueries"
 
-const Header = ({title}) => {
+const Header = ({title, description}) => {
   return (
       <Box
-          h="76px"
+          mt={IsMobile() ? "46px" : ""}
+          h={description ? "98px" : "76px"}
           display="flex"
-          flexDirection="row"
-          alignItems="center"
+          flexDirection="column"
+          justifyContent="center"
           mb="4px"  
         >
           <Text
@@ -16,6 +18,13 @@ const Header = ({title}) => {
               color="blueGray.900"
           >
               {title}
+          </Text>
+          <Text
+            fontSize="16px"
+            fontWeight="600"
+            color="blueGray.500"
+          >
+            {description}
           </Text>
       </Box>
   )
