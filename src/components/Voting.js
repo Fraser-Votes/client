@@ -6,6 +6,7 @@ import SEO from './seo'
 import firebase from "gatsby-plugin-firebase"
 import { IsDesktop } from '../utils/mediaQueries'
 import PlaceholderImage from "../images/placeholder.jpg"
+import * as openpgp from 'openpgp'
 
 const CandidateRow = ({position, children}) => {
     return (
@@ -311,6 +312,11 @@ export default class Candidates extends Component {
         }
 
         return true
+    }
+
+    encryptCanadidate = (candidateID) => {
+        openpgp.initWorker({path: '../../static/js/openpgp/openpgp.worker.js'})
+        
     }
 
     submitVote = () => {
