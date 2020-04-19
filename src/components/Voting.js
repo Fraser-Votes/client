@@ -326,9 +326,6 @@ export default class Candidates extends Component {
         //     console.log(url)
         // })
         const publicKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
-        Version: OpenPGP.js v3.0.9
-        Comment: https://openpgpjs.org
-        
         xsBNBF6btlMBCADCO0IAmCO1bdPf6/daU2T/Bl7suB9GJ0U7RqpAAjACFoR3
         gtA4a1sBf8qQwFxKU1J/ow018YRVWDmO3nfzxpnF9vINEh9vIL+DIBZJiclC
         e9NrmEOUngXVJUdsoCExPsOYw0RBw0adcS1mfw5Go/aA6w1j0cW1+Y35gm/d
