@@ -316,7 +316,7 @@ export default class Candidates extends Component {
 
     encryptCanadidate = (candidateID) => {
         openpgp.initWorker({path: '../../static/js/openpgp/openpgp.worker.js'})
-        
+        firebase.storage()
     }
 
     submitVote = () => {
