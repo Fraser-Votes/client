@@ -248,14 +248,7 @@ export default class Candidates extends Component {
                                         </ModalHeader>
                                         <ModalCloseButton/>
                                         <ModalBody overflowY="scroll">
-                                            {this.state.voteSuccessful ? 
-                                                "Vote Successful"
-                                            :
-                                                this.state.voteError ? 
-                                                    "Error"
-                                                :
-                                                this.createCandidateCards()
-                                            }
+                                            {this.createCandidateCards()}
                                         </ModalBody>
                                         <ModalFooter display="flex" flexDir="row" alignItems="center" justifyContent="center">
                                             <Button
@@ -382,7 +375,7 @@ export default class Candidates extends Component {
 
     submitVote = (toast) => {
         if (process.env.NODE_ENV === "development") {
-            firebase.functions().useFunctionsEmulator('http://localhost:5001') 
+            // firebase.functions().useFunctionsEmulator('http://localhost:5001') 
         }
         const functions = firebase.functions()
         let addVote = functions.httpsCallable("vote")
@@ -396,25 +389,28 @@ export default class Candidates extends Component {
             console.log(res.data.voteSuccessful)
             this.setState({
                 voteSuccessful: true,
-                voteSubmitting: false
+                voteSubmitting: false,
+                confirmationOpen: false
             })
             toast({
                 title: "Vote Submitted",
+                description: "Thanks for voting!",
                 status: "success",
-                duration: 5000,
+                duration: 10000,
                 isClosable: true
             })
         }).catch((err) => {
             console.error("error setting vote", err.code, err.message, err.details)
             this.setState({
                 voteError: true,
-                voteSubmitting: false
+                voteSubmitting: false,
+                confirmationOpen: false
             })
             toast({
                 title: "An error occurred",
-                description: "There was an error submitting your vote. Please try again or contact us for help.",
+                description: "There was an error submitting your vote. Please try again.",
                 status: "error",
-                duration: 5000,
+                duration: 10000,
                 isClosable: true
             })
         })
