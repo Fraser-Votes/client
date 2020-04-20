@@ -9,6 +9,15 @@ import PlaceholderImage from "../images/placeholder.jpg"
 import Helmet from 'react-helmet'
 import { withPrefix } from 'gatsby'
 
+const ToastContext = React.createContext(() => {})
+
+function ToastProvider({children}) {
+    const toast = useToast()
+    return (
+        <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>
+    )
+}
+
 const CandidateRow = ({position, children}) => {
     return (
         <Box mb="32px">
@@ -176,91 +185,97 @@ export default class Candidates extends Component {
 
     render() {
         return (
-            <Layout>    
-                <Helmet>
-                    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.6.2/openpgp.min.js"></script>
-                </Helmet>
-                <SEO title="Voting"/>
-                <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
-                {this.state.dataLoading ? 
-                    <>
-                    <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
-                    <Grid gridTemplateColumns={window.innerWidth > 960 ? "repeat(auto-fill, 310px)" : "1fr"} gridColumnGap="24px" gridRowGap="24px">
-                        <Skeleton borderRadius="12px" width="100%" height="60px"/>
-                        <Skeleton borderRadius="12px" width="100%" height="60px"/>
-                        <Skeleton borderRadius="12px" width="100%" height="60px" marginBottom="24px"/>
-                    </Grid>
-                    </>
+            <ToastProvider>
+                <Layout>    
+                    <Helmet>
+                        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.6.2/openpgp.min.js"></script>
+                    </Helmet>
+                    <SEO title="Voting"/>
+                    <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
+                    {this.state.dataLoading ? 
+                        <>
+                        <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
+                        <Grid gridTemplateColumns={window.innerWidth > 960 ? "repeat(auto-fill, 310px)" : "1fr"} gridColumnGap="24px" gridRowGap="24px">
+                            <Skeleton borderRadius="12px" width="100%" height="60px"/>
+                            <Skeleton borderRadius="12px" width="100%" height="60px"/>
+                            <Skeleton borderRadius="12px" width="100%" height="60px" marginBottom="24px"/>
+                        </Grid>
+                        </>
+                        :
+                        this.state.positions.map((position) => {
+                            return ( 
+                                <>
+                                <CandidateRow position={position.display}>
+                                    {this.state["candidates"][position.raw].map(candidate => {
+                                        return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
+                                    })}
+                                </CandidateRow>
+                                </>
+                            )
+                        })
+                    }
+                    {this.state.dataLoading ?
+                        <Skeleton margin="auto" width="140px" height="48px" borderRadius="12px"/>
                     :
-                    this.state.positions.map((position) => {
-                        return ( 
-                            <>
-                            <CandidateRow position={position.display}>
-                                {this.state["candidates"][position.raw].map(candidate => {
-                                    return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
-                                })}
-                            </CandidateRow>
-                            </>
-                        )
-                    })
-                }
-                {this.state.dataLoading ?
-                    <Skeleton margin="auto" width="140px" height="48px" borderRadius="12px"/>
-                :
-                    <>
-                    <Box width="100%" display="flex" alignItems="center">
-                        <Button
-                            onClick={() => this.confirmVote()}
-                            margin="auto"
-                            size="lg"
-                            variantColor="teal"
-                            borderRadius="12px"
-                            px="64px"
-                            py="16px"
-                            marginBottom="24px"
-                            isDisabled={!this.state.validated}
-                        >
-                            Confirm
-                        </Button>
-                    </Box>
-                    <Modal isOpen={this.state.confirmationOpen} onClose={() => this.setState({
-                        confirmationOpen: false,
-                        voteError: false,
-                        voteSubmitting: false,
-                        voteSuccessful: false                        
-                    })}>
-                        <ModalOverlay/>
-                        <ModalContent backgroundColor="blueGray.50" maxHeight="85vh" borderRadius="12px">
-                            <ModalHeader fontWeight="bold" color="blueGray.900">
-                                Confirm Your Vote
-                            </ModalHeader>
-                            <ModalCloseButton/>
-                            <ModalBody overflowY="scroll">
-                                {this.state.voteSuccessful ? 
-                                    "Vote Successful"
-                                :
-                                    this.state.voteError ? 
-                                        "Error"
-                                    :
-                                    this.createCandidateCards()
-                                }
-                            </ModalBody>
-                            <ModalFooter display="flex" flexDir="row" alignItems="center" justifyContent="center">
-                                <Button
-                                    variantColor="primary"
-                                    borderRadius="12px"
-                                    px="56px"
-                                    onClick={() => this.submitVote()}
-                                    isLoading={this.state.voteSubmitting}
-                                >
-                                    Submit
-                                </Button>
-                            </ModalFooter>
-                        </ModalContent>
-                    </Modal>
-                    </>
-                }
-            </Layout>
+                        <>
+                        <Box width="100%" display="flex" alignItems="center">
+                            <Button
+                                onClick={() => this.confirmVote()}
+                                margin="auto"
+                                size="lg"
+                                variantColor="teal"
+                                borderRadius="12px"
+                                px="64px"
+                                py="16px"
+                                marginBottom="24px"
+                                isDisabled={!this.state.validated}
+                            >
+                                Confirm
+                            </Button>
+                        </Box>
+                        <ToastContext.Consumer>
+                            {toast => (
+                                <Modal isOpen={this.state.confirmationOpen} onClose={() => this.setState({
+                                confirmationOpen: false,
+                                voteError: false,
+                                voteSubmitting: false,
+                                voteSuccessful: false                        
+                                })}>
+                                    <ModalOverlay/>
+                                    <ModalContent backgroundColor="blueGray.50" maxHeight="85vh" borderRadius="12px">
+                                        <ModalHeader fontWeight="bold" color="blueGray.900">
+                                            Confirm Your Vote
+                                        </ModalHeader>
+                                        <ModalCloseButton/>
+                                        <ModalBody overflowY="scroll">
+                                            {this.state.voteSuccessful ? 
+                                                "Vote Successful"
+                                            :
+                                                this.state.voteError ? 
+                                                    "Error"
+                                                :
+                                                this.createCandidateCards()
+                                            }
+                                        </ModalBody>
+                                        <ModalFooter display="flex" flexDir="row" alignItems="center" justifyContent="center">
+                                            <Button
+                                                variantColor="primary"
+                                                borderRadius="12px"
+                                                px="56px"
+                                                onClick={() => this.submitVote(toast)}
+                                                isLoading={this.state.voteSubmitting}
+                                            >
+                                                Submit
+                                            </Button>
+                                        </ModalFooter>
+                                    </ModalContent>
+                            </Modal>
+                            )}
+                        </ToastContext.Consumer>
+                        </>
+                    }
+                </Layout>
+            </ToastProvider>
         )
     }
 
@@ -325,7 +340,8 @@ export default class Candidates extends Component {
         //     // encrypt stuff with the key
         //     console.log(url)
         // })
-        const publicKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----       
+        const publicKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
+
         xsBNBF6c4EkBCAC3io7lVTPpEBSjllEmZtIyKlw270M+9nwqwJRrysGfQRGf
         Hd8YC9daIMHHEdTXiB5aPnDxT0l2Lj5wDHuTPnQEXlNq/RtBvfTHKC7tmNwy
         a3cwq6seS37+mE3+0AUz+eu3mBVX7Sdoe6jhCJFpk7fl1l0W3YtV45p8KXWI
@@ -345,7 +361,7 @@ export default class Candidates extends Component {
         101tm3jodHYbjzBIsA3uzFzFH0XwZn10CgNoPTju1rITKk46gdY4YYKAgy4p
         AKXPvSIrGZ6letC6BQ3UOdM0MWR9wmqiaApzrav8s2RlVuRR63efjOWfWNN7
         /wlsf9G5NW9pf+EctFi1HITJbfMNXPJKGOB26lhFxO25M8oe0yeAvs9DQSg8
-        GD3qDfRPyotOeI9ly43Vru516A7DK7ABiAPkYtJqHrQ/YwARAQABwsBfBBgB
+         GD3qDfRPyotOeI9ly43Vru516A7DK7ABiAPkYtJqHrQ/YwARAQABwsBfBBgB
         CAAJBQJenOBJAhsMAAoJEF5ZSZTzNCzeLe8H/0Wgwt+61wwygekevrtjjN0F
         pTHNlk8KYmR+WdGChI22eMatXYMyo2oJAPBd+IeH57LxJRNl7YqzJD2sZBr3
         jnud6QFipdGhFzdMt7jDOVuTBNr7VbN5v6G7YAPX5ZtiJ3PpteZy7fODQ9S1
@@ -364,7 +380,7 @@ export default class Candidates extends Component {
         console.log(encrypted)
     }   
 
-    submitVote = () => {
+    submitVote = (toast) => {
         if (process.env.NODE_ENV === "development") {
             firebase.functions().useFunctionsEmulator('http://localhost:5001') 
         }
@@ -382,11 +398,24 @@ export default class Candidates extends Component {
                 voteSuccessful: true,
                 voteSubmitting: false
             })
+            toast({
+                title: "Vote Submitted",
+                status: "success",
+                duration: 5000,
+                isClosable: true
+            })
         }).catch((err) => {
             console.error("error setting vote", err.code, err.message, err.details)
             this.setState({
                 voteError: true,
                 voteSubmitting: false
+            })
+            toast({
+                title: "An error occurred",
+                description: "There was an error submitting your vote. Please try again or contact us for help.",
+                status: "error",
+                duration: 5000,
+                isClosable: true
             })
         })
 
