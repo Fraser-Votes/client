@@ -188,7 +188,7 @@ export default class Candidates extends Component {
             <ToastProvider>
                 <Layout>    
                     <Helmet>
-                        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.6.2/openpgp.min.js"></script>
+                        <script defer src={withPrefix("../js/openpgp.min.js")}></script>
                     </Helmet>
                     <SEO title="Voting"/>
                     <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
@@ -328,13 +328,15 @@ export default class Candidates extends Component {
 
     encryptCandidate = async (candidateID) => {
         let openpgp = window.openpgp
-        // await openpgp.initWorker({path: withPrefix('/js/openpgp.worker.min.js')})
+        await openpgp.initWorker({path: withPrefix("../js/openpgp.worker.min.js")})
         // firebase.storage().ref('public.asc').getDownloadURL().then((url) => {
         //     // encrypt stuff with the key
         //     console.log(url)
         // })
         const publicKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
-
+        Version: OpenPGP.js v4.6.2
+        Comment: https://openpgpjs.org
+        
         xsBNBF6c4EkBCAC3io7lVTPpEBSjllEmZtIyKlw270M+9nwqwJRrysGfQRGf
         Hd8YC9daIMHHEdTXiB5aPnDxT0l2Lj5wDHuTPnQEXlNq/RtBvfTHKC7tmNwy
         a3cwq6seS37+mE3+0AUz+eu3mBVX7Sdoe6jhCJFpk7fl1l0W3YtV45p8KXWI
@@ -343,7 +345,7 @@ export default class Candidates extends Component {
         FYUhR8aG/8EFoGOmxqoLHRmt2iL54rVWywvpn/+YZ2nQfy4qJ1kTMNLTABEB
         AAHNJEZyYXNlciBWb3RlcyA8aGVsbG9AZnJhc2Vydm90ZXMuY29tPsLAdQQQ
         AQgAHwUCXpzgSQYLCQcIAwIEFQgKAgMWAgECGQECGwMCHgEACgkQXllJlPM0
-        LN7Z4wf9GU8U8dvx5wXjrz3e+xdG1qo2iI8DSuifezFIcA2+1FlRnCASE8In
+        LN7Z4wf9GU8U8dvx5wXjrz3e+xdG1qo2iI8aDSuifezFIcA2+1FlRnCASE8In
         FkTGiebyxTE7EZVvnagY61DHWrZnQ5A7qiuHOtv9sUcJGMRPjWVVLyGAzqrp
         LsJGCyz0F9kAPuVx46HA+OJiFhQbFX1y+JvJq4o/XoE7tkh4cSd/iT9lhALl
         /7SIAbplxjqRXBgQdrOKvmbeNdvhEDQQnvGa1wfCEEHM0qWtSwCheYUsgzPN
@@ -354,7 +356,7 @@ export default class Candidates extends Component {
         101tm3jodHYbjzBIsA3uzFzFH0XwZn10CgNoPTju1rITKk46gdY4YYKAgy4p
         AKXPvSIrGZ6letC6BQ3UOdM0MWR9wmqiaApzrav8s2RlVuRR63efjOWfWNN7
         /wlsf9G5NW9pf+EctFi1HITJbfMNXPJKGOB26lhFxO25M8oe0yeAvs9DQSg8
-         GD3qDfRPyotOeI9ly43Vru516A7DK7ABiAPkYtJqHrQ/YwARAQABwsBfBBgB
+        GD3qDfRPyotOeI9ly43Vru516A7DK7ABiAPkYtJqHrQ/YwARAQABwsBfBBgB
         CAAJBQJenOBJAhsMAAoJEF5ZSZTzNCzeLe8H/0Wgwt+61wwygekevrtjjN0F
         pTHNlk8KYmR+WdGChI22eMatXYMyo2oJAPBd+IeH57LxJRNl7YqzJD2sZBr3
         jnud6QFipdGhFzdMt7jDOVuTBNr7VbN5v6G7YAPX5ZtiJ3PpteZy7fODQ9S1
@@ -364,11 +366,9 @@ export default class Candidates extends Component {
         xLdERR5YZ2sz7Dltfb8=
         =Pwpw
         -----END PGP PUBLIC KEY BLOCK-----`
-        console.log(await openpgp.key.readArmored(publicKey))
         const { data: encrypted } = await openpgp.encrypt({
-            message: openpgp.message.fromText(candidateID),
-            publicKeys: (await openpgp.key.readArmored(publicKey)).keys,
-            armor: false,
+            message: openpgp.message.fromText('Hello World'),
+            publicKeys: openpgp.key.readArmored(publicKey).keys,
         })
         console.log(encrypted)
     }   
