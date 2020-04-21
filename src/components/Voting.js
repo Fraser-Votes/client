@@ -189,6 +189,7 @@ export default class Candidates extends Component {
                 <Layout>    
                     <Helmet>
                         <script defer src={withPrefix("../js/openpgp.min.js")}></script>
+                        <script defer src={withPrefix("../js/openpgp.worker.min.js")}></script>
                     </Helmet>
                     <SEO title="Voting"/>
                     <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
@@ -329,11 +330,7 @@ export default class Candidates extends Component {
     encryptCandidate = async (candidateID) => {
         let openpgp = window.openpgp
         await openpgp.initWorker({path: withPrefix("../js/openpgp.worker.min.js")})
-        // firebase.storage().ref('public.asc').getDownloadURL().then((url) => {
-        //     // encrypt stuff with the key
-        //     console.log(url)
-        // })
-        const publicKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
+        const publicKeyArmored = `-----BEGIN PGP PUBLIC KEY BLOCK-----
         Version: OpenPGP.js v4.6.2
         Comment: https://openpgpjs.org
         
@@ -345,7 +342,7 @@ export default class Candidates extends Component {
         FYUhR8aG/8EFoGOmxqoLHRmt2iL54rVWywvpn/+YZ2nQfy4qJ1kTMNLTABEB
         AAHNJEZyYXNlciBWb3RlcyA8aGVsbG9AZnJhc2Vydm90ZXMuY29tPsLAdQQQ
         AQgAHwUCXpzgSQYLCQcIAwIEFQgKAgMWAgECGQECGwMCHgEACgkQXllJlPM0
-        LN7Z4wf9GU8U8dvx5wXjrz3e+xdG1qo2iI8aDSuifezFIcA2+1FlRnCASE8In
+        LN7Z4wf9GU8U8dvx5wXjrz3e+xdG1qo2iI8DSuifezFIcA2+1FlRnCASE8In
         FkTGiebyxTE7EZVvnagY61DHWrZnQ5A7qiuHOtv9sUcJGMRPjWVVLyGAzqrp
         LsJGCyz0F9kAPuVx46HA+OJiFhQbFX1y+JvJq4o/XoE7tkh4cSd/iT9lhALl
         /7SIAbplxjqRXBgQdrOKvmbeNdvhEDQQnvGa1wfCEEHM0qWtSwCheYUsgzPN
@@ -368,7 +365,7 @@ export default class Candidates extends Component {
         -----END PGP PUBLIC KEY BLOCK-----`
         const { data: encrypted } = await openpgp.encrypt({
             message: openpgp.message.fromText('Hello World'),
-            publicKeys: openpgp.key.readArmored(publicKey).keys,
+            publicKeys: await (openpgp.key.readArmored(publicKeyArmored)).keys,
         })
         console.log(encrypted)
     }   
