@@ -342,7 +342,6 @@ export default class Candidates extends Component {
                 message: openpgp.message.fromText(candidateID),
                 publicKeys: res.keys,
             })
-            console.log(encrypted)
             resolve(encrypted)
         })
         })
@@ -360,7 +359,6 @@ export default class Candidates extends Component {
             ops.push(this.encryptCandidate(this.state.votes[this.position].candidateID))
         }
         Promise.all(ops).then((parsedVotes) => {
-            console.log(parsedVotes)
             this.setState({voteSubmitting: true})
             addVote({votes: parsedVotes}).then((res) => {
                 console.log(res.data.voteSuccessful)
