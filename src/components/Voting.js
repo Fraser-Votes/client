@@ -326,46 +326,18 @@ export default class Candidates extends Component {
 
         return true
     }
+    
+    getPublicKey = async () => {
+        let keyDoc = await firebase.firestore().collection("admin").doc("keys").get()
+        console.log(keyDoc.data().public)
+        this.setState({publicKey: keyDoc.data().public})
+    }
 
     encryptCandidate = async (candidateID) => {
         return new Promise(async (resolve) => {
         let openpgp = window.openpgp
         await openpgp.initWorker({path: withPrefix("../js/openpgp.worker.min.js")})
-        const publicKeyArmored = `-----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: OpenPGP.js v4.6.2
-Comment: https://openpgpjs.org
-
-xsBNBF6c4EkBCAC3io7lVTPpEBSjllEmZtIyKlw270M+9nwqwJRrysGfQRGf
-Hd8YC9daIMHHEdTXiB5aPnDxT0l2Lj5wDHuTPnQEXlNq/RtBvfTHKC7tmNwy
-a3cwq6seS37+mE3+0AUz+eu3mBVX7Sdoe6jhCJFpk7fl1l0W3YtV45p8KXWI
-H3eyZBh9Uz2hoThaSkTkmoklwHxEU8p5zLy9JsiiD3MN1+uC6nDXhRBF4vZj
-f6MJzorLZ1EgnuJaUqAQkNyIe+lA8lWyJgVOGy6ajmxWHdJDHR4fR8jN0se1
-FYUhR8aG/8EFoGOmxqoLHRmt2iL54rVWywvpn/+YZ2nQfy4qJ1kTMNLTABEB
-AAHNJEZyYXNlciBWb3RlcyA8aGVsbG9AZnJhc2Vydm90ZXMuY29tPsLAdQQQ
-AQgAHwUCXpzgSQYLCQcIAwIEFQgKAgMWAgECGQECGwMCHgEACgkQXllJlPM0
-LN7Z4wf9GU8U8dvx5wXjrz3e+xdG1qo2iI8DSuifezFIcA2+1FlRnCASE8In
-FkTGiebyxTE7EZVvnagY61DHWrZnQ5A7qiuHOtv9sUcJGMRPjWVVLyGAzqrp
-LsJGCyz0F9kAPuVx46HA+OJiFhQbFX1y+JvJq4o/XoE7tkh4cSd/iT9lhALl
-/7SIAbplxjqRXBgQdrOKvmbeNdvhEDQQnvGa1wfCEEHM0qWtSwCheYUsgzPN
-u63RyVVLsl6zMHmZqvZzon35s2CdDcXeR6ktct4XQ4LmYnTwuylPlzgJXMGu
-yW7lgWi/BhRVYVKAlhDaZJsxFuQEMOr1BXIj3irLFgXIi9YeFc7ATQRenOBJ
-AQgA6JG3PPUEoCp+IsiJG4nR1Z4/74cA4gDCNUBmRKyGXYknZw+JM1BWOmmL
-yOQF8OpabzzBQ58I+sI3NI3F9ckMlR0y+Tyu79isqL6V58T7vDWJRDvWaK1E
-101tm3jodHYbjzBIsA3uzFzFH0XwZn10CgNoPTju1rITKk46gdY4YYKAgy4p
-AKXPvSIrGZ6letC6BQ3UOdM0MWR9wmqiaApzrav8s2RlVuRR63efjOWfWNN7
-/wlsf9G5NW9pf+EctFi1HITJbfMNXPJKGOB26lhFxO25M8oe0yeAvs9DQSg8
-GD3qDfRPyotOeI9ly43Vru516A7DK7ABiAPkYtJqHrQ/YwARAQABwsBfBBgB
-CAAJBQJenOBJAhsMAAoJEF5ZSZTzNCzeLe8H/0Wgwt+61wwygekevrtjjN0F
-pTHNlk8KYmR+WdGChI22eMatXYMyo2oJAPBd+IeH57LxJRNl7YqzJD2sZBr3
-jnud6QFipdGhFzdMt7jDOVuTBNr7VbN5v6G7YAPX5ZtiJ3PpteZy7fODQ9S1
-wdddgQkQLAN1Jp+8qVwtBVBY45ar9T5eI7hiaZHqfvpLKyzySYmwzZ704O/r
-5V/tjZgaIInizOT/rlevPUVbsqkGGJ2RN6km+DJsEDx85Hu8PwsJbhYtbNHf
-SAc6OudQ00HALYnMYeoRKI/VO7YsFDRl6c+Oyh+5Ezz719NUKcLy0aJuvCTH
-xLdERR5YZ2sz7Dltfb8=
-=Pwpw
------END PGP PUBLIC KEY BLOCK-----`
-        let keys = null
-        openpgp.key.readArmored(publicKeyArmored).then(async (res) => {
+        openpgp.key.readArmored(this.state.publicKey).then(async (res) => {
             const { data: encrypted } = await openpgp.encrypt({
                 message: openpgp.message.fromText(candidateID),
                 publicKeys: res.keys,
@@ -380,6 +352,7 @@ xLdERR5YZ2sz7Dltfb8=
         if (process.env.NODE_ENV === "development") {
             // firebase.functions().useFunctionsEmulator('http://localhost:5001') 
         }
+        await this.getPublicKey()
         const functions = firebase.functions()
         let addVote = functions.httpsCallable("vote")
         let ops = []
