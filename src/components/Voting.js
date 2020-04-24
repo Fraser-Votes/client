@@ -328,6 +328,7 @@ export default class Candidates extends Component {
     }
 
     encryptCandidate = async (candidateID) => {
+        return new Promise(async (resolve) => {
         let openpgp = window.openpgp
         await openpgp.initWorker({path: withPrefix("../js/openpgp.worker.min.js")})
         const publicKeyArmored = `-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -365,58 +366,59 @@ xLdERR5YZ2sz7Dltfb8=
 -----END PGP PUBLIC KEY BLOCK-----`
         let keys = null
         openpgp.key.readArmored(publicKeyArmored).then(async (res) => {
-        console.log(res)
-         const { data: encrypted } = await openpgp.encrypt({
-            message: openpgp.message.fromText(candidateID),
-            publicKeys: res.keys,
+            const { data: encrypted } = await openpgp.encrypt({
+                message: openpgp.message.fromText(candidateID),
+                publicKeys: res.keys,
+            })
+            console.log(encrypted)
+            resolve(encrypted)
         })
-        return encrypted
-    })
+        })
     }   
 
-    submitVote = (toast) => {
+    submitVote = async (toast) => {
         if (process.env.NODE_ENV === "development") {
             // firebase.functions().useFunctionsEmulator('http://localhost:5001') 
         }
         const functions = firebase.functions()
         let addVote = functions.httpsCallable("vote")
-        let parsedVotes = {}
+        let ops = []
         for (this.position in this.state.votes) {
-            // TODO - this is non function - needs to be convered to async
-            parsedVotes[this.position] = this.encryptCandidate(this.state.votes[this.position].candidateID) 
+            ops.push(this.encryptCandidate(this.state.votes[this.position].candidateID))
         }
-        console.log(parsedVotes)
-        this.setState({voteSubmitting: true})
-        addVote({votes: parsedVotes}).then((res) => {
-            console.log(res.data.voteSuccessful)
-            this.setState({
-                voteSuccessful: true,
-                voteSubmitting: false,
-                confirmationOpen: false
-            })
-            toast({
-                title: "Vote Submitted",
-                description: "Thanks for voting!",
-                status: "success",
-                duration: 10000,
-                isClosable: true
-            })
-        }).catch((err) => {
-            console.error("error setting vote", err.code, err.message, err.details)
-            this.setState({
-                voteError: true,
-                voteSubmitting: false,
-                confirmationOpen: false
-            })
-            toast({
-                title: "An error occurred",
-                description: "There was an error submitting your vote. Please try again.",
-                status: "error",
-                duration: 10000,
-                isClosable: true
+        Promise.all(ops).then((parsedVotes) => {
+            console.log(parsedVotes)
+            this.setState({voteSubmitting: true})
+            addVote({votes: parsedVotes}).then((res) => {
+                console.log(res.data.voteSuccessful)
+                this.setState({
+                    voteSuccessful: true,
+                    voteSubmitting: false,
+                    confirmationOpen: false
+                })
+                toast({
+                    title: "Vote Submitted",
+                    description: "Thanks for voting!",
+                    status: "success",
+                    duration: 10000,
+                    isClosable: true
+                })
+            }).catch((err) => {
+                console.error("error setting vote", err.code, err.message, err.details)
+                this.setState({
+                    voteError: true,
+                    voteSubmitting: false,
+                    confirmationOpen: false
+                })
+                toast({
+                    title: "An error occurred",
+                    description: "There was an error submitting your vote. Please try again.",
+                    status: "error",
+                    duration: 10000,
+                    isClosable: true
+                })
             })
         })
-
     }
 
     getCandidates = async () => {
