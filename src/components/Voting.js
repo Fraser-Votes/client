@@ -333,7 +333,7 @@ export default class Candidates extends Component {
         this.setState({publicKey: keyDoc.data().public})
     }
 
-    encryptCandidate = async (candidateID) => {
+    encryptCandidate = async (candidateID, position) => {
         return new Promise(async (resolve) => {
         let openpgp = window.openpgp
         await openpgp.initWorker({path: withPrefix("../js/openpgp.worker.min.js")})
@@ -342,7 +342,14 @@ export default class Candidates extends Component {
                 message: openpgp.message.fromText(candidateID),
                 publicKeys: res.keys,
             })
-            resolve(encrypted)
+            this.setState(prevState => ({
+                parsedVotes: {
+                    ...prevState.parsedVotes,
+                    [position]: encrypted
+                }
+            }), () => {
+                resolve()
+            })
         })
         })
     }   
@@ -356,9 +363,14 @@ export default class Candidates extends Component {
         let addVote = functions.httpsCallable("vote")
         let ops = []
         for (this.position in this.state.votes) {
-            ops.push(this.encryptCandidate(this.state.votes[this.position].candidateID))
+            ops.push(this.encryptCandidate(this.state.votes[this.position].candidateID, this.position))
         }
-        Promise.all(ops).then((parsedVotes) => {
+        Promise.all(ops).then((votes) => {
+            let parsedVotes = {}
+            for (let position in this.state.votes) {
+                parsedVotes[position] = this.state.parsedVotes[position]
+            }
+            console.log(parsedVotes)
             this.setState({voteSubmitting: true})
             addVote({votes: parsedVotes}).then((res) => {
                 console.log(res.data.voteSuccessful)
