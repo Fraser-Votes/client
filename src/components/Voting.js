@@ -8,6 +8,7 @@ import { IsDesktop } from '../utils/mediaQueries'
 import PlaceholderImage from "../images/placeholder.jpg"
 import Helmet from 'react-helmet'
 import { withPrefix } from 'gatsby'
+import { getUser } from '../utils/auth'
 
 const ToastContext = React.createContext(() => {})
 
@@ -36,7 +37,7 @@ const CandidateRow = ({position, children}) => {
     )
 }
 
-const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, currentSelection}) => {
+const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection}) => {
 
     let currSelect = false
     currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` ? currSelect = false : currSelect = true
@@ -64,7 +65,7 @@ const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, 
             </Text>
             <Checkbox 
                 onChange={() => {onChecked(position, `${first.toLowerCase()}-${last.toLowerCase()}`, currSelect, first, last, photoURL)}}
-                isDisabled={isDisabled && currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}`} 
+                isDisabled={isDisabled && currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` || voted} 
                 variantColor="teal" 
                 ml="auto" 
                 mr="12px" 
@@ -122,6 +123,7 @@ export default class Candidates extends Component {
             voteError: false,
             voteSubmitting: false,
             voteSuccessful: false,
+            voted: false,
             votes: {
                 "president": {
                     candidateID: null,
@@ -181,6 +183,7 @@ export default class Candidates extends Component {
 
     componentDidMount() {
         this.getCandidates()
+        this.getUserVotingStatus()
     }
 
     render() {
@@ -192,7 +195,7 @@ export default class Candidates extends Component {
                         <script defer src={withPrefix("../js/openpgp.worker.min.js")}></script>
                     </Helmet>
                     <SEO title="Voting"/>
-                    <Header title="Voting" description="Please select the candidates that you want to vote for. "/>
+                    <Header title="Voting" description={this.state.voted ? "You already voted! Results will be released when the election ends." : "Please select the candidates that you want to vote for. "}/>
                     {this.state.dataLoading ? 
                         <>
                         <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
@@ -208,7 +211,7 @@ export default class Candidates extends Component {
                                 <>
                                 <CandidateRow position={position.display}>
                                     {this.state["candidates"][position.raw].map(candidate => {
-                                        return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
+                                        return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} voted={this.state.voted} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
                                     })}
                                 </CandidateRow>
                                 </>
@@ -229,7 +232,7 @@ export default class Candidates extends Component {
                                 px="64px"
                                 py="16px"
                                 marginBottom="24px"
-                                isDisabled={!this.state.validated}
+                                isDisabled={!this.state.validated || this.state.voted}
                             >
                                 Confirm
                             </Button>
@@ -377,7 +380,8 @@ export default class Candidates extends Component {
                 this.setState({
                     voteSuccessful: true,
                     voteSubmitting: false,
-                    confirmationOpen: false
+                    confirmationOpen: false,
+                    voted: true
                 })
                 toast({
                     title: "Vote Submitted",
@@ -402,6 +406,12 @@ export default class Candidates extends Component {
                 })
             })
         })
+    }
+
+    getUserVotingStatus = async () => {
+        const votingStatusRef = await firebase.firestore().collection("users").doc(getUser().email.split("@")[0]).get()
+        let votingStatus = votingStatusRef.data().voted
+        this.setState({voted: votingStatus})
     }
 
     getCandidates = async () => {
