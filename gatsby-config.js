@@ -78,7 +78,9 @@ module.exports = {
       options: {
         siteId: '1',
         matomoUrl: 'https://b.fraservotes.com',
-        siteUrl: 'https://fraservotes.com'
+        siteUrl: 'https://fraservotes.com',
+        matomoPhpScript: 'm.php',
+        matomoJsScript: 'm.js'
       }
     }
     // this (optional) plugin enables Progressive Web App + Offline functionality
