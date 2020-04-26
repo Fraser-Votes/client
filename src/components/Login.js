@@ -77,7 +77,7 @@ const Login = () => {
             my="6.5vh"
           />
         </Mobile>
-        <Box>
+        <Box marginBottom="40px">
           <Button
             isLoading={authLoading}
             size="lg"
