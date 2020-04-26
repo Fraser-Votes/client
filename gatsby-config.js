@@ -72,6 +72,14 @@ module.exports = {
         // Unique site id
         siteId: 'WTIVY',
       }
+    },
+    {
+      resolve: 'gatsby-plugin-matomo',
+      options: {
+        siteId: '1',
+        matomoUrl: 'https://b.fraservotes.com',
+        siteUrl: 'https://fraservotes.com'
+      }
     }
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
