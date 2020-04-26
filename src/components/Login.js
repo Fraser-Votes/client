@@ -100,7 +100,7 @@ const Login = () => {
             Please log in using your pdsb.net email
           </Text>
         </Box>
-        <Text marginTop={IsDesktop() ? 0 : "32px"} fontSize="12px" fontWeight="600" color="blueGray.600" mb="16px">Made with ☕ by David L, Jason H, & James A.Y.</Text>
+        <Text marginTop={IsDesktop() ? 0 : "32px"} fontSize="12px" fontWeight="600" color="blueGray.600" mb={IsDesktop() ? "16px" : "24px"}>Made with ☕ by David L, Jason H, & James A.Y.</Text>
       </Box>
     )
   }
