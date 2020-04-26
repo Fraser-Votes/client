@@ -14,6 +14,7 @@
     "gatsby-image": "^2.2.39",
     "gatsby-plugin-chakra-ui": "^0.1.4",
     "gatsby-plugin-create-client-paths": "^2.1.24",
+    "gatsby-plugin-fathom": "^1.2.0",
     "gatsby-plugin-firebase": "^0.2.0-beta.4",
     "gatsby-plugin-manifest": "^2.2.39",
     "gatsby-plugin-offline": "^3.0.32",

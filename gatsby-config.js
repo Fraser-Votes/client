@@ -64,6 +64,20 @@ module.exports = {
         },
       },
     },
+    {
+      resolve: 'gatsby-plugin-fathom',
+      options: {
+        // Fathom server URL. Defaults to `cdn.usefathom.com`
+        trackingUrl: 'a.fraservotes.com',
+        // Unique site id
+        siteId: 'WTIVY',
+        // Domain whitelist
+        whitelistHostnames: [
+          'localhost:8000',
+          'fraservotes.com'
+        ]
+      }
+    }
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
