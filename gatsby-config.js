@@ -64,25 +64,6 @@ module.exports = {
         },
       },
     },
-    {
-      resolve: 'gatsby-plugin-fathom',
-      options: {
-        // Fathom server URL. Defaults to `cdn.usefathom.com`
-        trackingUrl: 'a.fraservotes.com',
-        // Unique site id
-        siteId: 'WTIVY',
-      }
-    },
-    {
-      resolve: 'gatsby-plugin-matomo',
-      options: {
-        siteId: '1',
-        matomoUrl: 'https://b.fraservotes.com',
-        siteUrl: 'https://fraservotes.com',
-        matomoPhpScript: 'm.php',
-        matomoJsScript: 'm.js'
-      }
-    }
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
