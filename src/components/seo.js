@@ -68,7 +68,9 @@ function SEO({ description, lang, meta, title }) {
           content: metaDescription,
         },
       ].concat(meta)}
-    />
+    >
+      <script async defer data-domain="fraservotes.com" src="https://plausible.io/js/plausible.js"></script>
+    </Helmet>
   )
 }
 
