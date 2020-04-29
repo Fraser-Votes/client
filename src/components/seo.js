@@ -69,8 +69,14 @@ function SEO({ description, lang, meta, title }) {
         },
       ].concat(meta)}
     >
-      <script async defer data-domain="fraservotes.com" src="https://plausible.io/js/plausible.js"></script>
-      <script defer>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+      {title !== "404" ?
+            <>
+            <script async defer data-domain="fraservotes.com" src="https://plausible.io/js/plausible.js"></script>
+            <script defer>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+            </>
+            :
+            <></>
+      }
     </Helmet>
   )
 }
