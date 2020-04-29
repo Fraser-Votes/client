@@ -18,7 +18,7 @@ const App = () => (
         <PrivateRoute path="results" component={Results} />
         <PrivateRoute path="candidates/:candidateID" component={Profile}/>
         <Login path="login" />
-        <NotFoundPage default/>
+        {/* <NotFoundPage default/> */}
     </Router>
   </Box>
   </LightMode>
