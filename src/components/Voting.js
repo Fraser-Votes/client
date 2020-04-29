@@ -383,6 +383,7 @@ export default class Candidates extends Component {
                     confirmationOpen: false,
                     voted: true
                 })
+                window.plausible("Vote")
                 toast({
                     title: "Vote Submitted",
                     description: "Thanks for voting!",
