@@ -89,6 +89,7 @@ export default class Candidates extends Component {
 
     componentDidMount() {
         this.getCandidates()
+        this.innerWidth = window.innerWidth
     }
 
     render() {
@@ -99,11 +100,11 @@ export default class Candidates extends Component {
                     {this.state.dataLoading ? 
                         <>
                         <Skeleton borderRadius="4px" h="28px" w="120px" mb="24px"/>
-                        <Grid gridTemplateColumns={window.innerWidth > 960 ? "repeat(auto-fill, 210px)" : "1fr"} gridColumnGap="40px" gridRowGap="24px">
-                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
-                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
-                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
-                            <Skeleton borderRadius="16px" h={window.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                        <Grid gridTemplateColumns={this.innerWidth > 960 ? "repeat(auto-fill, 210px)" : "1fr"} gridColumnGap="40px" gridRowGap="24px">
+                            <Skeleton borderRadius="16px" h={this.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={this.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={this.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
+                            <Skeleton borderRadius="16px" h={this.innerWidth > 960 ? "200px" : "37vh"} w="100%" />
                         </Grid>
                         </>
                     : 
