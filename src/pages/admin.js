@@ -1,21 +1,19 @@
 import React from "react"
 import { Router } from "@reach/router"
-import Login from "../components/Login"
 import { LightMode, Box } from "@chakra-ui/core"
 import Candidates from "../components/Candidates"
 import Voting from "../components/Voting"
-import Profile from  '../components/Profile/Profile'
-import Results from "../components/Results"
-import PrivateAdminRoute from "../components/PrivateAdminRoute"
+import PrivateRoute from "../components/PrivateRoute"
 
-const App = () => (
+const Admin = () => (
   <LightMode>
   <Box>
     <Router basepath="/admin">
-        <PrivateAdminRoute path="candidates" component={Candidates} />
+        <PrivateRoute default admin={true} path="candidates" component={Candidates} />
+        <PrivateRoute path="voting" admin={true} component={Voting} />
     </Router>
   </Box>
   </LightMode>
 )
 
-export default App
+export default Admin

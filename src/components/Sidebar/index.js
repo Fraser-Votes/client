@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, Box, Icon, MenuButton, Menu, MenuList, MenuItem, Avatar } from '@chakra-ui/core'
 import { navigate } from 'gatsby';
-import { getUser, logout } from '../../utils/auth';
+import { getUser, logout, isAdmin } from '../../utils/auth';
 import firebase from "gatsby-plugin-firebase"
 
 const NavItem = ({title, iconName}) => {
@@ -48,6 +48,7 @@ const NavItem = ({title, iconName}) => {
 
 const ProfileBar = () => {
     const user = getUser()
+    const admin = isAdmin()
 
     return (
         <Menu>
@@ -67,6 +68,13 @@ const ProfileBar = () => {
                 <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => logout(firebase)}>
                     Log out
                 </MenuItem>
+                {admin ?  
+                <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => navigate(`/admin`)}>
+                    Admin
+                </MenuItem>    
+                :
+                <></>                    
+                }
             </MenuList>
         </Menu>
    )
