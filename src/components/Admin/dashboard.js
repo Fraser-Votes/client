@@ -2,11 +2,13 @@ import React, { Component } from "react"
 import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
 import { IsDesktop } from "../../utils/mediaQueries"
+import LiveUsersChart from "./Charting/LiveUsersChart"
 
 const StatItem = ({ stat, bounce, first, title, mobile }) => {
+  
   return (
     <Box 
-      display="flex" flexDirection="column" width={mobile ? "100px" : first ? "18.5%" : "20%"}
+      display="flex" flexDirection="column" width={mobile ? "40%" : first ? "18.5%" : "20%"}
     >
       <Text color="blueGray.500" fontSize="16px" fontWeight="600">
         {title}
@@ -93,7 +95,9 @@ export default class Dashboard extends Component {
       labels: [],
       plot: [],
       stats: [],
-      dataLoading: true,
+      loading1: true,
+      loading2:  true,
+      loading3: true,
     }
   }
 
@@ -105,7 +109,7 @@ export default class Dashboard extends Component {
   render() {
     return (
       <Layout>
-        {this.state.dataLoading ? (
+        {this.state.loading1 || this.state.loading2 || this.state.loading3 ? (
           "Loading"
         ) : (
           <Grid
@@ -127,14 +131,7 @@ export default class Dashboard extends Component {
             {this.innerWidth > 1500 ? (
               <>
                 <Stats stats={this.state.stats} />
-                <Box
-                  backgroundColor="white"
-                  gridArea="1 / 2 / 2 / 3"
-                  width="100%"
-                  height="100%"
-                >
-                  asdf
-                </Box>
+                <LiveUsersChart innerWidth={this.innerWidth} data={this.state.plot} labels={this.state.labels}/>
                 <Box
                   backgroundColor="white"
                   gridArea="2 / 1 / 3 / 2"
@@ -159,9 +156,7 @@ export default class Dashboard extends Component {
                 ) : (
                   <Stats stats={this.state.stats} />
                 )}
-                <Box backgroundColor="white" width="100%" height="100%">
-                  asdf
-                </Box>
+                <LiveUsersChart presentIndex={this.state.present_index} innerWidth={this.innerWidth} data={this.state.plot} labels={this.state.labels}/>
                 <Box backgroundColor="white" width="100%" height="100%">
                   asdf
                 </Box>
@@ -214,6 +209,7 @@ export default class Dashboard extends Component {
           plot: data.plot,
           present_index: data.present_index,
           stats: data.top_stats,
+          loading2: false
         })
       })
      
@@ -237,7 +233,8 @@ export default class Dashboard extends Component {
         console.log(data)
         data.top_stats[1].name = "new users"
         this.setState(prevState => ({
-            stats: [...prevState.stats, data.top_stats[1]]
+            stats: [...prevState.stats, data.top_stats[1]],
+            loading1: false
         }))
     })
 
@@ -267,7 +264,7 @@ export default class Dashboard extends Component {
           stats: [...prevState.stats, data.top_stats[1]],
         }), () => {
           this.setState({
-            dataLoading: false
+            loading3: false
           })
         })
       })
