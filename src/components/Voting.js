@@ -153,7 +153,7 @@ export default class Candidates extends Component {
                     photoURL: null,
                     selected: false
                 },
-                "promotions-officer": {
+                "communications-manager": {
                     candidateID: null,
                     first: null,
                     last: null,
@@ -166,7 +166,14 @@ export default class Candidates extends Component {
                     last: null,
                     photoURL: null,
                     selected: false
-                }
+                },
+                "design-manager": {
+                    candidateID: null,
+                    first: null,
+                    last: null,
+                    photoURL: null,
+                    selected: false
+                },
             },
             positions: [
                 // slightly janky - but for now, it works. This will be replaced with a server-side solution later
@@ -174,8 +181,9 @@ export default class Candidates extends Component {
                 {display: "Vice President", raw:"vice-president"},
                 {display: "Secretary", raw:"secretary"},
                 {display: "Treasurer", raw:"treasurer"},
-                {display: "Promotions Officer", raw:"promotions-officer"},
-                {display: "Social Convenor", raw:"social-convenor"}
+                {display: "Social Convenor", raw:"social-convenor"},
+                {display: "Communications Manager", raw:"communications-manager"},
+                {display: "Design Manager", raw:"design-manager"},
             ],
             confirmationOpen: false,
         }

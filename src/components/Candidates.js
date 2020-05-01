@@ -81,15 +81,16 @@ export default class Candidates extends Component {
                 {display: "Vice President", raw:"vice-president"},
                 {display: "Secretary", raw:"secretary"},
                 {display: "Treasurer", raw:"treasurer"},
-                {display: "Promotions Officer", raw:"promotions-officer"},
-                {display: "Social Convenor", raw:"social-convenor"}
+                {display: "Social Convenor", raw:"social-convenor"},
+                {display: "Communications Manager", raw:"communications-manager"},
+                {display: "Design Manager", raw:"design-manager"},
             ],
         }
     }
 
     componentDidMount() {
-        this.getCandidates()
         this.innerWidth = window.innerWidth
+        this.getCandidates()
     }
 
     render() {
