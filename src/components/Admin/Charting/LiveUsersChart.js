@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { Box, Text } from "@chakra-ui/core"
-import Chart from "react-apexcharts"
+import Loadable from '@loadable/component'
 
 
 // takes labels, presentIndex, and data props for the actual graph
@@ -119,3 +119,5 @@ export default class LiveUsersChart extends Component {
         )
     }
 }
+
+const Chart = Loadable(() => import('../../../../node_modules/react-apexcharts/dist/react-apexcharts'))
