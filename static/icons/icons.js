@@ -41,5 +41,13 @@ export default {
     dashboard: {
         path: <path d="M19 11H5M19 11C20.1046 11 21 11.8954 21 13V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V13C3 11.8954 3.89543 11 5 11M19 11V9C19 7.89543 18.1046 7 17 7M5 11V9C5 7.89543 5.89543 7 7 7M7 7V5C7 3.89543 7.89543 3 9 3H15C16.1046 3 17 3.89543 17 5V7M7 7H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>,
         viewbox: "0 0 24 24"
+    },
+    decreasing_arrow: {
+        path: <><circle cx="11" cy="11" r="10" fill="#FACDCD"/><path d="M14.1499 8.35005L14.1499 14.2495M14.1499 14.2495H8.44971M14.1499 14.2495L7.94971 7.8501" stroke="#D64545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></>,
+        viewBox: "0 0 23 23"
+    },
+    increasing_arrow: {
+        path: <><circle cx="11" cy="11" r="10" fill="#BEF8FD"/><path d="M8.00044 7.29985L13.8999 7.29983M13.8999 7.29983V13M13.8999 7.29983L7.50049 13.5" stroke="#14919B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></>,
+        viewBox: "0 0 23 23"
     }
 }
