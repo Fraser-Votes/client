@@ -1,10 +1,13 @@
 import React, { Component } from "react"
 import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
+import { IsDesktop } from "../../utils/mediaQueries"
 
-const StatItem = ({ stat, bounce, last, title }) => {
+const StatItem = ({ stat, bounce, first, title, mobile }) => {
   return (
-    <Box display="flex" flexDirection="column" width="20%">
+    <Box 
+      display="flex" flexDirection="column" width={mobile ? "100px" : first ? "18.5%" : "20%"}
+    >
       <Text color="blueGray.500" fontSize="16px" fontWeight="600">
         {title}
       </Text>
@@ -29,7 +32,7 @@ const StatItem = ({ stat, bounce, last, title }) => {
   )
 }
 
-const Stats = ({ stats }) => {
+const Stats = ({ stats, mobile }) => {
   return (
     <Box
       borderRadius="12px"
@@ -37,21 +40,48 @@ const Stats = ({ stats }) => {
       backgroundColor="white"
       gridArea={window.innerWidth > 1500 ? "1 / 1 / 2 / 2" : ""}
       width="100%"
-      height={window.innerWidth > 1500 ? "100%" : "160px"}
+      height={window.innerWidth > 1500 ? "100%" : mobile ? "300px" : "160px"}
       px="36px"
-      py="36px"
+      py={mobile ? "24px" : "36px"}
       display="flex"
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
+      flexWrap="wrap"
     >
-      <StatItem stat={stats[1]} title="Page Views" />
-      <Divider height="85%" borderLeftWidth="1.3px" borderColor="blueGray.100" orientation="vertical"/>
-      <StatItem stat={stats[4]} title="Votes Casted"/>
-      <Divider height="85%" borderLeftWidth="1.3px" borderColor="blueGray.100" orientation="vertical"/>
-      <StatItem bounce={true} stat={stats[2]} title="Bounce Rate"/>
-      <Divider height="85%" borderLeftWidth="1.3px" borderColor="blueGray.100" orientation="vertical"/>
-      <StatItem last={true} stat={stats[3]} title="New Users"/>
+      <StatItem
+        mobile={mobile}
+        first={true}
+        stat={stats[1]}
+        title="Page Views"
+      />
+      <Divider
+        height={mobile ? "30%" : "85%"}
+        borderLeftWidth="1.3px"
+        borderColor="blueGray.100"
+        orientation="vertical"
+      />
+      <StatItem mobile={mobile} stat={stats[4]} title="Votes Casted" />
+      <Divider
+        display={mobile ? "none" : ""}
+        height="85%"
+        borderLeftWidth="1.3px"
+        borderColor="blueGray.100"
+        orientation="vertical"
+      />
+      <StatItem
+        mobile={mobile}
+        bounce={true}
+        stat={stats[2]}
+        title="Bounce Rate"
+      />
+      <Divider
+        height={mobile ? "30%" : "85%"}
+        borderLeftWidth="1.3px"
+        borderColor="blueGray.100"
+        orientation="vertical"
+      />
+      <StatItem mobile={mobile} stat={stats[3]} title="New Users" />
     </Box>
   )
 }
@@ -80,37 +110,66 @@ export default class Dashboard extends Component {
         ) : (
           <Grid
             height="100vh"
-            my="40px"
+            my={this.innerWidth > 960 ? "40px" : "80px"}
             gridTemplateColumns={this.innerWidth > 1500 ? "2fr 1fr" : "1fr"}
-            gridTemplateRows={this.innerWidth > 1500 ? "repeat(2, 1fr)" : ""}
+            gridTemplateRows={
+              this.innerWidth > 1500
+                ? "repeat(2, 1fr)"
+                :
+                this.innerWidth > 700 ? 
+                "160px 280px 480px 480px"
+                : 
+                "300px minmax(280px, 2fr) repeat(3, minmax(480px, 4fr))"
+            }
             gridColumnGap="40px"
             gridRowGap="40px"
           >
-            <Stats stats={this.state.stats} />
-            <Box
-              backgroundColor="white"
-              gridArea={this.innerWidth > 1500 ? "1 / 2 / 2 / 3" : ""}
-              width="100%"
-              height="100%"
-            >
-              asdf
-            </Box>
-            <Box
-              backgroundColor="white"
-              gridArea={this.innerWidth > 1500 ? "2 / 1 / 3 / 2" : ""}
-              width="100%"
-              height="100%"
-            >
-              asdf
-            </Box>
-            <Box
-              backgroundColor="white"
-              gridArea={this.innerWidth > 1500 ? "2 / 2 / 3 / 3" : ""}
-              width="100%"
-              height="100%"
-            >
-              asdf
-            </Box>
+            {this.innerWidth > 1500 ? (
+              <>
+                <Stats stats={this.state.stats} />
+                <Box
+                  backgroundColor="white"
+                  gridArea="1 / 2 / 2 / 3"
+                  width="100%"
+                  height="100%"
+                >
+                  asdf
+                </Box>
+                <Box
+                  backgroundColor="white"
+                  gridArea="2 / 1 / 3 / 2"
+                  width="100%"
+                  height="100%"
+                >
+                  asdf
+                </Box>
+                <Box
+                  backgroundColor="white"
+                  gridArea="2 / 2 / 3 / 3"
+                  width="100%"
+                  height="100%"
+                >
+                  asdf
+                </Box>
+              </>
+            ) : (
+              <>
+                {this.innerWidth < 700 ? (
+                  <Stats mobile={true} stats={this.state.stats} />
+                ) : (
+                  <Stats stats={this.state.stats} />
+                )}
+                <Box backgroundColor="white" width="100%" height="100%">
+                  asdf
+                </Box>
+                <Box backgroundColor="white" width="100%" height="100%">
+                  asdf
+                </Box>
+                <Box backgroundColor="white" width="100%" height="100%">
+                  asdf
+                </Box>
+              </>
+            )}
           </Grid>
         )}
       </Layout>
@@ -122,6 +181,11 @@ export default class Dashboard extends Component {
     if (date[0] < 10) {
       date[0] = "0" + date[0]
     }
+
+    if (date[1] < 10) {
+      date[1] = "0" + date[1]
+    }
+
     date = date[2] + "-" + date[0] + "-" + date[1]
     console.log(date)
     fetch(
@@ -144,6 +208,7 @@ export default class Dashboard extends Component {
     )
       .then(res => res.json())
       .then(data => {
+        console.log(data)
         this.setState({
           labels: data.labels,
           plot: data.plot,
@@ -152,7 +217,7 @@ export default class Dashboard extends Component {
         })
       })
      
-    fetch("https://plausible.io/api/stats/fraservotes.com/main-graph?period=day&date=2020-04-30&from=undefined&to=undefined&filters=%7B%22goal%22%3A%22New%20User%22%7D", {
+    fetch(`https://plausible.io/api/stats/fraservotes.com/main-graph?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3A%22New%20User%22%7D`, {
     "headers": {
         "accept": "*/*",
         "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -169,6 +234,7 @@ export default class Dashboard extends Component {
     })
     .then(res => res.json())  
     .then(data => {
+        console.log(data)
         data.top_stats[1].name = "new users"
         this.setState(prevState => ({
             stats: [...prevState.stats, data.top_stats[1]]
@@ -195,11 +261,15 @@ export default class Dashboard extends Component {
     )
       .then(res => res.json())
       .then(data => {
+        console.log(data)
         data.top_stats[1].name = "votes"
         this.setState(prevState => ({
           stats: [...prevState.stats, data.top_stats[1]],
-          dataLoading: false,
-        }))
+        }), () => {
+          this.setState({
+            dataLoading: false
+          })
+        })
       })
   }
 }
