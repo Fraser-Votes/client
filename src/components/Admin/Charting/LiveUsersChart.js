@@ -53,6 +53,9 @@ export default class LiveUsersChart extends Component {
                             show: false
                         }
                     },
+                    tooltip: {
+                        enabled: false
+                    }
                 },
                 yaxis: {
                     labels: {
@@ -61,7 +64,12 @@ export default class LiveUsersChart extends Component {
                             fontWeight: 600,
                         },
                         offsetX: -6
-                    }
+                    },
+                    tooltip: {
+                        enabled: false
+                    },
+                    decimalsInFloat: 0,
+                    forceNiceScale: true,
                 },
                 grid: {
                     borderColor: '#D9E2EC',
@@ -84,9 +92,6 @@ export default class LiveUsersChart extends Component {
                 stroke: {
                     width: 2.5
                 },
-                tooltip: {
-                    enabled: false
-                }
             }
         }
     }
