@@ -4,6 +4,7 @@ import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
 import LiveUsersChart from "./Charting/LiveUsersChart"
 import SEO from "../seo"
 import ReferrersChart from "./Charting/ReferrersChart"
+import TopPagesChart from "./Charting/TopPagesChart"
 
 const StatItem = ({ stat, bounce, first, title, mobile }) => {
 
@@ -97,10 +98,13 @@ export default class Dashboard extends Component {
       stats: [],
       referrerNames: [],
       referrerCounts: [],
+      topPagesCounts: [],
+      topPagesNames: [],
       loading1: true,
       loading2:  true,
       loading3: true,
       loading4: true,
+      loading5: true
     }
   }
 
@@ -112,22 +116,24 @@ export default class Dashboard extends Component {
   render() {
     return (
       <Layout>
-        <SEO title="Dashboard"/>
-        {this.state.loading1 || this.state.loading2 || this.state.loading3 || this.state.loading4 ? (
+        <SEO title="Dashboard" />
+        {this.state.loading1 ||
+        this.state.loading2 ||
+        this.state.loading3 ||
+        this.state.loading4 ||
+        this.state.loading5 ? (
           "Loading"
         ) : (
           <Grid
-            height="100vh"
+            minHeight="100vh"
             my={this.innerWidth > 960 ? "40px" : "80px"}
             gridTemplateColumns={this.innerWidth > 1500 ? "2fr 1fr" : "1fr"}
             gridTemplateRows={
               this.innerWidth > 1500
-                ? "repeat(2, 1fr)"
-                :
-                this.innerWidth > 700 ? 
-                "160px 280px 480px 480px"
-                : 
-                "300px minmax(280px, 2fr) repeat(3, minmax(480px, 4fr))"
+                ? "1fr 1fr"
+                : this.innerWidth > 700
+                ? "160px 280px 480px 480px"
+                : "300px minmax(280px, 2fr) repeat(3, 480px)"
             }
             gridColumnGap="40px"
             gridRowGap="40px"
@@ -140,17 +146,17 @@ export default class Dashboard extends Component {
                   gridTemplateColumns="1fr"
                   gridTemplateRows="1fr 2fr"
                   gridRowGap="40px"
-
                 >
-                  <Box
-                    gridArea="1 / 1 / 2 / 2"
-                  >
+                  <Box gridArea="1 / 1 / 2 / 2">
                     <Stats stats={this.state.stats} />
                   </Box>
-                  <Box
-                    gridArea="2 / 1 / 3 / 2"
-                  >
-                    <LiveUsersChart presentIndex={this.state.present_index} innerWidth={this.innerWidth} data={this.state.plot} labels={this.state.labels}/>
+                  <Box gridArea="2 / 1 / 3 / 2">
+                    <LiveUsersChart
+                      presentIndex={this.state.present_index}
+                      innerWidth={this.innerWidth}
+                      data={this.state.plot}
+                      labels={this.state.labels}
+                    />
                   </Box>
                 </Box>
                 <Box
@@ -161,15 +167,22 @@ export default class Dashboard extends Component {
                 >
                   asdf
                 </Box>
-                <ReferrersChart referrerCounts={this.state.referrerCounts} referrerNames={this.state.referrerNames}/>
-                <Box
+                <ReferrersChart
+                  referrerCounts={this.state.referrerCounts}
+                  referrerNames={this.state.referrerNames}
+                />
+                <TopPagesChart
+                  topPagesCounts={this.state.topPagesCounts}
+                  topPagesNames={this.state.topPagesNames}
+                />
+                {/* <Box
                   backgroundColor="white"
                   gridArea="2 / 2 / 3 / 3"
                   width="100%"
                   height="100%"
                 >
                   asdf
-                </Box>
+                </Box> */}
               </>
             ) : (
               <>
@@ -178,16 +191,42 @@ export default class Dashboard extends Component {
                 ) : (
                   <Stats stats={this.state.stats} />
                 )}
-                <LiveUsersChart presentIndex={this.state.present_index} innerWidth={this.innerWidth} data={this.state.plot} labels={this.state.labels}/>
+                <LiveUsersChart
+                  presentIndex={this.state.present_index}
+                  innerWidth={this.innerWidth}
+                  data={this.state.plot}
+                  labels={this.state.labels}
+                />
                 <Box backgroundColor="white" width="100%" height="100%">
                   asdf
                 </Box>
-                <Box
-                  display="grid"
-                  gridTemplateColumns={this.innerWidth < 700 ? "" : "1fr 1fr"}
-                >
-                  <ReferrersChart referrerCounts={this.state.referrerCounts} referrerNames={this.state.referrerNames}/>
-                </Box>
+                {this.innerWidth > 700 ? (
+                  <Box
+                    display="grid"
+                    gridTemplateColumns={this.innerWidth < 700 ? "" : "1fr 1fr"}
+                    gridColumnGap="40px"
+                  >
+                    <ReferrersChart
+                      referrerCounts={this.state.referrerCounts}
+                      referrerNames={this.state.referrerNames}
+                    />
+                    <TopPagesChart
+                      topPagesCounts={this.state.topPagesCounts}
+                      topPagesNames={this.state.topPagesNames}
+                    />
+                  </Box>
+                ) : (
+                  <>
+                    <ReferrersChart
+                      referrerCounts={this.state.referrerCounts}
+                      referrerNames={this.state.referrerNames}
+                    />
+                    <TopPagesChart
+                      topPagesCounts={this.state.topPagesCounts}
+                      topPagesNames={this.state.topPagesNames}
+                    />
+                  </>
+                )}
               </>
             )}
           </Grid>
@@ -284,7 +323,7 @@ export default class Dashboard extends Component {
           })
         })
       })
-    fetch("https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=2020-05-01&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D", {
+    fetch(`https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=7`, {
       "headers": {
         "accept": "*/*",
         "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -312,6 +351,37 @@ export default class Dashboard extends Component {
         referrerNames: referrers,
         referrerCounts: counts,
         loading4: false
+      })
+    })
+
+    fetch(`https://plausible.io/api/stats/fraservotes.com/pages?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=7`, {
+      "headers": {
+        "accept": "*/*",
+        "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin"
+      },
+      "referrer": "https://plausible.io/fraservotes.com",
+      "referrerPolicy": "no-referrer-when-downgrade",
+      "body": null,
+      "method": "GET",
+      "mode": "cors",
+      "credentials": "omit"
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data)
+      let counts = []
+      let pages = []
+      for (var page in data) {
+        counts.push(data[page].count)
+        pages.push(data[page].name)
+      }
+      this.setState({
+        topPagesNames: pages,
+        topPagesCounts: counts,
+        loading5: false
       })
     })
   }
