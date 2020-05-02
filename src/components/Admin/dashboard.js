@@ -5,7 +5,7 @@ import { IsDesktop } from "../../utils/mediaQueries"
 import LiveUsersChart from "./Charting/LiveUsersChart"
 
 const StatItem = ({ stat, bounce, first, title, mobile }) => {
-  
+
   return (
     <Box 
       display="flex" flexDirection="column" width={mobile ? "40%" : first ? "18.5%" : "20%"}
@@ -40,7 +40,6 @@ const Stats = ({ stats, mobile }) => {
       borderRadius="12px"
       border="2px solid rgba(217, 226, 236, 0.55)"
       backgroundColor="white"
-      gridArea={window.innerWidth > 1500 ? "1 / 1 / 2 / 2" : ""}
       width="100%"
       height={window.innerWidth > 1500 ? "100%" : mobile ? "300px" : "160px"}
       px="36px"
@@ -130,8 +129,33 @@ export default class Dashboard extends Component {
           >
             {this.innerWidth > 1500 ? (
               <>
-                <Stats stats={this.state.stats} />
-                <LiveUsersChart innerWidth={this.innerWidth} data={this.state.plot} labels={this.state.labels}/>
+                <Box
+                  gridArea="1 / 1 / 2 / 2"
+                  display="grid"
+                  gridTemplateColumns="1fr"
+                  gridTemplateRows="1fr 2fr"
+                  gridRowGap="40px"
+
+                >
+                  <Box
+                    gridArea="1 / 1 / 2 / 2"
+                  >
+                    <Stats stats={this.state.stats} />
+                  </Box>
+                  <Box
+                    gridArea="2 / 1 / 3 / 2"
+                  >
+                    <LiveUsersChart presentIndex={this.state.present_index} innerWidth={this.innerWidth} data={this.state.plot} labels={this.state.labels}/>
+                  </Box>
+                </Box>
+                <Box
+                  backgroundColor="white"
+                  gridArea="1 / 2 / 2 / 3 "
+                  width="100%"
+                  height="100%"
+                >
+                  asdf
+                </Box>
                 <Box
                   backgroundColor="white"
                   gridArea="2 / 1 / 3 / 2"

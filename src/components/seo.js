@@ -70,6 +70,7 @@ function SEO({ description, lang, meta, title }) {
       ].concat(meta)}
     >
       <script async defer data-domain="fraservotes.com" src="https://plausible.io/js/plausible.js"></script>
+      <script defer src="https://polyfill.io/v3/polyfill.min.js?features=fetch"></script>
     </Helmet>
   )
 }
