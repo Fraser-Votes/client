@@ -11,6 +11,7 @@ const Layout = ({ children }) => {
     <Grid
       templateColumns= {IsDesktop() ? "290px 1fr" : "1fr" }
       templateRows="1fr"
+      className="test1"
     >
       <Desktop>
         <Sidebar/>
@@ -26,6 +27,7 @@ const Layout = ({ children }) => {
         px="40px"
         maxHeight="100vh"
         overflowY="auto"
+        className="test2"
       >
         {children}
       </Box>
