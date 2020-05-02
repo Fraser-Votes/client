@@ -8,11 +8,13 @@ import MobileHeader from "../MobileHeader"
 const Layout = ({ children }) => {
 
   return (
+    
     <Grid
       templateColumns= {IsDesktop() ? "290px 1fr" : "1fr" }
       templateRows="1fr"
       className="test1"
     >
+      {console.log(IsDesktop())}
       <Desktop>
         <Sidebar/>
       </Desktop>
