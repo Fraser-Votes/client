@@ -3,6 +3,7 @@ import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
 import LiveUsersChart from "./Charting/LiveUsersChart"
 import SEO from "../seo"
+import ReferrersChart from "./Charting/ReferrersChart"
 
 const StatItem = ({ stat, bounce, first, title, mobile }) => {
 
@@ -94,9 +95,12 @@ export default class Dashboard extends Component {
       labels: [],
       plot: [],
       stats: [],
+      referrerNames: [],
+      referrerCounts: [],
       loading1: true,
       loading2:  true,
       loading3: true,
+      loading4: true,
     }
   }
 
@@ -109,7 +113,7 @@ export default class Dashboard extends Component {
     return (
       <Layout>
         <SEO title="Dashboard"/>
-        {this.state.loading1 || this.state.loading2 || this.state.loading3 ? (
+        {this.state.loading1 || this.state.loading2 || this.state.loading3 || this.state.loading4 ? (
           "Loading"
         ) : (
           <Grid
@@ -151,20 +155,13 @@ export default class Dashboard extends Component {
                 </Box>
                 <Box
                   backgroundColor="white"
-                  gridArea="1 / 2 / 2 / 3 "
-                  width="100%"
-                  height="100%"
-                >
-                  asdf
-                </Box>
-                <Box
-                  backgroundColor="white"
                   gridArea="2 / 1 / 3 / 2"
                   width="100%"
                   height="100%"
                 >
                   asdf
                 </Box>
+                <ReferrersChart referrerCounts={this.state.referrerCounts} referrerNames={this.state.referrerNames}/>
                 <Box
                   backgroundColor="white"
                   gridArea="2 / 2 / 3 / 3"
@@ -185,8 +182,11 @@ export default class Dashboard extends Component {
                 <Box backgroundColor="white" width="100%" height="100%">
                   asdf
                 </Box>
-                <Box backgroundColor="white" width="100%" height="100%">
-                  asdf
+                <Box
+                  display="grid"
+                  gridTemplateColumns="1fr 1fr"
+                >
+                  <ReferrersChart referrerCounts={this.state.referrerCounts} referrerNames={this.state.referrerNames}/>
                 </Box>
               </>
             )}
@@ -284,5 +284,35 @@ export default class Dashboard extends Component {
           })
         })
       })
+    fetch("https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=2020-05-01&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D", {
+      "headers": {
+        "accept": "*/*",
+        "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin"
+      },
+      "referrer": "https://plausible.io/fraservotes.com",
+      "referrerPolicy": "no-referrer-when-downgrade",
+      "body": null,
+      "method": "GET",
+      "mode": "cors",
+      "credentials": "omit"
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data)
+      let counts = []
+      let referrers = []
+      for (var referrer in data) {
+        counts.push(data[referrer].count)
+        referrers.push(data[referrer].name)
+      }
+      this.setState({
+        referrerNames: referrers,
+        referrerCounts: counts,
+        loading4: false
+      })
+    })
   }
 }
