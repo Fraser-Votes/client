@@ -100,11 +100,17 @@ export default class Dashboard extends Component {
       referrerCounts: [],
       topPagesCounts: [],
       topPagesNames: [],
+      audience_present_index: 0,
+      present_index: 0,
+      audeincePlot: [],
+      audienceLabels: [],
+      audienceStats: [],
       loading1: true,
       loading2:  true,
       loading3: true,
       loading4: true,
-      loading5: true
+      loading5: true,
+      loading6: true
     }
   }
 
@@ -121,7 +127,8 @@ export default class Dashboard extends Component {
         this.state.loading2 ||
         this.state.loading3 ||
         this.state.loading4 ||
-        this.state.loading5 ? (
+        this.state.loading5 ||
+        this.state.loading6 ? (
           "Loading"
         ) : (
           <Grid
@@ -132,7 +139,7 @@ export default class Dashboard extends Component {
               this.innerWidth > 1500
                 ? "1fr 1fr"
                 : this.innerWidth > 700
-                ? "160px 280px 480px 480px"
+                ? "160px 280px 360px 480px"
                 : "300px minmax(280px, 2fr) repeat(3, 480px)"
             }
             gridColumnGap="40px"
@@ -384,5 +391,35 @@ export default class Dashboard extends Component {
         loading5: false
       })
     })
+
+    fetch(
+      `https://plausible.io/api/stats/fraservotes.com/main-graph?period=7d&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D`,
+      {
+        headers: {
+          accept: "*/*",
+          "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+        },
+        referrer: "https://plausible.io/fraservotes.com?period=7d",
+        referrerPolicy: "no-referrer-when-downgrade",
+        body: null,
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
+      }
+    )
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        this.setState({
+          audienceLabels: data.labels,
+          audeincePlot: data.plot,
+          audience_present_index: data.present_index,
+          audienceStats: data.top_stats,
+          loading6: false,
+        })
+      })
   }
 }
