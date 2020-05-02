@@ -184,7 +184,7 @@ export default class Dashboard extends Component {
                 </Box>
                 <Box
                   display="grid"
-                  gridTemplateColumns="1fr 1fr"
+                  gridTemplateColumns={this.innerWidth < 700 ? "" : "1fr 1fr"}
                 >
                   <ReferrersChart referrerCounts={this.state.referrerCounts} referrerNames={this.state.referrerNames}/>
                 </Box>
