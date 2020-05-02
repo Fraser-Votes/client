@@ -37,7 +37,7 @@ const CandidateRow = ({position, children}) => {
     )
 }
 
-const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection}) => {
+const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection, votingClosed}) => {
 
     let currSelect = false
     currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` ? currSelect = false : currSelect = true
@@ -65,7 +65,7 @@ const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, 
             </Text>
             <Checkbox 
                 onChange={() => {onChecked(position, `${first.toLowerCase()}-${last.toLowerCase()}`, currSelect, first, last, photoURL)}}
-                isDisabled={isDisabled && currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` || voted} 
+                isDisabled={isDisabled && currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` || voted || votingClosed} 
                 variantColor="teal" 
                 ml="auto" 
                 mr="12px" 
@@ -124,6 +124,8 @@ export default class Candidates extends Component {
             voteSubmitting: false,
             voteSuccessful: false,
             voted: false,
+            votingEnded: false,
+            votingOpen: false,
             votes: {
                 "president": {
                     candidateID: null,
@@ -191,6 +193,7 @@ export default class Candidates extends Component {
 
     componentDidMount() {
         this.getCandidates()
+        this.getVotingStatus()
         this.getUserVotingStatus()
     }
 
@@ -203,7 +206,7 @@ export default class Candidates extends Component {
                         <script defer src={withPrefix("../js/openpgp.worker.min.js")}></script>
                     </Helmet>
                     <SEO title="Voting"/>
-                    <Header title="Voting" description={this.state.voted ? "You already voted! Results will be released when the election ends." : "Please select the candidates that you want to vote for. "}/>
+                    <Header title="Voting" description={this.state.votingEnded ? "Voting has ended. Please check the results page." : this.state.voted ? "You already voted! Results will be released when the election ends." : this.state.votingOpen ? "Please select the candidates that you want to vote for." : "Voting has not been opened yet."}/>
                     {this.state.dataLoading ? 
                         <>
                         <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>
@@ -219,7 +222,7 @@ export default class Candidates extends Component {
                                 <>
                                 <CandidateRow position={position.display}>
                                     {this.state["candidates"][position.raw].map(candidate => {
-                                        return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} voted={this.state.voted} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
+                                        return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} voted={this.state.voted} votingClosed={!this.state.votingOpen} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
                                     })}
                                 </CandidateRow>
                                 </>
@@ -421,6 +424,16 @@ export default class Candidates extends Component {
         const votingStatusRef = await firebase.firestore().collection("users").doc(getUser().email.split("@")[0]).get()
         let votingStatus = votingStatusRef.data().voted
         this.setState({voted: votingStatus})
+    }
+
+    getVotingStatus = async () => {
+        const votingStatusRef = await firebase.firestore().collection("election").doc("voting").get()
+        let votingStatus = votingStatusRef.data().open
+        let votingEnded = votingStatusRef.data().hasEnded
+        this.setState({
+            votingOpen: votingStatus,
+            votingEnded: votingEnded
+        })
     }
 
     getCandidates = async () => {
