@@ -104,8 +104,8 @@ export default class LiveUsersChart extends Component {
             border="2px solid rgba(217, 226, 236, 0.55)"
             gridArea={this.props.innerWidth > 1500 ? "1 / 2 / 2 / 3" : ""}
             height="100%"
-            py="32px"
-            px="60px"
+            py={this.props.innerWidth > 575 ? "24px" : "32px"}
+            px={this.props.innerWidth > 575 ? "60px" : "32px"}
           >
             <Text
                 fontSize="16px"
