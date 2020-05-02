@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
 import LiveUsersChart from "./Charting/LiveUsersChart"
+import AudienceChart from "./Charting/AudienceChart"
 import SEO from "../seo"
 import ReferrersChart from "./Charting/ReferrersChart"
 import TopPagesChart from "./Charting/TopPagesChart"
@@ -102,7 +103,7 @@ export default class Dashboard extends Component {
       topPagesNames: [],
       audience_present_index: 0,
       present_index: 0,
-      audeincePlot: [],
+      audiencePlot: [],
       audienceLabels: [],
       audienceStats: [],
       loading1: true,
@@ -116,6 +117,7 @@ export default class Dashboard extends Component {
 
   componentDidMount() {
     this.innerWidth = window.innerWidth
+    window.addEventListener('resize', () => this.innerWidth = window.innerWidth)
     this.getQuickStats()
   }
 
@@ -139,8 +141,8 @@ export default class Dashboard extends Component {
               this.innerWidth > 1500
                 ? "1fr 1fr"
                 : this.innerWidth > 700
-                ? "160px 280px 360px 480px"
-                : "300px minmax(280px, 2fr) repeat(3, 480px)"
+                ? "160px 280px 440px 480px"
+                : "300px minmax(280px, 2fr) 410px repeat(2, 480px)"
             }
             gridColumnGap="40px"
             gridRowGap="40px"
@@ -165,31 +167,22 @@ export default class Dashboard extends Component {
                       labels={this.state.labels}
                     />
                   </Box>
-                </Box>
-                <Box
-                  backgroundColor="white"
-                  gridArea="2 / 1 / 3 / 2"
-                  width="100%"
-                  height="100%"
-                >
-                  asdf
-                </Box>
+                </Box>             
                 <ReferrersChart
                   referrerCounts={this.state.referrerCounts}
                   referrerNames={this.state.referrerNames}
                 />
+                <AudienceChart
+                  presentIndex={this.state.audience_present_index}
+                  innerWidth={this.innerWidth}
+                  data={this.state.audiencePlot}
+                  labels={this.state.audienceLabels}
+                  stats={this.state.audienceStats}
+                />  
                 <TopPagesChart
                   topPagesCounts={this.state.topPagesCounts}
                   topPagesNames={this.state.topPagesNames}
                 />
-                {/* <Box
-                  backgroundColor="white"
-                  gridArea="2 / 2 / 3 / 3"
-                  width="100%"
-                  height="100%"
-                >
-                  asdf
-                </Box> */}
               </>
             ) : (
               <>
@@ -204,9 +197,13 @@ export default class Dashboard extends Component {
                   data={this.state.plot}
                   labels={this.state.labels}
                 />
-                <Box backgroundColor="white" width="100%" height="100%">
-                  asdf
-                </Box>
+                <AudienceChart
+                  presentIndex={this.state.audience_present_index}
+                  innerWidth={this.innerWidth}
+                  data={this.state.audiencePlot}
+                  labels={this.state.audienceLabels}
+                  stats={this.state.audienceStats}
+                />
                 {this.innerWidth > 700 ? (
                   <Box
                     display="grid"
@@ -361,7 +358,7 @@ export default class Dashboard extends Component {
       })
     })
 
-    fetch(`https://plausible.io/api/stats/fraservotes.com/pages?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=7`, {
+    fetch(`https://plausible.io/api/stats/fraservotes.com/pages?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=30`, {
       "headers": {
         "accept": "*/*",
         "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -382,8 +379,13 @@ export default class Dashboard extends Component {
       let counts = []
       let pages = []
       for (var page in data) {
-        counts.push(data[page].count)
-        pages.push(data[page].name)
+        if (pages.length === 7) {
+          break
+        }
+        if(!data[page].name.includes("admin") && data[page].name !== "/" && !data[page].name.includes("login")) {
+          counts.push(data[page].count)
+          pages.push(data[page].name)
+        }
       }
       this.setState({
         topPagesNames: pages,
@@ -415,7 +417,7 @@ export default class Dashboard extends Component {
         console.log(data)
         this.setState({
           audienceLabels: data.labels,
-          audeincePlot: data.plot,
+          audiencePlot: data.plot,
           audience_present_index: data.present_index,
           audienceStats: data.top_stats,
           loading6: false,

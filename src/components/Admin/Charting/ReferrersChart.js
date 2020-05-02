@@ -98,7 +98,7 @@ export default class ReferrersChart extends Component {
             backgroundColor="white"
             borderRadius="12px"
             border="2px solid rgba(217, 226, 236, 0.55)"
-            gridArea={this.props.innerWidth > 1500 ? "1 / 2 / 2 / 3 " : ""}
+            gridArea={this.props.innerWidth > 1500 ? "2 / 1 / 3 / 2" : ""}
             width="100%"
             height="100%"
             py="36px"

@@ -53,7 +53,7 @@ export default class TopPagesChart extends Component {
                     offsetY: 6,
                     offsetX: 6,
                     formatter: function (val, opt) {
-                        return opt.w.globals.labels[opt.dataPointIndex].replace("/app/", "")
+                        return opt.w.globals.labels[opt.dataPointIndex].replace("/app/", "").replace("candidates/", "")
                     }
                 },
                 yaxis: {

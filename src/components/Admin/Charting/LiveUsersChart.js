@@ -46,12 +46,12 @@ export default class LiveUsersChart extends Component {
                             fontWeight: 600
                         },
                         offsetX: 4,
-                        axisBorder: {
-                            show: false
-                        },
-                        axisTicks: {
-                            show: false
-                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
                     },
                     tooltip: {
                         enabled: false
