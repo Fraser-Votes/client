@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import Layout from "../Layout"
-import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
+import { Grid, Box, Text, Icon, Divider, Skeleton } from "@chakra-ui/core"
 import LiveUsersChart from "./Charting/LiveUsersChart"
 import AudienceChart from "./Charting/AudienceChart"
 import SEO from "../seo"
@@ -131,7 +131,69 @@ export default class Dashboard extends Component {
         this.state.loading4 ||
         this.state.loading5 ||
         this.state.loading6 ? (
-          "Loading"
+          <Grid
+            minHeight="100vh"
+            my={this.innerWidth > 960 ? "40px" : "80px"}
+            gridTemplateColumns={this.innerWidth > 1500 ? "2fr 1fr" : "1fr"}
+            gridTemplateRows={
+              this.innerWidth > 1500
+                ? "1fr 1fr"
+                : this.innerWidth > 700
+                ? "160px 280px 440px 480px"
+                : "300px minmax(280px, 2fr) 410px repeat(2, 480px)"
+            }
+            gridColumnGap="40px"
+            gridRowGap="40px"
+          >
+            {this.innerWidth > 1500 ? (
+              <>
+                <Box
+                  gridArea="1 / 1 / 2 / 2"
+                  display="grid"
+                  gridTemplateColumns="1fr"
+                  gridTemplateRows="1fr 2fr"
+                  gridRowGap="40px"
+                >
+                  <Skeleton borderRadius="12px" gridArea="1 / 1 / 2 / 2"/>
+                  <Skeleton borderRadius="12px" gridArea="2 / 1 / 3 / 2"/>
+                </Box>             
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+              </>
+            ) : (
+              <>
+                {this.innerWidth < 700 ? (
+                  <Skeleton borderRadius="12px"/>
+                ) : (
+                  <Skeleton borderRadius="12px"/>
+                )}
+                <Skeleton/>
+                <Skeleton/>
+                {this.innerWidth > 700 ? (
+                  <Box
+                    display="grid"
+                    gridTemplateColumns={this.innerWidth < 700 ? "" : "1fr 1fr"}
+                    gridColumnGap="40px"
+                  >
+                    <Skeleton borderRadius="12px" />
+                    <Skeleton borderRadius="12px" />
+                  </Box>
+                ) : (
+                  <>
+                    <ReferrersChart
+                      referrerCounts={this.state.referrerCounts}
+                      referrerNames={this.state.referrerNames}
+                    />
+                    <TopPagesChart
+                      topPagesCounts={this.state.topPagesCounts}
+                      topPagesNames={this.state.topPagesNames}
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </Grid>
         ) : (
           <Grid
             minHeight="100vh"

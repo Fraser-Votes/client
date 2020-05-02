@@ -7,6 +7,7 @@ export default class AudienceChart extends Component {
         super(props)
         this.state = {
             series: [{
+                name: "Audience",
                 data: this.props.data
             }],
             options: {
