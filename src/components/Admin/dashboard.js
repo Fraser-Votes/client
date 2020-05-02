@@ -197,16 +197,7 @@ export default class Dashboard extends Component {
   }
 
   getQuickStats = () => {
-    let date = new Date(Date.now()).toLocaleDateString().split("/")
-    if (date[0] < 10) {
-      date[0] = "0" + date[0]
-    }
-
-    if (date[1] < 10) {
-      date[1] = "0" + date[1]
-    }
-
-    date = date[2] + "-" + date[0] + "-" + date[1]
+    let date = new Date(Date.now()).toLocaleDateString('fr-CA')
     console.log(date)
     fetch(
       `https://plausible.io/api/stats/fraservotes.com/main-graph?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D`,
