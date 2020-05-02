@@ -3,6 +3,7 @@ import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
 import { IsDesktop } from "../../utils/mediaQueries"
 import LiveUsersChart from "./Charting/LiveUsersChart"
+import SEO from "../seo"
 
 const StatItem = ({ stat, bounce, first, title, mobile }) => {
 
@@ -108,6 +109,7 @@ export default class Dashboard extends Component {
   render() {
     return (
       <Layout>
+        <SEO title="Dashboard"/>
         {this.state.loading1 || this.state.loading2 || this.state.loading3 ? (
           "Loading"
         ) : (
