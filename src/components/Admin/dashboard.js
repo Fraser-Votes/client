@@ -3,7 +3,6 @@ import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider } from "@chakra-ui/core"
 import LiveUsersChart from "./Charting/LiveUsersChart"
 import SEO from "../seo"
-import 'whatwg-fetch'
 
 const StatItem = ({ stat, bounce, first, title, mobile }) => {
 
