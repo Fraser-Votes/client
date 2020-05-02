@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { Box, Text } from "@chakra-ui/core"
 import Loadable from '@loadable/component'
-
+import "./Tooltip.css"
 
 // takes labels, presentIndex, and data props for the actual graph
 export default class LiveUsersChart extends Component {
@@ -38,7 +38,6 @@ export default class LiveUsersChart extends Component {
                     labels: {
                         formatter: function(val, timestamp, index) {
                             let date = new Date(timestamp)
-                            console.log(date.toLocaleTimeString())
                             return date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}).replace("PM", "pm").replace("AM", "am").replace(/^0+/, '')
                         },
                         style: {
@@ -92,6 +91,8 @@ export default class LiveUsersChart extends Component {
                 stroke: {
                     width: 2.5
                 },
+                tooltip: {
+                }
             }
         }
     }

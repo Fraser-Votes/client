@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Loadable from "@loadable/component"
 import { Box, Text, Icon } from "@chakra-ui/core"
+import "./Tooltip.css"
 
 export default class AudienceChart extends Component {
     constructor(props) {
