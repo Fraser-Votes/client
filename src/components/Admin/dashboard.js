@@ -181,14 +181,8 @@ export default class Dashboard extends Component {
                   </Box>
                 ) : (
                   <>
-                    <ReferrersChart
-                      referrerCounts={this.state.referrerCounts}
-                      referrerNames={this.state.referrerNames}
-                    />
-                    <TopPagesChart
-                      topPagesCounts={this.state.topPagesCounts}
-                      topPagesNames={this.state.topPagesNames}
-                    />
+                    <Skeleton borderRadius="12px"/>
+                    <Skeleton borderRadius="12px"/>
                   </>
                 )}
               </>
