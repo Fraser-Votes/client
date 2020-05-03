@@ -2,10 +2,10 @@ import React from "react"
 import { Box, Text } from "@chakra-ui/core"
 import { IsMobile } from "../../utils/mediaQueries"
 
-const Header = ({title, description}) => {
+const Header = ({title, description, admin}) => {
   return (
       <Box
-          mt={IsMobile() ? "46px" : ""}
+          mt={IsMobile() ? "46px" : admin ? "12px" : ""}
           h={description ? "98px" : "76px"}
           display="flex"
           flexDirection="column"
