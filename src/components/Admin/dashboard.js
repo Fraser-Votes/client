@@ -157,9 +157,9 @@ export default class Dashboard extends Component {
                   <Skeleton borderRadius="12px" gridArea="1 / 1 / 2 / 2"/>
                   <Skeleton borderRadius="12px" gridArea="2 / 1 / 3 / 2"/>
                 </Box>             
-                <Skeleton />
-                <Skeleton />
-                <Skeleton />
+                <Skeleton borderRadius="12px"/>
+                <Skeleton borderRadius="12px"/>
+                <Skeleton borderRadius="12px"/>
               </>
             ) : (
               <>
@@ -168,8 +168,8 @@ export default class Dashboard extends Component {
                 ) : (
                   <Skeleton borderRadius="12px"/>
                 )}
-                <Skeleton/>
-                <Skeleton/>
+                <Skeleton borderRadius="12px"/>
+                <Skeleton borderRadius="12px"/>
                 {this.innerWidth > 700 ? (
                   <Box
                     display="grid"
