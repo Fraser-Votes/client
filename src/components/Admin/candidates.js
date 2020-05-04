@@ -321,7 +321,6 @@ const CandidateDrawer = ({
                   onChange={onChange}
                   onFocus={() => onFocus("grade")}
                   value={drawerState.grade}
-                  placeholder={candidate.grade}
                   fontWeight="600"
                   color="blueGray.700"
                 >
@@ -404,6 +403,7 @@ const CandidateDrawer = ({
                 minHeight="100px"
                 fontWeight="600"
                 color="blueGray.700"
+                borderRadius="8px"
                 value={drawerState.bio}
                 onChange={onChange}
                 onFocus={() => onFocus("bio")}
@@ -523,12 +523,7 @@ export default class Candidates extends Component {
       isDrawerOpen: false,
       activePosition: "president",
       activeIndex: 0,
-      newCandidate: false,
       isDeleting: false,
-      drawerState: {
-        first: null,
-        last: null,
-      },
       positions: [
         // slightly janky - but for now, it works. This will be replaced with a server-side solution later
         { display: "President", raw: "president" },
