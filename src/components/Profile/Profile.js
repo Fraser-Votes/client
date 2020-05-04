@@ -4,6 +4,7 @@ import firebase from "gatsby-plugin-firebase"
 import { Link as GatsbyLink } from 'gatsby'
 import { IsDesktop } from '../../utils/mediaQueries'
 import SEO from '../seo'
+import PlaceholderImage from "../../images/placeholder.jpg"
 
 const ProfileNav = ({first, last}) => {
     return (
@@ -223,7 +224,7 @@ export default class Profile extends Component {
                     </>
                     :
                     <Box backgroundColor="blueGray.50" minHeight="100vh">
-                        <SEO title={this.state.candidate.first + " " + this.state.candidate.last}/>
+                        <SEO description={`${this.state.candidate.first} ${this.state.candidate.last}'s Profile Page`} image={this.state.candidate.photoURL || PlaceholderImage} title={this.state.candidate.first + " " + this.state.candidate.last}/>
                         <Box backgroundColor="white" pb="36px">
                             <ProfileNav first={this.state.candidate.first} last={this.state.candidate.last}/>
                             <ProfileHeader candidate={this.state.candidate}/>
