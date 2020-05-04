@@ -23,7 +23,6 @@ const Login = () => {
       navigate('/app/candidates')
     }
   
-
     googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {

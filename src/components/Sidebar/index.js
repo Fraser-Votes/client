@@ -77,10 +77,15 @@ const ProfileBar = () => {
                 <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => logout(firebase)}>
                     Log out
                 </MenuItem>
-                {admin ?  
-                <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => navigate(`/admin`)}>
-                    Admin
-                </MenuItem>    
+                {admin ?
+                  window.location.pathname.startsWith("/admin") ?  
+                    <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => navigate(`/app/candidates`)}>
+                      Client
+                    </MenuItem>   
+                  :
+                    <MenuItem fontWeight="600" color="blueGray.900" as="button" onClick={() => navigate(`/admin`)}>
+                      Admin
+                    </MenuItem>    
                 :
                 <></>                    
                 }

@@ -24,12 +24,14 @@ import {
   FormHelperText,
   AspectRatioBox,
   useToast,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter
+  PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverHeader,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverBody,
+  PopoverFooter
 } from "@chakra-ui/core"
 import Layout from "../Layout/index"
 import firebase from "gatsby-plugin-firebase"
@@ -155,7 +157,7 @@ const InputGroup = ({
         borderRadius="6px"
         borderColor="#D9E2EC"
         fontWeight="600"
-        id="fname"
+        id={field}
         placeholder={placeholder}
       />
     </FormControl>
@@ -172,13 +174,14 @@ const CandidateDrawer = ({
   index,
   toast,
   isDeleting,
+  isUpdating,
 }) => {
   let photoForm = new FormData()
 
   const [activeField, setActiveField] = React.useState("")
   const profilePictureInputRef = React.useRef(null)
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState()
-  const cancelDeleteDialogRef = React.useRef(null)
+  const [deleteConfirmPopoverOpen, setDeleteConfirmPopoverOpen] = React.useState(false)
+  const [newPhoto, setNewPhoto] = React.useState(false)
 
   const [drawerState, setDrawerState] = React.useState({
     first: candidate?.first,
@@ -188,12 +191,14 @@ const CandidateDrawer = ({
     email: candidate?.email,
     instagram: candidate?.instagram,
     snapchat: candidate?.snapchat,
-    twitter: candidate?.twitter,
+    facebook: candidate?.facebook,
     bio: candidate?.bio,
     videoURL: candidate?.videoURL,
     photoURL: candidate?.photoURL,
     photoFileObject: null,
   })
+
+  const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL']
 
   useEffect(() => {
     console.log("effect")
@@ -205,7 +210,7 @@ const CandidateDrawer = ({
       email: candidate.email,
       instagram: candidate.instagram,
       snapchat: candidate.snapchat,
-      twitter: candidate.twitter,
+      facebook: candidate.facebook,
       bio: candidate.bio,
       videoURL: candidate.videoURL,
       photoURL: candidate.photoURL,
@@ -239,278 +244,627 @@ const CandidateDrawer = ({
       photoFileObject: file,
       photoURL: URL.createObjectURL(file),
     })
+    setNewPhoto(true)
   }
 
-  const ConfirmDeleteDialog = () => {
-    return (
-      <AlertDialog
-        isOpen={confirmDeleteOpen}
-        leastDestructiveRef={cancelDeleteDialogRef}
-        onClose={() => setConfirmDeleteOpen(false)}
-      >
-        <AlertDialogContent borderRadius="12px">
-          <AlertDialogHeader fontWeight="bold" color="blue.900" fontSize="lg">
-            Delete Candidate
-          </AlertDialogHeader>
-          <AlertDialogBody fontWeight="600" color="blueGray.700">
-            Are you sure you want to delete {drawerState.first} {drawerState.last}? This action can't be undone afterwards.
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button px="18px" py="10px" borderRadius="8px" ref={cancelDeleteDialogRef} onClick={() => setConfirmDeleteOpen(false)}>
-              Cancel
-            </Button>
-            <Button px="18px" py="10px" borderRadius="8px" variantColor="red" onClick={() => {setConfirmDeleteOpen(false); deleteCandidate(position, index, toast)}} ml="18px">
-              Delete
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    )
+  const validateFields = () => {
+    for (var i = 0; i < isRequired.length; i++) {
+      if (!drawerState[isRequired[i]]) {
+        return false
+      }
+    }
+    return true
   }
 
   return (
-    <>
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={() => {
-          onClose()
-        }}
-        size={IsDesktop() ? "lg" : "full"}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader color="blue.900" borderBottomWidth="1px">
-            Editing: {candidate.first} {candidate.last}
-          </DrawerHeader>
-          <DrawerBody overflowY="scroll">
-            <SimpleGrid
-              spacingX="36px"
-              spacingY="22px"
-              columns={IsDesktop() ? 2 : 1}
-            >
-              <InputGroup
-                onFocus={onFocus}
-                onChange={onChange}
-                field="first"
-                required
-                placeholder="First name"
-                value={drawerState.first}
-                label="First Name"
-              />
-              <InputGroup
-                onFocus={onFocus}
-                onChange={onChange}
-                field="last"
-                required
-                placeholder="Last name"
-                value={drawerState.last}
-                label="Last Name"
-              />
-              <FormControl isRequired>
-                <FormLabel
-                  fontSize="16px"
-                  fontWeight="600"
-                  color="blue.900"
-                  mb="4px"
-                >
-                  Grade
-                </FormLabel>
-                <Select
-                  onChange={onChange}
-                  onFocus={() => onFocus("grade")}
-                  value={drawerState.grade}
-                  fontWeight="600"
-                  color="blueGray.700"
-                >
-                  <option value={9}>9</option>
-                  <option value={10}>10</option>
-                  <option value={11}>11</option>
-                </Select>
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel
-                  fontSize="16px"
-                  fontWeight="600"
-                  color="blue.900"
-                  mb="4px"
-                >
-                  Position
-                </FormLabel>
-                <Select
-                  onChange={onChange}
-                  onFocus={() => onFocus("position")}
-                  value={drawerState.position}
-                  fontWeight="600"
-                  color="blueGray.700"
-                >
-                  <option value="president">President</option>
-                  <option value="vice-president">Vice President</option>
-                  <option value="secretary">Secretary</option>
-                  <option value="treasurer">Treasurer</option>
-                  <option value="social-convenor">Social Convenor</option>
-                  <option value="communications-manager">
-                    Communications Manager
-                  </option>
-                  <option value="design-manager">Design Manager</option>
-                </Select>
-              </FormControl>
-              <InputGroup
-                onFocus={onFocus}
-                onChange={onChange}
-                field="email"
-                required
-                placeholder="Email"
-                value={drawerState.email}
-                label="Email"
-              />
-              <InputGroup
-                onFocus={onFocus}
-                onChange={onChange}
-                field="instagram"
-                placeholder="Instagram"
-                value={drawerState.instagram}
-                label="Instagram"
-              />
-              <InputGroup
-                onFocus={onFocus}
-                onChange={onChange}
-                field="snapchat"
-                placeholder="Snapchat"
-                value={drawerState.snapchat}
-                label="Snapchat"
-              />
-              <InputGroup
-                onFocus={onFocus}
-                onChange={onChange}
-                field="twitter"
-                placeholder="Twitter"
-                value={drawerState.twitter}
-                label="Twitter"
-              />
-            </SimpleGrid>
-            <FormControl isRequired my="22px">
+    <Drawer
+      isOpen={isOpen}
+      placement="right"
+      onClose={() => {
+        onClose()
+      }}
+      size={IsDesktop() ? "lg" : "full"}
+    >
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader color="blue.900" borderBottomWidth="1px">
+          Editing: {candidate.first} {candidate.last}
+        </DrawerHeader>
+        <DrawerBody overflowY="scroll">
+          <SimpleGrid
+            spacingX="36px"
+            spacingY="22px"
+            columns={IsDesktop() ? 2 : 1}
+          >
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="first"
+              required
+              placeholder="First name"
+              value={drawerState.first}
+              label="First Name"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="last"
+              required
+              placeholder="Last name"
+              value={drawerState.last}
+              label="Last Name"
+            />
+            <FormControl isRequired>
               <FormLabel
                 fontSize="16px"
                 fontWeight="600"
                 color="blue.900"
                 mb="4px"
               >
-                Bio
+                Grade
               </FormLabel>
-              <Textarea
-                minHeight="100px"
+              <Select
+                onChange={onChange}
+                onFocus={() => onFocus("grade")}
+                value={drawerState.grade}
                 fontWeight="600"
                 color="blueGray.700"
-                borderRadius="8px"
-                value={drawerState.bio}
-                onChange={onChange}
-                onFocus={() => onFocus("bio")}
-              />
-              <FormHelperText fontWeight="600" color="blueGray.400">
-                {drawerState.bio?.length}/240
-              </FormHelperText>
+              >
+                <option value={9}>9</option>
+                <option value={10}>10</option>
+                <option value={11}>11</option>
+              </Select>
             </FormControl>
-            <SimpleGrid
-              spacingX="36px"
-              spacingY="22px"
-              columns={IsDesktop() ? 2 : 1}
-            >
-              <InputGroup
-                onFocus={onFocus}
+            <FormControl isRequired>
+              <FormLabel
+                fontSize="16px"
+                fontWeight="600"
+                color="blue.900"
+                mb="4px"
+              >
+                Position
+              </FormLabel>
+              <Select
                 onChange={onChange}
-                field="videoURL"
-                required
-                placeholder="Video URL"
-                value={drawerState.videoURL}
-                label="Video URL"
-              />
-              <FormControl display="flex" flexDirection="column">
-                <FormLabel
-                  fontSize="16px"
-                  fontWeight="600"
-                  color="blue.900"
-                  mb="4px"
-                >
-                  Profile Picture
-                </FormLabel>
-                {drawerState.photoURL ? (
-                  <>
-                    <AspectRatioBox mb="12px" ratio={1 / 1}>
-                      <Image objectFit="cover" src={drawerState.photoURL} />
-                    </AspectRatioBox>
-                    <input
-                      onChange={photoOnChange}
-                      type="file"
-                      id="profilePictureUpload"
-                      ref={profilePictureInputRef}
-                      style={{ display: "none" }}
-                    />
-                    <Button
-                      color="blue.900"
-                      onClick={uploadProfilePhoto}
-                      borderRadius="8px"
-                    >
-                      Change
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <input
-                      onChange={photoOnChange}
-                      type="file"
-                      id="profilePictureUpload"
-                      ref={profilePictureInputRef}
-                      style={{ display: "none" }}
-                    />
-                    <Button
-                      color="blue.900"
-                      borderRadius="8px"
-                      onClick={uploadProfilePhoto}
-                    >
-                      Upload
-                    </Button>
-                  </>
-                )}
-              </FormControl>
-            </SimpleGrid>
-          </DrawerBody>
-          <DrawerFooter borderTopWidth="1px">
-            <Button
-              onClick={onClose}
+                onFocus={() => onFocus("position")}
+                value={drawerState.position}
+                fontWeight="600"
+                color="blueGray.700"
+              >
+                <option value="president">President</option>
+                <option value="vice-president">Vice President</option>
+                <option value="secretary">Secretary</option>
+                <option value="treasurer">Treasurer</option>
+                <option value="social-convenor">Social Convenor</option>
+                <option value="communications-manager">
+                  Communications Manager
+                </option>
+                <option value="design-manager">Design Manager</option>
+              </Select>
+            </FormControl>
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="email"
+              required
+              placeholder="Email"
+              value={drawerState.email}
+              label="Email"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="instagram"
+              placeholder="Instagram"
+              value={drawerState.instagram}
+              label="Instagram"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="snapchat"
+              placeholder="Snapchat"
+              value={drawerState.snapchat}
+              label="Snapchat"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="facebook"
+              placeholder="Facebook"
+              value={drawerState.facebook}
+              label="Facebook"
+            />
+          </SimpleGrid>
+          <FormControl isRequired my="22px">
+            <FormLabel
+              fontSize="16px"
+              fontWeight="600"
               color="blue.900"
-              px="18px"
-              py="10px"
-              mr="18px"
+              mb="4px"
             >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => setConfirmDeleteOpen(true)}
-              px="18px"
-              py="10px"
+              Bio
+            </FormLabel>
+            <Textarea
+              minHeight="100px"
+              fontWeight="600"
+              color="blueGray.700"
               borderRadius="8px"
-              variantColor="red"
-              mr="18px"
-              isLoading={isDeleting}
-            >
-              Delete
-            </Button>
-            <Button
-              onClick={() => updateCandidate(position, index, toast)}
-              px="18px"
-              py="10px"
+              value={drawerState.bio}
+              onChange={onChange}
+              onFocus={() => onFocus("bio")}
+            />
+            <FormHelperText fontWeight="600" color="blueGray.400">
+              {drawerState.bio?.length}/240
+            </FormHelperText>
+          </FormControl>
+          <SimpleGrid
+            spacingX="36px"
+            spacingY="22px"
+            columns={IsDesktop() ? 2 : 1}
+          >
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="videoURL"
+              required
+              placeholder="Video URL"
+              value={drawerState.videoURL}
+              label="Video URL"
+            />
+            <FormControl display="flex" flexDirection="column">
+              <FormLabel
+                fontSize="16px"
+                fontWeight="600"
+                color="blue.900"
+                mb="4px"
+              >
+                Profile Picture
+              </FormLabel>
+              {drawerState.photoURL ? (
+                <>
+                  <AspectRatioBox mb="12px" ratio={1 / 1}>
+                    <Image objectFit="cover" src={drawerState.photoURL} />
+                  </AspectRatioBox>
+                  <input
+                    onChange={photoOnChange}
+                    type="file"
+                    id="profilePictureUpload"
+                    ref={profilePictureInputRef}
+                    style={{ display: "none" }}
+                  />
+                  <Button
+                    color="blue.900"
+                    onClick={uploadProfilePhoto}
+                    borderRadius="8px"
+                  >
+                    Change
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <input
+                    onChange={photoOnChange}
+                    type="file"
+                    id="profilePictureUpload"
+                    ref={profilePictureInputRef}
+                    style={{ display: "none" }}
+                  />
+                  <Button
+                    color="blue.900"
+                    borderRadius="8px"
+                    onClick={uploadProfilePhoto}
+                  >
+                    Upload
+                  </Button>
+                </>
+              )}
+            </FormControl>
+          </SimpleGrid>
+        </DrawerBody>
+        <DrawerFooter borderTopWidth="1px">
+          <Button
+            onClick={onClose}
+            color="blue.900"
+            px="18px"
+            py="10px"
+            mr="18px"
+          >
+            Cancel
+          </Button>
+          <Popover
+            isOpen={deleteConfirmPopoverOpen}
+            onClose={() => setDeleteConfirmPopoverOpen(false)}
+            closeOnBlur={true}
+          >
+            <PopoverTrigger>
+              <Button
+                px="18px"
+                py="10px"
+                borderRadius="8px"
+                variantColor="red"
+                mr="18px"
+                isLoading={isDeleting}
+                onClick={() => setDeleteConfirmPopoverOpen(true)}
+              >
+                Delete
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent 
               borderRadius="8px"
-              variantColor="teal"
             >
-              Save
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-      <ConfirmDeleteDialog/>
-    </>
+              <PopoverHeader border="0" fontWeight="bold" color="blue.900">
+                Confirm Deletion
+              </PopoverHeader>
+              <PopoverArrow />
+              <PopoverCloseButton />
+              <PopoverBody>
+                Are you sure you want to delete {drawerState.first} {drawerState.last}? This action can't be undone.
+              </PopoverBody>
+              <PopoverFooter border="0">
+                <Button
+                  px="18px"
+                  py="10px"
+                  borderRadius="8px"  
+                  mr="18px"      
+                  onClick={() => setDeleteConfirmPopoverOpen(false)}        
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  px="18px"
+                  py="10px"
+                  borderRadius="8px"                    
+                  variantColor="red"
+                  onClick={() => deleteCandidate(position, index, toast)}
+                >
+                  Delete
+                </Button>
+              </PopoverFooter>
+            </PopoverContent>
+          </Popover>
+          <Button
+            onClick={() => {
+              if (validateFields()) {
+                updateCandidate(position, index, toast, drawerState, newPhoto)
+              } else {
+                toast({
+                  title: 'Missing fields',
+                  description: 'Please fill out all the required fields',
+                  status: 'error',
+                  duration: '7500',
+                  isClosable: true
+                })
+              }
+            }}
+            px="18px"
+            py="10px"
+            borderRadius="8px"
+            variantColor="teal"
+            isLoading={isUpdating}
+          >
+            Save
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+const AddCandidateDrawer = ({
+  isOpen,
+  onClose,
+  addCandidate,
+  position,
+  index,
+  toast,
+  isDeleting,
+  isUpdating,
+}) => {
+  let photoForm = new FormData()
+
+  const [activeField, setActiveField] = React.useState("")
+  const profilePictureInputRef = React.useRef(null)
+  const [newPhoto, setNewPhoto] = React.useState(false)
+
+  const [drawerState, setDrawerState] = React.useState({
+    first: undefined,
+    last: undefined,
+    grade: undefined,
+    position: undefined,
+    email: undefined,
+    instagram: undefined,
+    snapchat: undefined,
+    twitter: undefined,
+    bio: undefined,
+    videoURL: undefined,
+    photoURL: undefined,
+    photoFileObject: null,
+  })
+
+  const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL']
+
+  const onFocus = field => {
+    setActiveField(field)
+  }
+
+  const onChange = event => {
+    setDrawerState({
+      ...drawerState,
+      [activeField]: event.target.value,
+    })
+  }
+
+  const uploadProfilePhoto = () => {
+    profilePictureInputRef.current.click()
+  }
+
+  const photoOnChange = e => {
+    e.stopPropagation()
+    e.preventDefault()
+    let file = e.target.files[0]
+    photoForm.append("file", file)
+    console.log(file)
+    setDrawerState({
+      ...drawerState,
+      photoFileObject: file,
+      photoURL: URL.createObjectURL(file),
+    })
+    setNewPhoto(true)
+  }
+
+  const validateFields = () => {
+    for (var i = 0; i < isRequired.length; i++) {
+      if (!drawerState[isRequired[i]]) {
+        return false
+      }
+    }
+    return true
+  }
+
+  return (
+    <Drawer
+      isOpen={isOpen}
+      placement="right"
+      onClose={() => {
+        onClose()
+      }}
+      size={IsDesktop() ? "lg" : "full"}
+    >
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader color="blue.900" borderBottomWidth="1px">
+          Add Candidate
+        </DrawerHeader>
+        <DrawerBody overflowY="scroll">
+          <SimpleGrid
+            spacingX="36px"
+            spacingY="22px"
+            columns={IsDesktop() ? 2 : 1}
+          >
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="first"
+              required
+              placeholder="First name"
+              value={drawerState.first}
+              label="First Name"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="last"
+              required
+              placeholder="Last name"
+              value={drawerState.last}
+              label="Last Name"
+            />
+            <FormControl isRequired>
+              <FormLabel
+                fontSize="16px"
+                fontWeight="600"
+                color="blue.900"
+                mb="4px"
+              >
+                Grade
+              </FormLabel>
+              <Select
+                onChange={onChange}
+                onFocus={() => onFocus("grade")}
+                value={drawerState.grade}
+                fontWeight="600"
+                color="blueGray.700"
+              >
+                <option value={9}>9</option>
+                <option value={10}>10</option>
+                <option value={11}>11</option>
+              </Select>
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel
+                fontSize="16px"
+                fontWeight="600"
+                color="blue.900"
+                mb="4px"
+              >
+                Position
+              </FormLabel>
+              <Select
+                onChange={onChange}
+                onFocus={() => onFocus("position")}
+                value={drawerState.position}
+                fontWeight="600"
+                color="blueGray.700"
+              >
+                <option value="president">President</option>
+                <option value="vice-president">Vice President</option>
+                <option value="secretary">Secretary</option>
+                <option value="treasurer">Treasurer</option>
+                <option value="social-convenor">Social Convenor</option>
+                <option value="communications-manager">
+                  Communications Manager
+                </option>
+                <option value="design-manager">Design Manager</option>
+              </Select>
+            </FormControl>
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="email"
+              required
+              placeholder="Email"
+              value={drawerState.email}
+              label="Email"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="instagram"
+              placeholder="Instagram"
+              value={drawerState.instagram}
+              label="Instagram"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="snapchat"
+              placeholder="Snapchat"
+              value={drawerState.snapchat}
+              label="Snapchat"
+            />
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="twitter"
+              placeholder="Twitter"
+              value={drawerState.twitter}
+              label="Twitter"
+            />
+          </SimpleGrid>
+          <FormControl isRequired my="22px">
+            <FormLabel
+              fontSize="16px"
+              fontWeight="600"
+              color="blue.900"
+              mb="4px"
+            >
+              Bio
+            </FormLabel>
+            <Textarea
+              minHeight="100px"
+              fontWeight="600"
+              color="blueGray.700"
+              borderRadius="8px"
+              value={drawerState.bio}
+              onChange={onChange}
+              onFocus={() => onFocus("bio")}
+            />
+            <FormHelperText fontWeight="600" color="blueGray.400">
+              {drawerState.bio?.length}/240
+            </FormHelperText>
+          </FormControl>
+          <SimpleGrid
+            spacingX="36px"
+            spacingY="22px"
+            columns={IsDesktop() ? 2 : 1}
+          >
+            <InputGroup
+              onFocus={onFocus}
+              onChange={onChange}
+              field="videoURL"
+              required
+              placeholder="Video URL"
+              value={drawerState.videoURL}
+              label="Video URL"
+            />
+            <FormControl display="flex" flexDirection="column">
+              <FormLabel
+                fontSize="16px"
+                fontWeight="600"
+                color="blue.900"
+                mb="4px"
+              >
+                Profile Picture
+              </FormLabel>
+              {drawerState.photoURL ? (
+                <>
+                  <AspectRatioBox mb="12px" ratio={1 / 1}>
+                    <Image objectFit="cover" src={drawerState.photoURL} />
+                  </AspectRatioBox>
+                  <input
+                    onChange={photoOnChange}
+                    type="file"
+                    id="profilePictureUpload"
+                    ref={profilePictureInputRef}
+                    style={{ display: "none" }}
+                  />
+                  <Button
+                    color="blue.900"
+                    onClick={uploadProfilePhoto}
+                    borderRadius="8px"
+                  >
+                    Change
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <input
+                    onChange={photoOnChange}
+                    type="file"
+                    id="profilePictureUpload"
+                    ref={profilePictureInputRef}
+                    style={{ display: "none" }}
+                  />
+                  <Button
+                    color="blue.900"
+                    borderRadius="8px"
+                    onClick={uploadProfilePhoto}
+                  >
+                    Upload
+                  </Button>
+                </>
+              )}
+            </FormControl>
+          </SimpleGrid>
+        </DrawerBody>
+        <DrawerFooter borderTopWidth="1px">
+          <Button
+            onClick={onClose}
+            color="blue.900"
+            px="18px"
+            py="10px"
+            mr="18px"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (validateFields()) {
+                addCandidate(position, index, toast, drawerState, newPhoto)
+              } else {
+                toast({
+                  title: 'Missing fields',
+                  description: 'Please fill out all the required fields',
+                  status: 'error',
+                  duration: '7500',
+                  isClosable: true
+                })
+              }
+            }}
+            px="18px"
+            py="10px"
+            borderRadius="8px"
+            variantColor="teal"
+            isLoading={isUpdating}
+          >
+            Add
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
@@ -524,6 +878,7 @@ export default class Candidates extends Component {
       activePosition: "president",
       activeIndex: 0,
       isDeleting: false,
+      isUpdating: false,
       positions: [
         // slightly janky - but for now, it works. This will be replaced with a server-side solution later
         { display: "President", raw: "president" },
@@ -597,6 +952,7 @@ export default class Candidates extends Component {
             <ToastProvider>
               <ToastContext.Consumer>
                 {toast => (
+                  <>
                   <CandidateDrawer
                     deleteCandidate={this.deleteCandidate}
                     updateCandidate={this.updateCandidate}
@@ -619,7 +975,12 @@ export default class Candidates extends Component {
                     onClose={this.closeDrawer}
                     toast={toast}
                     isDeleting={this.state.isDeleting}
+                    isUpdating={this.state.isUpdating}
                   />
+                  <AddCandidateDrawer
+                    isOpen={this.state.isAddCandidateDrawerOpen}
+                  />
+                  </>
                 )}
               </ToastContext.Consumer>
             </ToastProvider>
@@ -671,6 +1032,91 @@ export default class Candidates extends Component {
          this.closeDrawer()
        })
      })
+  }
+
+  updateCandidate = async (initialPosition, index, toast, drawerCandidate, newPhoto) => {
+    this.setState({
+      isUpdating: true
+    })
+    let position = drawerCandidate.position
+    console.log(initialPosition === position)
+    let candidateName = `${this.state.candidates[initialPosition][index].first} ${this.state.candidates[initialPosition][index].last}`
+    let candidateID = `${this.state.candidates[initialPosition][index].first}-${this.state.candidates[initialPosition][index].last}`.toLowerCase()
+    let photoURL = null
+    if (newPhoto) {
+      console.log(":asdfffffffff")
+      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.first, drawerCandidate.last, drawerCandidate.email)
+    }
+    
+    let updateData = {
+      first: drawerCandidate.first,
+      last: drawerCandidate.last,
+      bio: drawerCandidate.bio,
+      displayPosition: drawerCandidate.position.replace("-", " ").replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
+      email: drawerCandidate.email,
+      facebook: drawerCandidate.facebook,
+      instagram: drawerCandidate.instagram,
+      snapchat: drawerCandidate.snapchat,
+      photoURL: newPhoto ? photoURL : drawerCandidate.photoURL,
+      grade: drawerCandidate.grade,
+      position: firebase.firestore().collection("positions").doc(drawerCandidate.position),
+      videoURL: drawerCandidate.videoURL
+    }
+
+    for (var field in updateData) {
+      if (updateData[field] == undefined) {
+        delete updateData[field]
+      }
+    }
+
+    console.log(updateData)
+    firebase.firestore().collection("candidates").doc(candidateID).update(updateData).then(() => {
+      if (initialPosition === position) {
+        this.setState(prevState => {
+          prevState.candidates[position][index] = updateData
+          return {
+          isUpdating: false,
+          candidates: {
+            ...prevState.candidates,
+            [position]: prevState.candidates[position]
+          }
+        }})
+      } else {
+        this.setState(prevState => {
+          prevState.candidates[initialPosition].splice(index, 1)
+          prevState.candidates[position].push(updateData)
+          return {
+          isUpdating: false,
+          candidates: {
+            ...prevState.candidates,
+            [initialPosition]: prevState.candidates[initialPosition].length > 0 ? prevState.candidates[initialPosition] : [],
+            [position]: prevState.candidates[position]
+          }
+        }})
+      }
+      this.closeDrawer()
+      toast({
+        title: "Candidate Updated",
+        description: `Updated ${candidateName}'s profile`,
+        status: 'success',
+        duration: 7500,
+        isClosable: true
+      })
+    })
+  }
+
+  // returns a firebase storage ref to the photo
+  uploadCandidatePhoto = async (photoObj, first, last, email) => {
+    let refName = `candidates/${first}-${last}-${email}`
+    let childName = `${first}-${last}-${email}`
+    try {
+      const uploadTask = await firebase.storage().ref(refName).put(photoObj);
+      const photoURL = await uploadTask.ref.getDownloadURL()
+      return photoURL
+    } catch (err) {
+      throw new Error(err)
+    }
+
   }
 
   getCandidates = async () => {
