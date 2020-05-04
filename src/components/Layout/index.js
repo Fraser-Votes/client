@@ -39,7 +39,7 @@ const Layout = ({ children }) => {
             h="100%"
             w="100%"
             bg="blueGray.50"
-            px="24px"
+            px="32px"
             maxHeight="100vh"
             overflowY="auto"
           >

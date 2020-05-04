@@ -383,7 +383,7 @@ export default class Dashboard extends Component {
           })
         })
       })
-    fetch(`https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=7`, {
+    fetch(`https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=8`, {
       "headers": {
         "accept": "*/*",
         "accept-language": "en-CA,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -404,8 +404,10 @@ export default class Dashboard extends Component {
       let counts = []
       let referrers = []
       for (var referrer in data) {
-        counts.push(data[referrer].count)
-        referrers.push(data[referrer].name)
+        if (data[referrer].name !== "auth.fraservotes.com") {
+          counts.push(data[referrer].count)
+          referrers.push(data[referrer].name)
+        }
       }
       this.setState({
         referrerNames: referrers,
