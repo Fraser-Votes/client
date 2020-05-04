@@ -318,7 +318,6 @@ export default class Dashboard extends Component {
     )
       .then(res => res.json())
       .then(data => {
-        console.log(data)
         this.setState({
           labels: data.labels,
           plot: data.plot,
@@ -345,7 +344,6 @@ export default class Dashboard extends Component {
     })
     .then(res => res.json())  
     .then(data => {
-        console.log(data)
         data.top_stats[1].name = "new users"
         this.setState(prevState => ({
             stats: [...prevState.stats, data.top_stats[1]],
@@ -373,7 +371,6 @@ export default class Dashboard extends Component {
     )
       .then(res => res.json())
       .then(data => {
-        console.log(data)
         data.top_stats[1].name = "votes"
         this.setState(prevState => ({
           stats: [...prevState.stats, data.top_stats[1]],
@@ -400,7 +397,6 @@ export default class Dashboard extends Component {
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data)
       let counts = []
       let referrers = []
       for (var referrer in data) {
@@ -433,7 +429,6 @@ export default class Dashboard extends Component {
     })
     .then(res => res.json())
     .then(data => {
-      console.log(data)
       let counts = []
       let pages = []
       for (var page in data) {
@@ -472,7 +467,6 @@ export default class Dashboard extends Component {
     )
       .then(res => res.json())
       .then(data => {
-        console.log(data)
         this.setState({
           audienceLabels: data.labels,
           audiencePlot: data.plot,
