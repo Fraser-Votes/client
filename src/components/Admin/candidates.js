@@ -145,7 +145,7 @@ const InputGroup = ({
   required,
   field,
   onFocus,
-  disabled
+  disabled,
 }) => {
   return (
     <FormControl isRequired={required}>
@@ -415,9 +415,10 @@ const CandidateDrawer = ({
               onChange={onChange}
               field="videoURL"
               required
-              placeholder="Video URL"
+              placeholder="Youtube Link"
+              helper="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               value={drawerState.videoURL}
-              label="Video URL"
+              label="Youtube Link"
             />
             <FormControl display="flex" flexDirection="column">
               <FormLabel
@@ -797,9 +798,10 @@ const AddCandidateDrawer = ({
               onChange={onChange}
               field="videoURL"
               required
-              placeholder="Video URL"
+              helper="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+              placeholder="Youtube Link"
               value={drawerState.videoURL}
-              label="Video URL"
+              label="Youtube Link"
             />
             <FormControl display="flex" flexDirection="column">
               <FormLabel
