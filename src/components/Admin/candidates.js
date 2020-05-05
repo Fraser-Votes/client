@@ -1196,7 +1196,7 @@ export default class Candidates extends Component {
 
   // returns a firebase storage ref to the photo
   uploadCandidatePhoto = async (photoObj, id) => {
-    let refName = `candidates/${id}`
+    let refName = `candidates/${id ? id : Date.now()}`
     let childName = id
     try {
       const uploadTask = await firebase.storage().ref(refName).put(photoObj);
