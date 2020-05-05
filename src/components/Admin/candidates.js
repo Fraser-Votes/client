@@ -45,7 +45,7 @@ function ToastProvider({ children }) {
   return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>
 }
 
-const Header = ({ title, description }) => {
+const Header = ({ title, openDrawer }) => {
   return (
     <Box
       mt={IsMobile() ? "46px" : "12px"}
@@ -67,6 +67,7 @@ const Header = ({ title, description }) => {
         fontSize="14px"
         fontWeight="600"
         variantColor="blue"
+        onClick={openDrawer}
       >
         Add Candidate
       </Button>
@@ -561,11 +562,8 @@ const AddCandidateDrawer = ({
   isOpen,
   onClose,
   addCandidate,
-  position,
-  index,
   toast,
-  isDeleting,
-  isUpdating,
+  isAdding
 }) => {
   let photoForm = new FormData()
 
@@ -576,19 +574,37 @@ const AddCandidateDrawer = ({
   const [drawerState, setDrawerState] = React.useState({
     first: undefined,
     last: undefined,
-    grade: undefined,
-    position: undefined,
+    grade: 9,
+    position: "president",
     email: undefined,
     instagram: undefined,
     snapchat: undefined,
-    twitter: undefined,
+    facebook: undefined,
     bio: undefined,
     videoURL: undefined,
     photoURL: undefined,
     photoFileObject: null,
   })
+  
 
   const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL']
+
+  useEffect(() => {
+    setDrawerState({
+      first: undefined,
+      last: undefined,
+      grade: 9,
+      position: "president",
+      email: undefined,
+      instagram: undefined,
+      snapchat: undefined,
+      facebook: undefined,
+      bio: undefined,
+      videoURL: undefined,
+      photoURL: undefined,
+      photoFileObject: null,
+    })
+  }, [isOpen])
 
   const onFocus = field => {
     setActiveField(field)
@@ -743,10 +759,10 @@ const AddCandidateDrawer = ({
             <InputGroup
               onFocus={onFocus}
               onChange={onChange}
-              field="twitter"
-              placeholder="Twitter"
-              value={drawerState.twitter}
-              label="Twitter"
+              field="facebook"
+              placeholder="Facebook"
+              value={drawerState.facebook}
+              label="Facebook"
             />
           </SimpleGrid>
           <FormControl isRequired my="22px">
@@ -848,7 +864,7 @@ const AddCandidateDrawer = ({
           <Button
             onClick={() => {
               if (validateFields()) {
-                addCandidate(position, index, toast, drawerState, newPhoto)
+                addCandidate(drawerState, toast, newPhoto)
               } else {
                 toast({
                   title: 'Missing fields',
@@ -863,7 +879,7 @@ const AddCandidateDrawer = ({
             py="10px"
             borderRadius="8px"
             variantColor="teal"
-            isLoading={isUpdating}
+            isLoading={isAdding}
           >
             Add
           </Button>
@@ -884,6 +900,8 @@ export default class Candidates extends Component {
       activeIndex: 0,
       isDeleting: false,
       isUpdating: false,
+      isAddCandidateDrawerOpen: false,
+      isAdding: false,
       positions: [
         // slightly janky - but for now, it works. This will be replaced with a server-side solution later
         { display: "President", raw: "president" },
@@ -904,7 +922,7 @@ export default class Candidates extends Component {
   render() {
     return (
       <Layout>
-        <Header admin={true} title="Candidates" />
+        <Header admin={true} title="Candidates" openDrawer={() => this.setState({isAddCandidateDrawerOpen: true})}/>
         <AdminSEO title="Candidates"/>
         {this.state.dataLoading ? (
           <>
@@ -985,6 +1003,10 @@ export default class Candidates extends Component {
                   />
                   <AddCandidateDrawer
                     isOpen={this.state.isAddCandidateDrawerOpen}
+                    addCandidate={this.addCandidate}
+                    onClose={this.closeAddCandidateDrawer}
+                    toast={toast}
+                    isAdding={this.state.isAdding}
                   />
                   </>
                 )}
@@ -999,6 +1021,12 @@ export default class Candidates extends Component {
   closeDrawer = () => {
     this.setState({
       isDrawerOpen: false,
+    })
+  }
+
+  closeAddCandidateDrawer = () => {
+    this.setState({
+      isAddCandidateDrawerOpen: false,
     })
   }
 
@@ -1045,12 +1073,10 @@ export default class Candidates extends Component {
       isUpdating: true
     })
     let position = drawerCandidate.position
-    console.log(initialPosition === position)
     let candidateName = `${this.state.candidates[initialPosition][index].first} ${this.state.candidates[initialPosition][index].last}`
     let candidateID = drawerCandidate.id
     let photoURL = null
     if (newPhoto) {
-      console.log(":asdfffffffff")
       photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.id)
     }
     
@@ -1076,7 +1102,6 @@ export default class Candidates extends Component {
       }
     }
 
-    console.log(updateData)
     firebase.firestore().collection("candidates").doc(candidateID).update(updateData).then(() => {
       if (initialPosition === position) {
         this.setState(prevState => {
@@ -1110,6 +1135,63 @@ export default class Candidates extends Component {
         isClosable: true
       })
     })
+  }
+
+  addCandidate = async (drawerCandidate, toast, newPhoto) => {
+    this.setState({
+      isAdding: true
+    })
+    let position = drawerCandidate.position
+    let candidateName = `${drawerCandidate.first} ${drawerCandidate.last}`
+    let candidateID = drawerCandidate.id
+    let photoURL = null
+    if (newPhoto) {
+      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.id)
+    }
+    
+    let updateData = {
+      first: drawerCandidate.first,
+      last: drawerCandidate.last,
+      bio: drawerCandidate.bio,
+      displayPosition: drawerCandidate.position.replace("-", " ").replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
+      email: drawerCandidate.email,
+      facebook: drawerCandidate.facebook,
+      instagram: drawerCandidate.instagram,
+      snapchat: drawerCandidate.snapchat,
+      photoURL: newPhoto ? photoURL : undefined,
+      grade: drawerCandidate.grade,
+      position: firebase.firestore().collection("positions").doc(drawerCandidate.position),
+      videoURL: drawerCandidate.videoURL,
+      id: drawerCandidate.id
+    }
+
+    for (var field in updateData) {
+      if (updateData[field] == undefined) {
+        delete updateData[field]
+      }
+    }
+
+    firebase.firestore().collection("candidates").add(updateData).then((docRef) => {
+      this.setState(prevState => {
+        prevState.candidates[drawerCandidate.position].push(Object.assign(updateData, {id: docRef.id}))
+        return {
+            candidates: {
+              ...prevState.candidates
+            },
+            isAdding: false,
+            isAddCandidateDrawerOpen: false
+        }
+      }, () => {
+        toast({
+          title: "Candidate Added",
+          description: `Added ${candidateName}`,
+          status: "success",
+          duration: 7500,
+          isClosable: true
+        })
+      })
+    })
+
   }
 
   // returns a firebase storage ref to the photo
