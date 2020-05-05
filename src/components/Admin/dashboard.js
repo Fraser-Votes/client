@@ -3,7 +3,7 @@ import Layout from "../Layout"
 import { Grid, Box, Text, Icon, Divider, Skeleton } from "@chakra-ui/core"
 import LiveUsersChart from "./Charting/LiveUsersChart"
 import AudienceChart from "./Charting/AudienceChart"
-import SEO from "../seo"
+import AdminSEO from "../adminSEO"
 import ReferrersChart from "./Charting/ReferrersChart"
 import TopPagesChart from "./Charting/TopPagesChart"
 
@@ -124,7 +124,7 @@ export default class Dashboard extends Component {
   render() {
     return (
       <Layout>
-        <SEO title="Dashboard" />
+        <AdminSEO title="Dashboard" />
         {this.state.loading1 ||
         this.state.loading2 ||
         this.state.loading3 ||

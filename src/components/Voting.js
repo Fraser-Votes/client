@@ -37,7 +37,7 @@ const CandidateRow = ({position, children}) => {
     )
 }
 
-const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection, votingClosed}) => {
+const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection, votingClosed, id}) => {
 
     let currSelect = false
     currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` ? currSelect = false : currSelect = true
@@ -59,13 +59,13 @@ const CandidateCard = ({first, last, position, photoURL, onChecked, isDisabled, 
                 fontSize="16px"
                 color="blueGray.700"
                 as="a"
-                href={`/app/candidates/${first.toLowerCase()}-${last.toLowerCase()}`}
+                href={`/app/candidates/${id}`}
             >
                 {first} {last}
             </Text>
             <Checkbox 
-                onChange={() => {onChecked(position, `${first.toLowerCase()}-${last.toLowerCase()}`, currSelect, first, last, photoURL)}}
-                isDisabled={isDisabled && currentSelection !== `${first.toLowerCase()}-${last.toLowerCase()}` || voted || votingClosed} 
+                onChange={() => {onChecked(position, id, currSelect, first, last, photoURL)}}
+                isDisabled={(isDisabled && currentSelection !== id) || voted || votingClosed} 
                 variantColor="teal" 
                 ml="auto" 
                 mr="12px" 
@@ -222,7 +222,7 @@ export default class Candidates extends Component {
                                 <>
                                 <CandidateRow position={position.display}>
                                     {this.state["candidates"][position.raw].map(candidate => {
-                                        return <CandidateCard onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} voted={this.state.voted} votingClosed={!this.state.votingOpen} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
+                                        return <CandidateCard id={candidate.id} onChecked={this.createVote} currentSelection={this.state.votes[position.raw].candidateID} isDisabled={this.state.votes[position.raw].selected} voted={this.state.voted} votingClosed={!this.state.votingOpen} photoURL={candidate.photoURL} first={candidate.first} last={candidate.last} position={position.raw}/>
                                     })}
                                 </CandidateRow>
                                 </>
@@ -447,7 +447,7 @@ export default class Candidates extends Component {
                 var positionDocRef = db.collection("positions").doc(position.id)
                 candidateRef.where("position", "==", positionDocRef).get().then(res => {
                     res.forEach(doc => {
-                        candidates[position.id].push(doc.data())
+                        candidates[position.id].push(Object.assign(doc.data(), {id: doc.id}))
                     })
                 }).catch(err => console.log(err))
             })

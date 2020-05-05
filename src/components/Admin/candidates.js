@@ -37,6 +37,7 @@ import Layout from "../Layout/index"
 import firebase from "gatsby-plugin-firebase"
 import { IsDesktop, IsMobile } from "../../utils/mediaQueries"
 import PlaceholderImage from "../../images/placeholder.jpg"
+import AdminSEO from "../adminSEO"
 
 const ToastContext = React.createContext(() => {})
 function ToastProvider({ children }) {
@@ -143,6 +144,7 @@ const InputGroup = ({
   required,
   field,
   onFocus,
+  disabled
 }) => {
   return (
     <FormControl isRequired={required}>
@@ -159,6 +161,7 @@ const InputGroup = ({
         fontWeight="600"
         id={field}
         placeholder={placeholder}
+        isDisabled={disabled}
       />
     </FormControl>
   )
@@ -196,6 +199,7 @@ const CandidateDrawer = ({
     videoURL: candidate?.videoURL,
     photoURL: candidate?.photoURL,
     photoFileObject: null,
+    id: candidate.id
   })
 
   const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL']
@@ -215,6 +219,7 @@ const CandidateDrawer = ({
       videoURL: candidate.videoURL,
       photoURL: candidate.photoURL,
       photoFileObject: null,
+      id: candidate.id
     })
   }, [candidate, isOpen])
 
@@ -900,6 +905,7 @@ export default class Candidates extends Component {
     return (
       <Layout>
         <Header admin={true} title="Candidates" />
+        <AdminSEO title="Candidates"/>
         {this.state.dataLoading ? (
           <>
             <Skeleton
@@ -1009,7 +1015,7 @@ export default class Candidates extends Component {
       isDeleting: true
     })
     let candidateName = `${this.state.candidates[position][index].first} ${this.state.candidates[position][index].last}`
-    let candidateID = `${this.state.candidates[position][index].first}-${this.state.candidates[position][index].last}`.toLowerCase()
+    let candidateID = this.state.candidates[position][index].id
      firebase.firestore().collection("candidates").doc(candidateID).delete()
      .then(() => {
       this.setState(prevState => {
@@ -1041,11 +1047,11 @@ export default class Candidates extends Component {
     let position = drawerCandidate.position
     console.log(initialPosition === position)
     let candidateName = `${this.state.candidates[initialPosition][index].first} ${this.state.candidates[initialPosition][index].last}`
-    let candidateID = `${this.state.candidates[initialPosition][index].first}-${this.state.candidates[initialPosition][index].last}`.toLowerCase()
+    let candidateID = drawerCandidate.id
     let photoURL = null
     if (newPhoto) {
       console.log(":asdfffffffff")
-      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.first, drawerCandidate.last, drawerCandidate.email)
+      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.id)
     }
     
     let updateData = {
@@ -1060,7 +1066,8 @@ export default class Candidates extends Component {
       photoURL: newPhoto ? photoURL : drawerCandidate.photoURL,
       grade: drawerCandidate.grade,
       position: firebase.firestore().collection("positions").doc(drawerCandidate.position),
-      videoURL: drawerCandidate.videoURL
+      videoURL: drawerCandidate.videoURL,
+      id: drawerCandidate.id
     }
 
     for (var field in updateData) {
@@ -1106,9 +1113,9 @@ export default class Candidates extends Component {
   }
 
   // returns a firebase storage ref to the photo
-  uploadCandidatePhoto = async (photoObj, first, last, email) => {
-    let refName = `candidates/${first}-${last}-${email}`
-    let childName = `${first}-${last}-${email}`
+  uploadCandidatePhoto = async (photoObj, id) => {
+    let refName = `candidates/${id}`
+    let childName = id
     try {
       const uploadTask = await firebase.storage().ref(refName).put(photoObj);
       const photoURL = await uploadTask.ref.getDownloadURL()
@@ -1135,9 +1142,9 @@ export default class Candidates extends Component {
             .get()
             .then(res => {
               res.forEach(doc => {
-                candidates[position.id].push(doc.data())
+                candidates[position.id].push(Object.assign(doc.data(), {id: doc.id}))
               })
-            })
+             })
             .catch(err => console.log(err))
         })
       })

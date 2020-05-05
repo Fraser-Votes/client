@@ -8,7 +8,7 @@ import { IsDesktop } from '../utils/mediaQueries'
 import SEO from './seo'
 import PlaceholderImage from "../images/placeholder.jpg"
 
-const CandidateCard = ({first, last, grade, photoURL}) => {
+const CandidateCard = ({first, last, grade, photoURL, id}) => {
     return (
         <Box 
         background="white" 
@@ -35,7 +35,7 @@ const CandidateCard = ({first, last, grade, photoURL}) => {
             <Divider my="0px" color="#F0F4F8" borderWidth="1.5px"/>
             <Box 
                 as="button" 
-                onClick={() => {navigate(`/app/candidates/${first.toLowerCase()}-${last.toLowerCase()}`)}} 
+                onClick={() => {navigate(`/app/candidates/${id}`)}} 
                 px="14px" 
                 display="flex" 
                 flexDirection="row" 
@@ -112,7 +112,7 @@ export default class Candidates extends Component {
                         this.state.positions.map((position) => {
                             return <CandidateRow position={position.display}>
                                 {this.state["candidates"][position.raw].map(candidate => {
-                                    return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} />
+                                    return <CandidateCard first={candidate.first} last={candidate.last} grade={candidate.grade} photoURL={candidate.photoURL} id={candidate.id}/>
                                 })}
                             </CandidateRow>
                         })
@@ -132,7 +132,7 @@ export default class Candidates extends Component {
                 var positionDocRef = db.collection("positions").doc(position.id)
                 candidateRef.where("position", "==", positionDocRef).get().then(res => {
                     res.forEach(doc => {
-                        candidates[position.id].push(doc.data())
+                        candidates[position.id].push(Object.assign(doc.data(), {id: doc.id}))
                     })
                 }).catch(err => console.log(err))
             })

@@ -239,7 +239,7 @@ export default class Profile extends Component {
 
     getCandidate = () => {
         console.log(this.props.candidateID)
-        firebase.firestore().collection("candidates").doc(this.props.candidateID.toLowerCase()).get().then(candidate => {
+        firebase.firestore().collection("candidates").doc(this.props.candidateID).get().then(candidate => {
             this.setState({
                 candidate: candidate.data(),
                 dataLoaded: true
