@@ -45,7 +45,9 @@ export default class Results extends Component {
         "Loading" 
         : 
         <Grid>
-            <ResultsChart />
+            {this.state.results.map((results) => {
+                return <ResultsChart results={results.results} position={results.position}/>
+            })}
         </Grid>
         }
       </Layout>
@@ -54,15 +56,38 @@ export default class Results extends Component {
 
   getResults = async () => {
       try {
+
         let resultsRef = await firebase.firestore().collection("election").doc("results").get()
+        let results = resultsRef.data()
+
+        let positionOrderRef = await firebase.firestore().collection("election").doc("positions").get()
+        let positions = positionOrderRef.data().order
+        console.log(positions)
+
+        let parsedResults = []
+        for (var index in positions) {
+            let position = positions[index]
+            let tempResultsObj = []
+            Object.keys(results[position]).forEach( async (candidateID) => {
+                let candidateRef = await firebase.firestore().collection("candidates").doc(candidateID).get()
+                let candidate = candidateRef.data()
+                let name = candidate.first + " " + candidate.last
+                tempResultsObj.push({x: name, y: results[position][candidateID]})
+            })
+            parsedResults.push({
+                position: position,
+                results: tempResultsObj
+            })
+        }
+
+        console.log(parsedResults)
         this.setState({
-            results: resultsRef.data(),
+            results: parsedResults,
             resultsLoading: false
         })
       } catch(err) {
           console.error("Error getting results: ", err)
       }
-      
   }
 
 }

@@ -1216,36 +1216,24 @@ export default class Candidates extends Component {
     const candidateRef = db.collection("candidates")
     const candidates = {}
 
-    db.collection("positions")
-      .get()
-      .then(res => {
-        res.docs.forEach(position => {
-          candidates[position.id] = []
-          var positionDocRef = db.collection("positions").doc(position.id)
-          candidateRef
-            .where("position", "==", positionDocRef)
-            .get()
-            .then(res => {
-              res.forEach(doc => {
-                candidates[position.id].push(Object.assign(doc.data(), {id: doc.id}))
-              })
-             })
-            .catch(err => console.log(err))
-        })
-      })
-      .then(() => {
-        this.setState(
-          {
+    try {
+        const positions = await db.collection("positions").get()
+        for (const position of positions.docs) {
+            candidates[position.id] = []
+            var positionDocRef = db.collection("positions").doc(position.id)
+            const res = await candidateRef.where("position", "==", positionDocRef).get()
+            res.forEach(doc => {
+                candidates[position.id].push({ ...doc.data(), id: doc.id })
+            })
+        }
+        this.setState({
             candidates: candidates,
-          },
-          () => {
-            // pretend this doesn't exist
-            setTimeout(() => {
-              this.setState({ dataLoading: false })
-            }, 700)
-          }
-        )
-      })
-    return true
+            dataLoading: false
+        })
+        return true
+    } catch (err) {
+        console.log(err)
+        return false
+    } 
   }
 }

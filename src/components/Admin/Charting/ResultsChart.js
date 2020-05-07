@@ -8,7 +8,7 @@ export default class ResultsChart extends Component {
         super(props)
         this.state = {
             series: [{
-                data: this.props.votes
+                data: this.props.results
             }],
             options: {
                 chart: {
@@ -19,7 +19,7 @@ export default class ResultsChart extends Component {
                     }
                 },
                 xaxis: {
-                    categories: this.props.names,
+                    type: 'category',
                     labels: {
                         show: false
                     },
@@ -60,9 +60,9 @@ export default class ResultsChart extends Component {
                     opposite: true,
                     labels: {
                         show: true,
-                        formatter: function (val, index) {
-                            return props.votes[props.names.indexOf(val)]
-                        },
+                        // formatter: function (val, index) {
+                        //     return props.results.results[props.names.indexOf(val)]
+                        // },
                         style: {
                             color: ["#486581"],
                             fontSize: "14px",
@@ -124,7 +124,7 @@ export default class ResultsChart extends Component {
                 Votes
             </Text>
           </Box>
-            <Chart options={this.state.options} series={this.state.series} height="93%" width="100%" type="bar"/>
+            <Chart ref={this.chartRef} options={this.state.options} series={this.state.series} height="93%" width="100%" type="bar"/>
           </Box>
         )
     }
