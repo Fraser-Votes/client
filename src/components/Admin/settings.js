@@ -255,20 +255,28 @@ export default class Settings extends Component {
             let vote = doc.data().votes[key];
             let decryptedVote = await this.decrypt(vote)
             if (votes[key]) {
-                votes[key].push(decryptedVote)
+                if (votes[key][decryptedVote]) {
+                    votes[key][decryptedVote]++
+                } else {
+                    votes[key][decryptedVote] = 1
+                }
             } else {
-                votes[key] = []
-                votes[key].push(decryptedVote)
+                votes[key] = {}
+                votes[key][decryptedVote] = 1
             }
           }
         }
       });
     })
     .then(() => {
-        
-        this.setState({
-            isCounting: false,
-            votes: votes
+        firebase.firestore().collection("election").doc("results").set({
+            votes: {votes}
+        })
+        .then(() => {
+            this.setState({
+                isCounting: false,
+                votes: votes
+            })
         })
     })
     .catch((err) => {
