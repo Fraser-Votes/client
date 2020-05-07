@@ -235,7 +235,7 @@ export default class Settings extends Component {
 
   countVotes = async () => {
     this.setState({
-        isCounting: true
+      isCounting: true
     })
 
     let votes = {}
@@ -243,29 +243,34 @@ export default class Settings extends Component {
     let db = firebase.firestore()
     try {
       let snapshot = await db.collection("ballots").get()
-      for (var doc of snapshot) {
+
+      // weird workaround to promisify DataSnapshot.forEach
+      let promises = []
+      snapshot.forEach(doc => {
         for (var key in doc.data().votes) {
           if (doc.data().votes.hasOwnProperty(key)) {
             let vote = doc.data().votes[key];
-            let decryptedVote = await this.decrypt(vote)
-            if (votes[key]) {
+            promises.push(this.decrypt(vote).then(decryptedVote => {
+              if (votes[key]) {
                 if (votes[key][decryptedVote]) {
-                    votes[key][decryptedVote]++
+                  votes[key][decryptedVote]++
                 } else {
-                    votes[key][decryptedVote] = 1
+                  votes[key][decryptedVote] = 1
                 }
-            } else {
+              } else {
                 votes[key] = {}
                 votes[key][decryptedVote] = 1
-            }
+              }
+            }))
           }
         }
-      }
-      console.log(votes)
+      })
+      await Promise.all(promises)
+
       await db.collection("election").doc("results").set(votes)
       this.setState({
-          isCounting: false,
-          votes: votes
+        isCounting: false,
+        votes: votes
       })
     } catch (err) {
       console.log("Error counting votes:", err)
