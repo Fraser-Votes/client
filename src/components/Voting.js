@@ -440,25 +440,25 @@ export default class Candidates extends Component {
         const db = firebase.firestore()
         const candidateRef = db.collection("candidates")
         const candidates = {}
-    
-        db.collection("positions").get().then(res => {
-            res.docs.forEach(position => {
+
+        try {
+            const positions = await db.collection("positions").get()
+            for (const position of positions.docs) {
                 candidates[position.id] = []
                 var positionDocRef = db.collection("positions").doc(position.id)
-                candidateRef.where("position", "==", positionDocRef).get().then(res => {
-                    res.forEach(doc => {
-                        candidates[position.id].push(Object.assign(doc.data(), {id: doc.id}))
-                    })
-                }).catch(err => console.log(err))
-            })
-        }).then(() => {
+                const res = await candidateRef.where("position", "==", positionDocRef).get()
+                res.forEach(doc => {
+                    candidates[position.id].push({ ...doc.data(), id: doc.id })
+                })
+            }
             this.setState({
-                candidates: candidates,                
-            },() => {
-                // pretend this doesn't exist
-                setTimeout(() => {this.setState({dataLoading: false})}, 700)
+                candidates: candidates,
+                dataLoading: false
             })
-        })    
-        return true
+            return true
+        } catch (err) {
+            console.log(err)
+            return false
+        }
     }
 }

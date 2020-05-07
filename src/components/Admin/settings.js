@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox, IconButton } from "@chakra-ui/core"
 import Layout from "../Layout"
 import { IsMobile } from "../../utils/mediaQueries"
+import { snapshotMap } from "../../utils/helpers"
 import AdminSEO from "../adminSEO"
 import firebase from "gatsby-plugin-firebase"
 import { withPrefix } from "gatsby"
@@ -239,43 +240,39 @@ export default class Settings extends Component {
     })
 
     let votes = {}
-
     let db = firebase.firestore()
+
     try {
       let snapshot = await db.collection("ballots").get()
 
-      // weird workaround to promisify DataSnapshot.forEach
-      let promises = []
-      snapshot.forEach(doc => {
+      await snapshotMap(snapshot, async (doc) => {
         for (var key in doc.data().votes) {
           if (doc.data().votes.hasOwnProperty(key)) {
             let vote = doc.data().votes[key]
-            // disgusting IIFE, refactor later
-            promises.push((position => this.decrypt(vote).then(decryptedVote => {
-              if (votes[position]) {
-                if (votes[position][decryptedVote]) {
-                  votes[position][decryptedVote]++
-                } else {
-                  votes[position][decryptedVote] = 1
-                }
+            let decryptedVote = await this.decrypt(vote)
+            if (votes[key]) {
+              if (votes[key][decryptedVote]) {
+                votes[key][decryptedVote]++
               } else {
-                votes[position] = {}
-                votes[position][decryptedVote] = 1
+                votes[key][decryptedVote] = 1
               }
-            }))(key))
+            } else {
+              votes[key] = {}
+              votes[key][decryptedVote] = 1
+            }
           }
         }
       })
-      await Promise.all(promises)
 
       await db.collection("election").doc("results").set(votes)
-      this.setState({
-        isCounting: false,
-        votes: votes
-      })
     } catch (err) {
       console.log("Error counting votes:", err)
     }
+
+    this.setState({
+      isCounting: false,
+      votes: votes
+    })
   }
 
   removeKeyFile = () => {
