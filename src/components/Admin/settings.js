@@ -269,6 +269,20 @@ export default class Settings extends Component {
       });
     })
     .then(() => {
+
+        /**
+         * votes is supposed to follow this schema
+        votes = {
+          "communications-manager": { "jack-doe": 4 },
+          "design-manager": { "jessica-doe": 4 },
+          president: { "jane-doe": 2, "sarah-doe": 2 },
+          secretary: { "john-smith": 3, "daniel-lupas": 1 },
+          "social-convenor": { "jason-doe": 4 },
+          treasurer: { "carly-doe": 4 },
+          "vice-president": { "john-doe": 3, "7iPRz4IA7EosbL99RIO9": 1 },
+        }
+        */
+
         firebase.firestore().collection("election").doc("results").set({
             votes: {votes}
         })
