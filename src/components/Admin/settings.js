@@ -14,7 +14,7 @@ function ToastProvider({ children }) {
   return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>
 }
 
-const Header = ({ title, openDrawer }) => {
+const Header = ({ title }) => {
   return (
     <Box
       mt={IsMobile() ? "46px" : "12px"}
@@ -186,7 +186,7 @@ export default class Settings extends Component {
                             </Text>
                             <Button
                                 mt="12px"
-                                onClick={this.countVotes}
+                                onClick={() => this.verifyVotingClosed(toast)}
                                 _hover={{ bg: "rgba(220, 238, 251, 0.5);" }}
                                 backgroundColor="blue.50"
                                 color="blue.800"
@@ -222,6 +222,20 @@ export default class Settings extends Component {
     )
   }
 
+  verifyVotingClosed = (toast) => {
+    if (this.state.votingOpen) {
+      toast({
+        title: "Voting must be closed",
+        description: "Voting must be closed to count votes",
+        status: "warning",
+        duration: 10000,
+        isClosable: true
+      })
+    } else {
+      this.countVotes(toast)
+    }
+  }
+
   decrypt = async (encrypted) => {
     let openpgp = window.openpgp
     const privKeyObj = (await openpgp.key.readArmored(this.state.privateKey)).keys[0];
@@ -234,7 +248,7 @@ export default class Settings extends Component {
     return data;
   };
 
-  countVotes = async () => {
+  countVotes = async (toast) => {
     this.setState({
       isCounting: true
     })
@@ -265,8 +279,31 @@ export default class Settings extends Component {
       })
 
       await db.collection("election").doc("results").set(votes)
+      this.setState({
+        isCounting: false,
+        votes: votes
+      }, () => {
+        toast({
+          title: "Votes counted",
+          description: "Please go to the results page.",
+          status: "success",
+          duration: 10000,
+          isClosable: true
+        })
+      })
     } catch (err) {
-      console.log("Error counting votes:", err)
+      this.setState({
+        isCounting: false
+      }, () => {
+        toast({
+          title: "Something went wrong",
+          description: "Please try again",
+          status: "error",
+          duration: 10000,
+          isClosable: true
+        })
+        console.log("Error counting votes:", err)
+      })
     }
 
     this.setState({

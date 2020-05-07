@@ -138,6 +138,7 @@ const Sidebar = ({isMobile}) => {
               </Box>
               <NavItem isAdmin={true} title="Dashboard" iconName="dashboard" />
               <NavItem isAdmin={true} title="Candidates" iconName="candidates" />
+              <NavItem isAdmin={true} title="Results" iconName="results" />              
               <NavItem isAdmin={true} title="Settings" iconName="settings_custom" />              
             </>
           ) : (
