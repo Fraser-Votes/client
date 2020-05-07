@@ -239,23 +239,12 @@ export default class Settings extends Component {
     })
 
     let votes = {}
-    // let votes2 = {
-    //   "communications-manager": { "jack-doe": 4 },
-    //   "design-manager": { "jessica-doe": 4 },
-    //   president: { "jane-doe": 2, "sarah-doe": 2 },
-    //   secretary: { "john-smith": 3, "daniel-lupas": 1 },
-    //   "social-convenor": { "jason-doe": 4 },
-    //   treasurer: { "carly-doe": 4 },
-    //   "vice-president": { "john-doe": 3, "7iPRz4IA7EosbL99RIO9": 1 },
-    // }
 
     let db = firebase.firestore()
     try {
       let snapshot = await db.collection("ballots").get()
       for (var doc of snapshot) {
-        // console.log(doc.id, "=>", doc.data());
         for (var key in doc.data().votes) {
-          // console.log(key)
           if (doc.data().votes.hasOwnProperty(key)) {
             let vote = doc.data().votes[key];
             let decryptedVote = await this.decrypt(vote)
@@ -272,13 +261,14 @@ export default class Settings extends Component {
           }
         }
       }
+      console.log(votes)
       await db.collection("election").doc("results").set(votes)
       this.setState({
           isCounting: false,
           votes: votes
       })
     } catch (err) {
-      console.log("Error getting documents", err)
+      console.log("Error counting votes:", err)
     }
   }
 
