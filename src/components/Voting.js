@@ -206,7 +206,7 @@ export default class Candidates extends Component {
                         <script defer src={withPrefix("../js/openpgp.worker.min.js")}></script>
                     </Helmet>
                     <SEO title="Voting"/>
-                    <Header title="Voting" description={this.state.votingEnded ? "Voting has ended. Please check the results page." : this.state.voted ? "You already voted! Results will be released when the election ends." : this.state.votingOpen ? "Please select the candidates that you want to vote for." : "Voting has not been opened yet."}/>
+                    <Header title="Voting" description={this.state.votingEnded ? "Voting has ended. Please check the results page." : this.state.voted ? "You already voted! Results will be released when the election ends." : this.state.votingOpen ? "Please select the candidates that you want to vote for." : "Voting is currently closed."}/>
                     {this.state.dataLoading ? 
                         <>
                         <Skeleton borderRadius="4px" width="180px" height="30px" marginBottom="24px"/>

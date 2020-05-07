@@ -38,12 +38,12 @@ const NavItem = ({title, iconName, isAdmin}) => {
                 fill="transparent"
                 w={iconName === "candidates" ? "23.33px" : iconName=== "results" ? "18px" : "18px"} 
                 h={iconName === "candidates" ? "18.67px" : iconName=== "results" ? "16px" : "18px"}
-                mt={iconName !== "candidates" && iconName !== "dashboard" ? "4px" : 0}
-                ml={iconName !== "candidates" ? "4px" : 0}
+                mt={iconName !== "candidates" && iconName !== "dashboard" && iconName !== "settings_custom" ? "4px" : 0}
+                ml={ iconName === "settings_custom" ? "3px" : iconName !== "candidates" ? "4px" : 0}
                 name={iconName}
             />
             <Text
-                ml= {iconName=== "candidates" ? "35px" : "37px"}
+                ml= {iconName === "candidates" ? "35px" : "38px"}
                 lineHeight="38px"
                 fontWeight="bold"
                 color= {isActive ? "blue.700" : "blueGray.500"}
@@ -137,11 +137,8 @@ const Sidebar = ({isMobile}) => {
                 </Box>
               </Box>
               <NavItem isAdmin={true} title="Dashboard" iconName="dashboard" />
-              <NavItem
-                isAdmin={true}
-                title="Candidates"
-                iconName="candidates"
-              />
+              <NavItem isAdmin={true} title="Candidates" iconName="candidates" />
+              <NavItem isAdmin={true} title="Settings" iconName="settings_custom" />              
             </>
           ) : (
             <>

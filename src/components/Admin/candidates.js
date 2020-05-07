@@ -222,6 +222,7 @@ const CandidateDrawer = ({
       photoFileObject: null,
       id: candidate.id
     })
+    setDeleteConfirmPopoverOpen(false)
   }, [candidate, isOpen])
 
   const onFocus = field => {
