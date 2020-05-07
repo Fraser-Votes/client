@@ -249,19 +249,20 @@ export default class Settings extends Component {
       snapshot.forEach(doc => {
         for (var key in doc.data().votes) {
           if (doc.data().votes.hasOwnProperty(key)) {
-            let vote = doc.data().votes[key];
-            promises.push(this.decrypt(vote).then(decryptedVote => {
-              if (votes[key]) {
-                if (votes[key][decryptedVote]) {
-                  votes[key][decryptedVote]++
+            let vote = doc.data().votes[key]
+            // disgusting IIFE, refactor later
+            promises.push((position => this.decrypt(vote).then(decryptedVote => {
+              if (votes[position]) {
+                if (votes[position][decryptedVote]) {
+                  votes[position][decryptedVote]++
                 } else {
-                  votes[key][decryptedVote] = 1
+                  votes[position][decryptedVote] = 1
                 }
               } else {
-                votes[key] = {}
-                votes[key][decryptedVote] = 1
+                votes[position] = {}
+                votes[position][decryptedVote] = 1
               }
-            }))
+            }))(key))
           }
         }
       })
