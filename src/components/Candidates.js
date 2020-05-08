@@ -39,8 +39,7 @@ const CandidateCard = ({
         {last}
       </Text>
       <Text fontWeight="bold" fontSize="12px" color="blueGray.500">
-        Grade
-        {grade}
+        Grade {grade}
       </Text>
     </Box>
     <Divider my="0px" color="#F0F4F8" borderWidth="1.5px" />
