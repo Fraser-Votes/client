@@ -20,8 +20,6 @@ jobs:
         key: ${{ runner.os }}-build-npm-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-build-npm-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
 
     - name: Install dependencies
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -42,11 +40,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: bin
-        key: ${{ runner.os }}-build-firebase-${{ hashFiles('bin') }}
+        key: ${{ runner.os }}-build-firebase-${{ hashFiles('bin/firebase_tools') }}
         restore-keys: |
           ${{ runner.os }}-build-firebase-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
 
     - name: Install Firebase tools
       if: steps.cache-firebase.outputs.cache-hit != 'true'
