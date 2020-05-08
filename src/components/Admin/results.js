@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import Layout from "../Layout"
+import { sortByKey } from "../../utils/helpers"
 import { IsMobile } from "../../utils/mediaQueries"
 import { Box, Text, Grid } from "@chakra-ui/core"
 import AdminSEO from "../adminSEO"
@@ -32,7 +33,7 @@ export default class Results extends Component {
   }
 
   componentDidMount() {
-      this.getResults()
+    this.getResults()
   }
 
   render() {
@@ -40,63 +41,44 @@ export default class Results extends Component {
       <Layout>
         <AdminSEO title="Results" />
         <Header title="Results" />
-        {this.state.resultsLoading ? 
-        "Loading" 
-        : 
-        <Grid>
+        {this.state.resultsLoading ?
+          "Loading"
+          :
+          <Grid>
             {this.state.results.map((results) => {
-                // return <ResultsChart results={results.results} position={results.position}/>
+              // return <ResultsChart results={results.results} position={results.position}/>
             })}
-        </Grid>
+          </Grid>
         }
       </Layout>
     )
   }
 
-  sortByKey(array, key) {
-    console.log(array, key)
-    return array.sort(function(a, b) {
-        var x = a[key]; var y = b[key];
-        return ((x < y) ? 1 : ((x > y) ? -1 : 0));
-    });
-  }
-
   getResults = async () => {
-      try {
+    const db = firebase.firestore()
+    try {
+      const resultsRef = await db.collection("election").doc("results").get()
+      const resultData = resultsRef.data()
+      const positionRef = await db.collection("election").doc("positions").get()
+      const positions = positionRef.data().order
 
-        let resultsRef = await firebase.firestore().collection("election").doc("results").get()
-        let results = resultsRef.data()
-
-        let positionOrderRef = await firebase.firestore().collection("election").doc("positions").get()
-        let positions = positionOrderRef.data().order
-
-        let parsedResults = []
-        for (var index in positions) {
-            let position = positions[index]
-            let tempResultsObj = []
-            Object.keys(results[position]).forEach( async (candidateID) => {
-                let candidateRef = await firebase.firestore().collection("candidates").doc(candidateID).get()
-                let candidate = candidateRef.data()
-                let name = candidate.first + " " + candidate.last
-                let photoURL = candidate.photoURL
-                tempResultsObj.push({name: name, count: results[position][candidateID], photoURL: photoURL})
+      const results = await Promise.all(positions.map(async (position) => {
+          const positionResults = await Promise.all(
+            Object.keys(resultData[position]).map(async (id) => {
+              const ref = await db.collection("candidates").doc(id).get()
+              const candidate = ref.data()
+              const name = candidate.first + " " + candidate.last
+              const photoURL = candidate.photoURL
+              return { name, photoURL, count: resultData[position][id] }
             })
-            // console.log(parsedResults)
-            parsedResults.push({
-                position: position,
-                results: tempResultsObj
-            })
-            console.log(this.sortByKey(this.parsedResults[index].results, "count"))
-        }
-
-        console.log(parsedResults)
-        this.setState({
-            results: parsedResults,
-            resultsLoading: false
+          )
+          return { position, results: sortByKey(positionResults, "count") }
         })
-      } catch(err) {
-          console.error("Error getting results: ", err)
-      }
+      )
+      this.setState({ results, resultsLoading: false })
+    } catch (err) {
+      console.error("Error getting results: ", err)
+    }
   }
 
 }
