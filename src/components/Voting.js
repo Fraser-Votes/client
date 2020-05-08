@@ -343,7 +343,6 @@ export default class Candidates extends Component {
     
     getPublicKey = async () => {
         let keyDoc = await firebase.firestore().collection("admin").doc("keys").get()
-        console.log(keyDoc.data().public)
         this.setState({publicKey: keyDoc.data().public})
     }
 
@@ -384,10 +383,8 @@ export default class Candidates extends Component {
             for (let position in this.state.votes) {
                 parsedVotes[position] = this.state.parsedVotes[position]
             }
-            console.log(parsedVotes)
             this.setState({voteSubmitting: true})
             addVote({votes: parsedVotes}).then((res) => {
-                console.log(res.data.voteSuccessful)
                 this.setState({
                     voteSuccessful: true,
                     voteSubmitting: false,

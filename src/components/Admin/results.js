@@ -4,7 +4,6 @@ import { IsMobile } from "../../utils/mediaQueries"
 import { Box, Text, Grid } from "@chakra-ui/core"
 import AdminSEO from "../adminSEO"
 import firebase from "gatsby-plugin-firebase"
-import ResultsChart from "./Charting/ResultsChart"
 
 const Header = ({ title }) => {
   return (
@@ -46,12 +45,20 @@ export default class Results extends Component {
         : 
         <Grid>
             {this.state.results.map((results) => {
-                return <ResultsChart results={results.results} position={results.position}/>
+                // return <ResultsChart results={results.results} position={results.position}/>
             })}
         </Grid>
         }
       </Layout>
     )
+  }
+
+  sortByKey(array, key) {
+    console.log(array, key)
+    return array.sort(function(a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+    });
   }
 
   getResults = async () => {
@@ -62,7 +69,6 @@ export default class Results extends Component {
 
         let positionOrderRef = await firebase.firestore().collection("election").doc("positions").get()
         let positions = positionOrderRef.data().order
-        console.log(positions)
 
         let parsedResults = []
         for (var index in positions) {
@@ -72,12 +78,15 @@ export default class Results extends Component {
                 let candidateRef = await firebase.firestore().collection("candidates").doc(candidateID).get()
                 let candidate = candidateRef.data()
                 let name = candidate.first + " " + candidate.last
-                tempResultsObj.push({x: name, y: results[position][candidateID]})
+                let photoURL = candidate.photoURL
+                tempResultsObj.push({name: name, count: results[position][candidateID], photoURL: photoURL})
             })
+            // console.log(parsedResults)
             parsedResults.push({
                 position: position,
                 results: tempResultsObj
             })
+            console.log(this.sortByKey(this.parsedResults[index].results, "count"))
         }
 
         console.log(parsedResults)
