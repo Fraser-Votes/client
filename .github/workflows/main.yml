@@ -12,7 +12,7 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v2
 
-    - name: Cache node modules
+    - name: Cache node_modules
       uses: actions/cache@v1
       env:
         cache-name: cache-node-modules
@@ -37,10 +37,25 @@ jobs:
         messagingSenderId: ${{ secrets.MESSAGING_ID }}
         appId: ${{ secrets.APP_ID }}
 
-    - name: Deploy to Firebase
-      uses: w9jds/firebase-action@master
-      with:
-        args: deploy --only hosting
+    - name: Cache Firebase tools
+      id: cache-firebase
+      uses: actions/cache@v1
       env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        cache-name: cache-firebase
+      with:
+        path: bin
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('bin') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Install Firebase tools
+      if: steps.cache-firebase.outputs.cache-hit != 'true'
+      run: |
+        mkdir bin
+        curl -o bin/firebase_tools https://firebase.tools/bin/linux/latest -L
+        chmod +x bin/firebase_tools
+
+    - name: Deploy to Firebase
+      run: ./bin/firebase_tools deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }} --project ${{ secrets.PROJECT_ID }}
