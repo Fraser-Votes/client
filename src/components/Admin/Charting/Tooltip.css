@@ -1,0 +1,30 @@
+.apexcharts-tooltip-title {
+    font-size: 16px !important;
+    font-weight: 600;
+    background-color: #ffffff !important;
+    color: #003E6B !important;
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-left: 9px !important;
+}
+
+.apexcharts-tooltip-text {
+    font-size: 14px !important;
+    font-weight: 600;
+}
+
+.apexcharts-tooltip-text-label {
+    color: #627D98 !important
+}
+
+.apexcharts-tooltip-marker {
+    display: none !important
+}
+
+.apexcharts-tooltip-text-value {
+    color: #829AB1 !important
+}
+
+.apexcharts-tooltip-series-group {
+    margin-top: -4px !important
+}

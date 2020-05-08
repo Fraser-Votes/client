@@ -23,53 +23,88 @@ const Login = () => {
       navigate('/app/candidates')
     }
   
-
     googleAuth = () => {
       setAuthLoading(true)
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-          firebase.auth().signInWithPopup(provider).then(res => {
-            setUser(res.user)
-            navigate('/app/candidates')
-          }).catch(err => {
-            setAuthLoading(false)
-            console.warn("Something went wrong with authentication: " + err)
-          })
+          firebase.auth().signInWithRedirect(provider);
       })
     }
+
+    firebase.auth().getRedirectResult().then(res => {
+      if (res.additionalUserInfo.isNewUser) {
+        window.plausible("New User")
+      } 
+      setUser(res.user)
+      navigate('/app/candidates')
+    }).catch(err => {
+      setAuthLoading(false)
+      console.warn("Something went wrong with authentication: " + err)
+    })
   })
     
 
   const LoginSection = () => {
     return (
-      <Box 
-        display="flex" 
-        justifyContent="space-between" 
-        flexDirection="column" 
-        px={IsMobile() ? "5vw" : 0} py={IsMobile() ? "12vh" : "24vh"} 
-        h="100vh" 
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        flexDirection="column"
+        px={IsMobile() ? "5vw" : 0}
+        paddingTop={IsMobile() ? "12vh" : "24vh"}
+        h="100vh"
         textAlign="center"
       >
-        <SEO title="Login"/>
+        <SEO title="Login" />
         <Box>
-          <Text fontWeight="bold" color="blueGray.900" fontSize={IsMobile() ? "3xl" : "4xl"}>Fraser Votes</Text>
-          <Text fontWeight="600" color="blueGray.600" fontSize={IsMobile() ? "md" : "lg"}>Student Activity Council Elections 2020</Text>
+          <Text
+            fontWeight="bold"
+            color="blueGray.900"
+            fontSize={IsMobile() ? "3xl" : "4xl"}
+          >
+            Fraser Votes
+          </Text>
+          <Text
+            fontWeight="600"
+            color="blueGray.600"
+            fontSize={IsMobile() ? "md" : "lg"}
+          >
+            Student Activity Council Elections 2020
+          </Text>
         </Box>
         <Mobile>
-          <Box 
-            backgroundPosition="center center" 
-            backgroundRepeat="no-repeat"  
+          <Box
+            backgroundPosition="center center"
+            backgroundRepeat="no-repeat"
             backgroundSize="contain"
-            backgroundImage={`url("${loginIllustration}")`} 
+            backgroundImage={`url("${loginIllustration}")`}
             height="100%"
             my="6.5vh"
           />
         </Mobile>
-        <Box>
-          <Button isLoading={authLoading} size="lg" py="16px" px="92px" borderRadius="12px" onClick={() => {googleAuth()}} variantColor="primary">
+        <Box marginBottom="40px">
+          <Button
+            isLoading={authLoading}
+            size="lg"
+            py="16px"
+            px="92px"
+            borderRadius="12px"
+            onClick={() => {
+              googleAuth()
+            }}
+            variantColor="primary"
+          >
             Continue
           </Button>
-          <Text letterSpacing="normal" color="blueGray.600" marginTop="12px" fontSize="sm">Please log in using your pdsb.net email</Text>
+          <Text
+            letterSpacing="normal"
+            color="blueGray.600"
+            marginTop="12px"
+            fontSize="sm"
+          >
+            Please log in using your pdsb.net email
+          </Text>
         </Box>
+        <Text marginTop={IsDesktop() ? 0 : "32px"} fontSize="12px" fontWeight="600" color="blueGray.600" mb={IsDesktop() ? "16px" : "24px"}>Made with ☕ by David L, Jason H, & James A.Y.</Text>
       </Box>
     )
   }

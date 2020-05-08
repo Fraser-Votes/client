@@ -8,28 +8,46 @@ import MobileHeader from "../MobileHeader"
 const Layout = ({ children }) => {
 
   return (
-    <Grid
-      templateColumns= {IsDesktop() ? "290px 1fr" : "1fr" }
-      templateRows="1fr"
-    >
+    <>
       <Desktop>
+        <Grid
+        templateColumns="290px 1fr"
+        templateRows="1fr"
+        >
         <Sidebar/>
+        <Box
+          minHeight="100vh"
+          h="100%"
+          w="100%"
+          bg="blueGray.50"
+          px="40px"
+          maxHeight="100vh"
+          overflowY="auto"
+        >
+          {children}
+        </Box>
+      </Grid>
       </Desktop>
       <Mobile>
-        <MobileHeader/>
+        <Grid
+          templateColumns="1fr"
+          templateRows="1fr"
+        >
+          <MobileHeader/>
+          <Box
+            minHeight="100vh"
+            h="100%"
+            w="100%"
+            bg="blueGray.50"
+            px="32px"
+            maxHeight="100vh"
+            overflowY="auto"
+          >
+            {children}
+          </Box>
+        </Grid>
       </Mobile>
-      <Box
-        minHeight="100vh"
-        h="100%"
-        w="100%"
-        bg="blueGray.50"
-        px="40px"
-        maxHeight="100vh"
-        overflowY="auto"
-      >
-        {children}
-      </Box>
-    </Grid>
+    </>
   )
 }
 

@@ -10,7 +10,7 @@ import PropTypes from "prop-types"
 import Helmet from "react-helmet"
 import { useStaticQuery, graphql } from "gatsby"
 
-function SEO({ description, lang, meta, title, image }) {
+function AdminSEO({ description, lang, meta, title, image }) {
   const { site } = useStaticQuery(
     graphql`
       query {
@@ -78,22 +78,21 @@ function SEO({ description, lang, meta, title, image }) {
         }
       ].concat(meta)}
     >
-      <script async defer data-domain="fraservotes.com" src="https://plausible.io/js/plausible.js"></script>
     </Helmet>
   )
 }
 
-SEO.defaultProps = {
+AdminSEO.defaultProps = {
   lang: `en`,
   meta: [],
   description: ``,
 }
 
-SEO.propTypes = {
+AdminSEO.propTypes = {
   description: PropTypes.string,
   lang: PropTypes.string,
   meta: PropTypes.arrayOf(PropTypes.object),
   title: PropTypes.string.isRequired,
 }
 
-export default SEO
+export default AdminSEO
