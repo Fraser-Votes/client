@@ -4,12 +4,10 @@
  * @param {string} key
  * @returns {any[]}
  */
-export const sortByKey = (array, key) => {
-  return array.sort(function (a, b) {
-    var x = a[key]; var y = b[key];
-    return ((x < y) ? 1 : ((x > y) ? -1 : 0));
-  });
-}
+export const sortByKey = (array, key) => array.sort((a, b) => {
+  const x = a[key]; const y = b[key];
+  return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+});
 
 /**
  * Asynchronously enumerate children of `snapshot`
@@ -18,9 +16,9 @@ export const sortByKey = (array, key) => {
  * @returns {Promise<Array>} Array of results of callback
  */
 export const snapshotMap = (snapshot, callback) => {
-  const promises = []
-  snapshot.forEach(child => {
-    promises.push(callback(child))
-  })
-  return Promise.all(promises)
-}
+  const promises = [];
+  snapshot.forEach((child) => {
+    promises.push(callback(child));
+  });
+  return Promise.all(promises);
+};

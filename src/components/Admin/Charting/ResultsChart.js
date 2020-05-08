@@ -1,65 +1,65 @@
-import React, { Component } from 'react'
-import Loadable from '@loadable/component'
-import { Box, Text } from '@chakra-ui/core'
-import "./ReferrersChart.css"
+import React, { Component } from 'react';
+import Loadable from '@loadable/component';
+import { Box, Text } from '@chakra-ui/core';
+import './ReferrersChart.css';
 
 export default class ResultsChart extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       series: [{
-        data: this.props.results.map(result => result.count)
+        data: this.props.results.map((result) => result.count),
       }],
       options: {
         chart: {
           type: 'bar',
-          fontFamily: "Averta Std",
-          toolbar: { show: false }
+          fontFamily: 'Averta Std',
+          toolbar: { show: false },
         },
         xaxis: {
-          categories: this.props.results.map(result => result.name)
+          categories: this.props.results.map((result) => result.name),
         },
         plotOptions: {
           bar: {
-            barHeight: "47%",
+            barHeight: '47%',
             distributed: true,
             horizontal: true,
             dataLabels: {
-              position: 'bottom'
-            }
-          }
+              position: 'bottom',
+            },
+          },
         },
         legend: { show: false },
         colors: ['#DCEEFB'],
         dataLabels: {
           enabled: true,
           textAnchor: 'start',
-          style: { colors: ["#486581"] }
+          style: { colors: ['#486581'] },
         },
         yaxis: {
           opposite: true,
           labels: {
             show: true,
             style: {
-              color: ["#486581"],
-              fontSize: "14px",
+              color: ['#486581'],
+              fontSize: '14px',
               fontWeight: 600,
-              cssClass: "horizontal-bar-label",
+              cssClass: 'horizontal-bar-label',
             },
-            offsetX: 0
+            offsetX: 0,
           },
         },
         grid: { show: false },
         tooltip: { enabled: false },
         noData: {
-          text: "No results have been recorded.",
+          text: 'No results have been recorded.',
           style: {
-            color: "#BCCCDC",
-            fontSize: '16px'
-          }
-        }
-      }
-    }
+            color: '#BCCCDC',
+            fontSize: '16px',
+          },
+        },
+      },
+    };
   }
 
   render() {
@@ -96,8 +96,8 @@ export default class ResultsChart extends Component {
         </Box>
         <Chart ref={this.chartRef} options={this.state.options} series={this.state.series} height="93%" width="100%" type="bar" />
       </Box>
-    )
+    );
   }
 }
 
-const Chart = Loadable(() => import('../../../../node_modules/react-apexcharts/dist/react-apexcharts'))
+const Chart = Loadable(() => import('../../../../node_modules/react-apexcharts/dist/react-apexcharts'));

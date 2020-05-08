@@ -1,0 +1,6 @@
+static/*
+node_modules/*
+.cache/*
+public/*
+package-lock.json
+package.json

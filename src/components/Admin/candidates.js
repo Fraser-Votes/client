@@ -1,96 +1,67 @@
-import React, { Component, useEffect } from "react"
+import React, { Component, useEffect } from 'react';
 import {
-  Box,
-  Grid,
-  Text,
-  Skeleton,
-  Image,
-  Icon,
-  PseudoBox,
-  Drawer,
-  Button,
-  DrawerOverlay,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-  FormControl,
-  FormLabel,
-  Input,
-  SimpleGrid,
-  Select,
-  Textarea,
-  FormHelperText,
-  AspectRatioBox,
+  Box, AspectRatioBox, PseudoBox, Grid, SimpleGrid, Text, Skeleton, Image, Icon, Button,
+  Drawer, DrawerOverlay, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter,
+  FormControl, FormLabel, Input, Select, Textarea, FormHelperText,
+  Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody, PopoverFooter,
+  PopoverArrow, PopoverCloseButton,
   useToast,
-  PopoverTrigger,
-  Popover,
-  PopoverContent,
-  PopoverHeader,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  PopoverFooter
-} from "@chakra-ui/core"
-import Layout from "../Layout/index"
-import firebase from "gatsby-plugin-firebase"
-import { IsDesktop, IsMobile } from "../../utils/mediaQueries"
-import PlaceholderImage from "../../images/placeholder.jpg"
-import AdminSEO from "../adminSEO"
+} from '@chakra-ui/core';
+import firebase from 'gatsby-plugin-firebase';
+import Layout from '../Layout/index';
+import { IsDesktop, IsMobile } from '../../utils/mediaQueries';
+import { snapshotMap } from '../../utils/helpers';
+import PlaceholderImage from '../../images/placeholder.jpg';
+import AdminSEO from '../adminSEO';
 
-const ToastContext = React.createContext(() => {})
+const ToastContext = React.createContext(() => { });
 function ToastProvider({ children }) {
-  const toast = useToast()
-  return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>
+  const toast = useToast();
+  return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>;
 }
 
-const Header = ({ title, openDrawer }) => {
-  return (
-    <Box
-      mt={IsMobile() ? "46px" : "12px"}
-      h="76px"
-      display="flex"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      mb="4px"
+const Header = ({ title, openDrawer }) => (
+  <Box
+    mt={IsMobile() ? '46px' : '12px'}
+    h="76px"
+    display="flex"
+    flexDirection="row"
+    justifyContent="space-between"
+    alignItems="center"
+    mb="4px"
+  >
+    <Text fontSize="2xl" fontWeight="bold" color="blueGray.900">
+      {title}
+    </Text>
+    <Button
+      mt="4px"
+      borderRadius="8px"
+      px="18px"
+      py="12px"
+      fontSize="14px"
+      fontWeight="600"
+      variantColor="blue"
+      onClick={openDrawer}
     >
-      <Text fontSize="2xl" fontWeight="bold" color="blueGray.900">
-        {title}
-      </Text>
-      <Button
-        mt="4px"
-        borderRadius="8px"
-        px="18px"
-        py="12px"
-        fontSize="14px"
-        fontWeight="600"
-        variantColor="blue"
-        onClick={openDrawer}
-      >
-        Add Candidate
-      </Button>
-    </Box>
-  )
-}
+      Add Candidate
+    </Button>
+  </Box>
+);
 
-const CandidateRow = ({ position, children }) => {
-  return (
-    <Box mb="32px">
-      <Text fontSize="xl" fontWeight="bold" color="blueGray.900" mb="18px">
-        {position}
-      </Text>
-      <Grid
-        gridTemplateColumns={IsDesktop() ? "repeat(auto-fill, 310px)" : "1fr"}
-        gridColumnGap="24px"
-        gridRowGap="24px"
-      >
-        {children}
-      </Grid>
-    </Box>
-  )
-}
+const CandidateRow = ({ position, children }) => (
+  <Box mb="32px">
+    <Text fontSize="xl" fontWeight="bold" color="blueGray.900" mb="18px">
+      {position}
+    </Text>
+    <Grid
+      gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'}
+      gridColumnGap="24px"
+      gridRowGap="24px"
+    >
+      {children}
+    </Grid>
+  </Box>
+);
 
 const CandidateCard = ({
   first,
@@ -99,43 +70,43 @@ const CandidateCard = ({
   position,
   index,
   editCandidate,
-}) => {
-  return (
-    <Box
-      h="60px"
-      w="100%"
-      backgroundColor="white"
-      border="2px solid rgba(217, 226, 236, 0.6)"
+}) => (
+  <Box
+    h="60px"
+    w="100%"
+    backgroundColor="white"
+    border="2px solid rgba(217, 226, 236, 0.6)"
+    borderRadius="12px"
+    px="12px"
+    py="10px"
+    display="flex"
+    flexDirection="row"
+    alignItems="center"
+  >
+    <Image
       borderRadius="12px"
-      px="12px"
-      py="10px"
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
+      h="40px"
+      w="40px"
+      objectFit="cover"
+      src={photoURL}
+      fallbackSrc={PlaceholderImage}
+      mr="20px"
+    />
+    <Text fontWeight="600" fontSize="16px" color="blueGray.700">
+      {first}
+      {' '}
+      {last}
+    </Text>
+    <PseudoBox
+      ml="auto"
+      paddingBottom="2px"
+      as="button"
+      onClick={() => editCandidate(position, index)}
     >
-      <Image
-        borderRadius="12px"
-        h="40px"
-        w="40px"
-        objectFit="cover"
-        src={photoURL}
-        fallbackSrc={PlaceholderImage}
-        mr="20px"
-      />
-      <Text fontWeight="600" fontSize="16px" color="blueGray.700">
-        {first} {last}
-      </Text>
-      <PseudoBox
-        ml="auto"
-        paddingBottom="2px"
-        as="button"
-        onClick={() => editCandidate(position, index)}
-      >
-        <Icon name="edit" size="18px" color="blueGray.700" />
-      </PseudoBox>
-    </Box>
-  )
-}
+      <Icon name="edit" size="18px" color="blueGray.700" />
+    </PseudoBox>
+  </Box>
+);
 
 const InputGroup = ({
   placeholder,
@@ -146,27 +117,25 @@ const InputGroup = ({
   field,
   onFocus,
   disabled,
-}) => {
-  return (
-    <FormControl isRequired={required}>
-      <FormLabel fontSize="16px" fontWeight="600" color="blue.900" mb="4px">
-        {label}
-      </FormLabel>
-      <Input
-        onFocus={() => onFocus(field)}
-        onChange={onChange}
-        value={value}
-        color="blueGray.700"
-        borderRadius="6px"
-        borderColor="#D9E2EC"
-        fontWeight="600"
-        id={field}
-        placeholder={placeholder}
-        isDisabled={disabled}
-      />
-    </FormControl>
-  )
-}
+}) => (
+  <FormControl isRequired={required}>
+    <FormLabel fontSize="16px" fontWeight="600" color="blue.900" mb="4px">
+      {label}
+    </FormLabel>
+    <Input
+      onFocus={() => onFocus(field)}
+      onChange={onChange}
+      value={value}
+      color="blueGray.700"
+      borderRadius="6px"
+      borderColor="#D9E2EC"
+      fontWeight="600"
+      id={field}
+      placeholder={placeholder}
+      isDisabled={disabled}
+    />
+  </FormControl>
+);
 
 const CandidateDrawer = ({
   isOpen,
@@ -180,12 +149,12 @@ const CandidateDrawer = ({
   isDeleting,
   isUpdating,
 }) => {
-  let photoForm = new FormData()
+  const photoForm = new FormData();
 
-  const [activeField, setActiveField] = React.useState("")
-  const profilePictureInputRef = React.useRef(null)
-  const [deleteConfirmPopoverOpen, setDeleteConfirmPopoverOpen] = React.useState(false)
-  const [newPhoto, setNewPhoto] = React.useState(false)
+  const [activeField, setActiveField] = React.useState('');
+  const profilePictureInputRef = React.useRef(null);
+  const [deleteConfirmPopoverOpen, setDeleteConfirmPopoverOpen] = React.useState(false);
+  const [newPhoto, setNewPhoto] = React.useState(false);
 
   const [drawerState, setDrawerState] = React.useState({
     first: candidate?.first,
@@ -200,13 +169,13 @@ const CandidateDrawer = ({
     videoURL: candidate?.videoURL,
     photoURL: candidate?.photoURL,
     photoFileObject: null,
-    id: candidate.id
-  })
+    id: candidate.id,
+  });
 
-  const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL']
+  const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL'];
 
   useEffect(() => {
-    console.log("effect")
+    console.log('effect');
     setDrawerState({
       first: candidate.first,
       last: candidate.last,
@@ -220,63 +189,67 @@ const CandidateDrawer = ({
       videoURL: candidate.videoURL,
       photoURL: candidate.photoURL,
       photoFileObject: null,
-      id: candidate.id
-    })
-    setDeleteConfirmPopoverOpen(false)
-  }, [candidate, isOpen])
+      id: candidate.id,
+    });
+    setDeleteConfirmPopoverOpen(false);
+  }, [candidate, isOpen]);
 
-  const onFocus = field => {
-    setActiveField(field)
-  }
+  const onFocus = (field) => {
+    setActiveField(field);
+  };
 
-  const onChange = event => {
+  const onChange = (event) => {
     setDrawerState({
       ...drawerState,
       [activeField]: event.target.value,
-    })
-  }
+    });
+  };
 
   const uploadProfilePhoto = () => {
-    profilePictureInputRef.current.click()
-  }
+    profilePictureInputRef.current.click();
+  };
 
-  const photoOnChange = e => {
-    e.stopPropagation()
-    e.preventDefault()
-    let file = e.target.files[0]
-    photoForm.append("file", file)
-    console.log(file)
+  const photoOnChange = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const file = e.target.files[0];
+    photoForm.append('file', file);
+    console.log(file);
     setDrawerState({
       ...drawerState,
       photoFileObject: file,
       photoURL: URL.createObjectURL(file),
-    })
-    setNewPhoto(true)
-  }
+    });
+    setNewPhoto(true);
+  };
 
   const validateFields = () => {
-    for (var i = 0; i < isRequired.length; i++) {
+    for (let i = 0; i < isRequired.length; i++) {
       if (!drawerState[isRequired[i]]) {
-        return false
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   return (
     <Drawer
       isOpen={isOpen}
       placement="right"
       onClose={() => {
-        onClose()
+        onClose();
       }}
-      size={IsDesktop() ? "lg" : "full"}
+      size={IsDesktop() ? 'lg' : 'full'}
     >
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader color="blue.900" borderBottomWidth="1px">
-          Editing: {candidate.first} {candidate.last}
+          Editing:
+          {' '}
+          {candidate.first}
+          {' '}
+          {candidate.last}
         </DrawerHeader>
         <DrawerBody overflowY="scroll">
           <SimpleGrid
@@ -313,7 +286,7 @@ const CandidateDrawer = ({
               </FormLabel>
               <Select
                 onChange={onChange}
-                onFocus={() => onFocus("grade")}
+                onFocus={() => onFocus('grade')}
                 value={drawerState.grade}
                 fontWeight="600"
                 color="blueGray.700"
@@ -334,7 +307,7 @@ const CandidateDrawer = ({
               </FormLabel>
               <Select
                 onChange={onChange}
-                onFocus={() => onFocus("position")}
+                onFocus={() => onFocus('position')}
                 value={drawerState.position}
                 fontWeight="600"
                 color="blueGray.700"
@@ -400,10 +373,11 @@ const CandidateDrawer = ({
               borderRadius="8px"
               value={drawerState.bio}
               onChange={onChange}
-              onFocus={() => onFocus("bio")}
+              onFocus={() => onFocus('bio')}
             />
             <FormHelperText fontWeight="600" color="blueGray.400">
-              {drawerState.bio?.length}/240
+              {drawerState.bio?.length}
+              /240
             </FormHelperText>
           </FormControl>
           <SimpleGrid
@@ -440,7 +414,7 @@ const CandidateDrawer = ({
                     type="file"
                     id="profilePictureUpload"
                     ref={profilePictureInputRef}
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                   />
                   <Button
                     color="blue.900"
@@ -457,7 +431,7 @@ const CandidateDrawer = ({
                     type="file"
                     id="profilePictureUpload"
                     ref={profilePictureInputRef}
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                   />
                   <Button
                     color="blue.900"
@@ -484,7 +458,7 @@ const CandidateDrawer = ({
           <Popover
             isOpen={deleteConfirmPopoverOpen}
             onClose={() => setDeleteConfirmPopoverOpen(false)}
-            closeOnBlur={true}
+            closeOnBlur
           >
             <PopoverTrigger>
               <Button
@@ -499,7 +473,7 @@ const CandidateDrawer = ({
                 Delete
               </Button>
             </PopoverTrigger>
-            <PopoverContent 
+            <PopoverContent
               borderRadius="8px"
             >
               <PopoverHeader border="0" fontWeight="bold" color="blue.900">
@@ -508,22 +482,23 @@ const CandidateDrawer = ({
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
-                Are you sure you want to delete {drawerState.first} {drawerState.last}? This action can't be undone.
+                {`Are you sure you want to delete ${drawerState.first} ${drawerState.last}?`}
+                This action can&apos;t be undone.
               </PopoverBody>
               <PopoverFooter border="0">
                 <Button
                   px="18px"
                   py="10px"
-                  borderRadius="8px"  
-                  mr="18px"      
-                  onClick={() => setDeleteConfirmPopoverOpen(false)}        
+                  borderRadius="8px"
+                  mr="18px"
+                  onClick={() => setDeleteConfirmPopoverOpen(false)}
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   px="18px"
                   py="10px"
-                  borderRadius="8px"                    
+                  borderRadius="8px"
                   variantColor="red"
                   onClick={() => deleteCandidate(position, index, toast)}
                 >
@@ -535,15 +510,15 @@ const CandidateDrawer = ({
           <Button
             onClick={() => {
               if (validateFields()) {
-                updateCandidate(position, index, toast, drawerState, newPhoto)
+                updateCandidate(position, index, toast, drawerState, newPhoto);
               } else {
                 toast({
                   title: 'Missing fields',
                   description: 'Please fill out all the required fields',
                   status: 'error',
                   duration: '7500',
-                  isClosable: true
-                })
+                  isClosable: true,
+                });
               }
             }}
             px="18px"
@@ -557,27 +532,27 @@ const CandidateDrawer = ({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};
 
 const AddCandidateDrawer = ({
   isOpen,
   onClose,
   addCandidate,
   toast,
-  isAdding
+  isAdding,
 }) => {
-  let photoForm = new FormData()
+  const photoForm = new FormData();
 
-  const [activeField, setActiveField] = React.useState("")
-  const profilePictureInputRef = React.useRef(null)
-  const [newPhoto, setNewPhoto] = React.useState(false)
+  const [activeField, setActiveField] = React.useState('');
+  const profilePictureInputRef = React.useRef(null);
+  const [newPhoto, setNewPhoto] = React.useState(false);
 
   const [drawerState, setDrawerState] = React.useState({
     first: undefined,
     last: undefined,
     grade: 9,
-    position: "president",
+    position: 'president',
     email: undefined,
     instagram: undefined,
     snapchat: undefined,
@@ -586,17 +561,17 @@ const AddCandidateDrawer = ({
     videoURL: undefined,
     photoURL: undefined,
     photoFileObject: null,
-  })
-  
+  });
 
-  const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL']
+
+  const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL'];
 
   useEffect(() => {
     setDrawerState({
       first: undefined,
       last: undefined,
       grade: 9,
-      position: "president",
+      position: 'president',
       email: undefined,
       instagram: undefined,
       snapchat: undefined,
@@ -605,55 +580,55 @@ const AddCandidateDrawer = ({
       videoURL: undefined,
       photoURL: undefined,
       photoFileObject: null,
-    })
-  }, [isOpen])
+    });
+  }, [isOpen]);
 
-  const onFocus = field => {
-    setActiveField(field)
-  }
+  const onFocus = (field) => {
+    setActiveField(field);
+  };
 
-  const onChange = event => {
+  const onChange = (event) => {
     setDrawerState({
       ...drawerState,
       [activeField]: event.target.value,
-    })
-  }
+    });
+  };
 
   const uploadProfilePhoto = () => {
-    profilePictureInputRef.current.click()
-  }
+    profilePictureInputRef.current.click();
+  };
 
-  const photoOnChange = e => {
-    e.stopPropagation()
-    e.preventDefault()
-    let file = e.target.files[0]
-    photoForm.append("file", file)
-    console.log(file)
+  const photoOnChange = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const file = e.target.files[0];
+    photoForm.append('file', file);
+    console.log(file);
     setDrawerState({
       ...drawerState,
       photoFileObject: file,
       photoURL: URL.createObjectURL(file),
-    })
-    setNewPhoto(true)
-  }
+    });
+    setNewPhoto(true);
+  };
 
   const validateFields = () => {
-    for (var i = 0; i < isRequired.length; i++) {
+    for (let i = 0; i < isRequired.length; i++) {
       if (!drawerState[isRequired[i]]) {
-        return false
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   return (
     <Drawer
       isOpen={isOpen}
       placement="right"
       onClose={() => {
-        onClose()
+        onClose();
       }}
-      size={IsDesktop() ? "lg" : "full"}
+      size={IsDesktop() ? 'lg' : 'full'}
     >
       <DrawerOverlay />
       <DrawerContent>
@@ -696,7 +671,7 @@ const AddCandidateDrawer = ({
               </FormLabel>
               <Select
                 onChange={onChange}
-                onFocus={() => onFocus("grade")}
+                onFocus={() => onFocus('grade')}
                 value={drawerState.grade}
                 fontWeight="600"
                 color="blueGray.700"
@@ -717,7 +692,7 @@ const AddCandidateDrawer = ({
               </FormLabel>
               <Select
                 onChange={onChange}
-                onFocus={() => onFocus("position")}
+                onFocus={() => onFocus('position')}
                 value={drawerState.position}
                 fontWeight="600"
                 color="blueGray.700"
@@ -783,10 +758,11 @@ const AddCandidateDrawer = ({
               borderRadius="8px"
               value={drawerState.bio}
               onChange={onChange}
-              onFocus={() => onFocus("bio")}
+              onFocus={() => onFocus('bio')}
             />
             <FormHelperText fontWeight="600" color="blueGray.400">
-              {drawerState.bio?.length}/240
+              {drawerState.bio?.length}
+              /240
             </FormHelperText>
           </FormControl>
           <SimpleGrid
@@ -823,7 +799,7 @@ const AddCandidateDrawer = ({
                     type="file"
                     id="profilePictureUpload"
                     ref={profilePictureInputRef}
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                   />
                   <Button
                     color="blue.900"
@@ -840,7 +816,7 @@ const AddCandidateDrawer = ({
                     type="file"
                     id="profilePictureUpload"
                     ref={profilePictureInputRef}
-                    style={{ display: "none" }}
+                    style={{ display: 'none' }}
                   />
                   <Button
                     color="blue.900"
@@ -867,15 +843,15 @@ const AddCandidateDrawer = ({
           <Button
             onClick={() => {
               if (validateFields()) {
-                addCandidate(drawerState, toast, newPhoto)
+                addCandidate(drawerState, toast, newPhoto);
               } else {
                 toast({
                   title: 'Missing fields',
                   description: 'Please fill out all the required fields',
                   status: 'error',
                   duration: '7500',
-                  isClosable: true
-                })
+                  isClosable: true,
+                });
               }
             }}
             px="18px"
@@ -889,44 +865,266 @@ const AddCandidateDrawer = ({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};
 
 export default class Candidates extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       dataLoading: true,
       candidates: {},
       isDrawerOpen: false,
-      activePosition: "president",
+      activePosition: 'president',
       activeIndex: 0,
       isDeleting: false,
       isUpdating: false,
       isAddCandidateDrawerOpen: false,
       isAdding: false,
       positions: [
-        // slightly janky - but for now, it works. This will be replaced with a server-side solution later
-        { display: "President", raw: "president" },
-        { display: "Vice President", raw: "vice-president" },
-        { display: "Secretary", raw: "secretary" },
-        { display: "Treasurer", raw: "treasurer" },
-        { display: "Social Convenor", raw: "social-convenor" },
-        { display: "Communications Manager", raw: "communications-manager" },
-        { display: "Design Manager", raw: "design-manager" },
+        // slightly janky - but for now, it works.
+        // TODO: replace with a server-side solution
+        { display: 'President', raw: 'president' },
+        { display: 'Vice President', raw: 'vice-president' },
+        { display: 'Secretary', raw: 'secretary' },
+        { display: 'Treasurer', raw: 'treasurer' },
+        { display: 'Social Convenor', raw: 'social-convenor' },
+        { display: 'Communications Manager', raw: 'communications-manager' },
+        { display: 'Design Manager', raw: 'design-manager' },
       ],
-    }
+    };
   }
 
   componentDidMount() {
-    this.getCandidates()
+    this.getCandidates();
+  }
+
+  closeDrawer = () => {
+    this.setState({
+      isDrawerOpen: false,
+    });
+  }
+
+  closeAddCandidateDrawer = () => {
+    this.setState({
+      isAddCandidateDrawerOpen: false,
+    });
+  }
+
+  editCandidate = (activePosition, activeIndex) => {
+    this.setState({
+      isDrawerOpen: true,
+      activePosition,
+      activeIndex,
+    });
+  }
+
+  deleteCandidate = async (position, index, toast) => {
+    this.setState({
+      isDeleting: true,
+    });
+    const candidateName = `${this.state.candidates[position][index].first} ${this.state.candidates[position][index].last}`;
+    const candidateID = this.state.candidates[position][index].id;
+    firebase.firestore().collection('candidates').doc(candidateID).delete()
+      .then(() => {
+        this.setState((prevState) => {
+          prevState.candidates[position].splice(index, 1);
+          return {
+            candidates: {
+              ...prevState.candidates,
+              [position]: prevState.candidates[position],
+            },
+            isDeleting: false,
+          };
+        }, () => {
+          toast({
+            title: 'Candidate Deleted',
+            description: `Deleted ${candidateName}`,
+            status: 'success',
+            duration: 7500,
+            isClosable: true,
+          });
+          this.closeDrawer();
+        });
+      });
+  }
+
+  updateCandidate = async (initialPosition, index, toast, drawerCandidate, newPhoto) => {
+    this.setState({
+      isUpdating: true,
+    });
+    const db = firebase.firestore();
+    const { position, id: candidateID } = drawerCandidate;
+    const candidateName = `${this.state.candidates[initialPosition][index].first} ${this.state.candidates[initialPosition][index].last}`;
+    let photoURL = null;
+    if (newPhoto) {
+      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, candidateID);
+    }
+
+    const updateData = {
+      first: drawerCandidate.first,
+      last: drawerCandidate.last,
+      bio: drawerCandidate.bio,
+      displayPosition: drawerCandidate.position
+        .replace('-', ' ')
+        .replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
+      email: drawerCandidate.email,
+      facebook: drawerCandidate.facebook,
+      instagram: drawerCandidate.instagram,
+      snapchat: drawerCandidate.snapchat,
+      photoURL: newPhoto ? photoURL : drawerCandidate.photoURL,
+      grade: drawerCandidate.grade,
+      position: db.collection('positions').doc(drawerCandidate.position),
+      videoURL: drawerCandidate.videoURL,
+      id: candidateID,
+    };
+
+    Object.keys(updateData)
+      .forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+    db.collection('candidates').doc(candidateID).update(updateData)
+      .then(() => {
+        if (initialPosition === position) {
+          this.setState((prevState) => ({
+            isUpdating: false,
+            candidates: {
+              ...prevState.candidates,
+              [position]: {
+                ...prevState.candidates[position],
+                [index]: updateData,
+              },
+            },
+          }));
+        } else {
+          this.setState((prevState) => {
+            // TODO: don't modify prevState
+            prevState.candidates[initialPosition].splice(index, 1);
+            prevState.candidates[position].push(updateData);
+            return {
+              isUpdating: false,
+              candidates: {
+                ...prevState.candidates,
+                [initialPosition]: prevState.candidates[initialPosition].length > 0
+                  ? prevState.candidates[initialPosition]
+                  : [],
+                [position]: prevState.candidates[position],
+              },
+            };
+          });
+        }
+        this.closeDrawer();
+        toast({
+          title: 'Candidate Updated',
+          description: `Updated ${candidateName}'s profile`,
+          status: 'success',
+          duration: 7500,
+          isClosable: true,
+        });
+      });
+  }
+
+  addCandidate = async (drawerCandidate, toast, newPhoto) => {
+    this.setState({
+      isAdding: true,
+    });
+    const db = firebase.firestore();
+    const candidateName = `${drawerCandidate.first} ${drawerCandidate.last}`;
+    let photoURL = null;
+    if (newPhoto) {
+      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject,
+        drawerCandidate.id);
+    }
+
+    const updateData = {
+      first: drawerCandidate.first,
+      last: drawerCandidate.last,
+      bio: drawerCandidate.bio,
+      displayPosition: drawerCandidate.position
+        .replace('-', ' ')
+        .replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
+      email: drawerCandidate.email,
+      facebook: drawerCandidate.facebook,
+      instagram: drawerCandidate.instagram,
+      snapchat: drawerCandidate.snapchat,
+      photoURL: newPhoto ? photoURL : undefined,
+      grade: drawerCandidate.grade,
+      position: db.collection('positions').doc(drawerCandidate.position),
+      videoURL: drawerCandidate.videoURL,
+      id: drawerCandidate.id,
+    };
+
+    Object.keys(updateData)
+      .forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+    db.collection('candidates').add(updateData).then((docRef) => {
+      this.setState((prevState) => {
+        prevState.candidates[drawerCandidate.position].push({ ...updateData, id: docRef.id });
+        return {
+          candidates: {
+            ...prevState.candidates,
+          },
+          isAdding: false,
+          isAddCandidateDrawerOpen: false,
+        };
+      }, () => {
+        toast({
+          title: 'Candidate Added',
+          description: `Added ${candidateName}`,
+          status: 'success',
+          duration: 7500,
+          isClosable: true,
+        });
+      });
+    });
+  }
+
+  // returns a firebase storage ref to the photo
+  uploadCandidatePhoto = async (photoObj, id) => {
+    const refName = `candidates/${id || Date.now()}`;
+    try {
+      const uploadTask = await firebase.storage().ref(refName).put(photoObj);
+      const photoURL = await uploadTask.ref.getDownloadURL();
+      return photoURL;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  getCandidates = async () => {
+    const db = firebase.firestore();
+    const candidateRef = db.collection('candidates');
+    const candidates = {};
+
+    try {
+      const positions = await db.collection('positions').get();
+      snapshotMap(positions.docs, async (position) => {
+        candidates[position.id] = [];
+        const positionDocRef = db.collection('positions').doc(position.id);
+        const res = await candidateRef.where('position', '==', positionDocRef).get();
+        res.forEach((doc) => {
+          candidates[position.id].push({ ...doc.data(), id: doc.id });
+        });
+      });
+      this.setState({
+        candidates,
+        dataLoading: false,
+      });
+      return true;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   }
 
   render() {
     return (
       <Layout>
-        <Header admin={true} title="Candidates" openDrawer={() => this.setState({isAddCandidateDrawerOpen: true})}/>
-        <AdminSEO title="Candidates"/>
+        <Header
+          admin
+          title="Candidates"
+          openDrawer={() => this.setState({ isAddCandidateDrawerOpen: true })}
+        />
+        <AdminSEO title="Candidates" />
         {this.state.dataLoading ? (
           <>
             <Skeleton
@@ -937,7 +1135,7 @@ export default class Candidates extends Component {
             />
             <Grid
               gridTemplateColumns={
-                window.innerWidth > 960 ? "repeat(auto-fill, 310px)" : "1fr"
+                window.innerWidth > 960 ? 'repeat(auto-fill, 310px)' : '1fr'
               }
               gridColumnGap="24px"
               gridRowGap="24px"
@@ -954,63 +1152,56 @@ export default class Candidates extends Component {
           </>
         ) : (
           <>
-            {this.state.positions.map(position => {
-              return (
-                <>
-                  <CandidateRow position={position.display}>
-                    {this.state["candidates"][position.raw].map(
-                      (candidate, index) => {
-                        return (
-                          <CandidateCard
-                            photoURL={candidate.photoURL}
-                            first={candidate.first}
-                            last={candidate.last}
-                            position={position.raw}
-                            index={index}
-                            editCandidate={this.editCandidate}
-                          />
-                        )
-                      }
-                    )}
-                  </CandidateRow>
-                </>
-              )
-            })}
+            {this.state.positions.map((position) => (
+              <>
+                <CandidateRow position={position.display}>
+                  {this.state.candidates[position.raw].map(
+                    (candidate, index) => (
+                      <CandidateCard
+                        photoURL={candidate.photoURL}
+                        first={candidate.first}
+                        last={candidate.last}
+                        position={position.raw}
+                        index={index}
+                        editCandidate={this.editCandidate}
+                      />
+                    ),
+                  )}
+                </CandidateRow>
+              </>
+            ))}
             <ToastProvider>
               <ToastContext.Consumer>
-                {toast => (
+                {(toast) => (
                   <>
-                  <CandidateDrawer
-                    deleteCandidate={this.deleteCandidate}
-                    updateCandidate={this.updateCandidate}
-                    position={this.state.activePosition}
-                    index={this.state.activeIndex}
-                    isOpen={this.state.isDrawerOpen}
-                    candidate={
-                      this.state.candidates[this.state.activePosition][this.state.activeIndex]
-                        ? 
-                      this.state.candidates[this.state.activePosition][this.state.activeIndex]
-                        : 
-                      {
-                        first: 'Deleted',
-                        last: 'Candidate',
-                        grade: "Deleted",
-                        position: "Deleted",
-                        email: "Deleted"
-                      }
-                    }
-                    onClose={this.closeDrawer}
-                    toast={toast}
-                    isDeleting={this.state.isDeleting}
-                    isUpdating={this.state.isUpdating}
-                  />
-                  <AddCandidateDrawer
-                    isOpen={this.state.isAddCandidateDrawerOpen}
-                    addCandidate={this.addCandidate}
-                    onClose={this.closeAddCandidateDrawer}
-                    toast={toast}
-                    isAdding={this.state.isAdding}
-                  />
+                    <CandidateDrawer
+                      deleteCandidate={this.deleteCandidate}
+                      updateCandidate={this.updateCandidate}
+                      position={this.state.activePosition}
+                      index={this.state.activeIndex}
+                      isOpen={this.state.isDrawerOpen}
+                      candidate={
+                          this.state.candidates[this.state.activePosition][this.state.activeIndex]
+                          || {
+                            first: 'Deleted',
+                            last: 'Candidate',
+                            grade: 'Deleted',
+                            position: 'Deleted',
+                            email: 'Deleted',
+                          }
+                        }
+                      onClose={this.closeDrawer}
+                      toast={toast}
+                      isDeleting={this.state.isDeleting}
+                      isUpdating={this.state.isUpdating}
+                    />
+                    <AddCandidateDrawer
+                      isOpen={this.state.isAddCandidateDrawerOpen}
+                      addCandidate={this.addCandidate}
+                      onClose={this.closeAddCandidateDrawer}
+                      toast={toast}
+                      isAdding={this.state.isAdding}
+                    />
                   </>
                 )}
               </ToastContext.Consumer>
@@ -1018,222 +1209,6 @@ export default class Candidates extends Component {
           </>
         )}
       </Layout>
-    )
-  }
-
-  closeDrawer = () => {
-    this.setState({
-      isDrawerOpen: false,
-    })
-  }
-
-  closeAddCandidateDrawer = () => {
-    this.setState({
-      isAddCandidateDrawerOpen: false,
-    })
-  }
-
-  editCandidate = (activePosition, activeIndex) => {
-    this.setState({
-      isDrawerOpen: true,
-      activePosition: activePosition,
-      activeIndex: activeIndex,
-    })
-  }
-
-  deleteCandidate = async (position, index, toast) => {
-    this.setState({
-      isDeleting: true
-    })
-    let candidateName = `${this.state.candidates[position][index].first} ${this.state.candidates[position][index].last}`
-    let candidateID = this.state.candidates[position][index].id
-     firebase.firestore().collection("candidates").doc(candidateID).delete()
-     .then(() => {
-      this.setState(prevState => {
-        prevState.candidates[position].splice(index, 1)
-        return {
-         candidates: {
-           ...prevState.candidates,
-           [position]: prevState.candidates[position]
-         },
-         isDeleting: false
-        }
-       }, () => {
-         toast({
-           title: "Candidate Deleted",
-           description: `Deleted ${candidateName}`,
-           status: "success",
-           duration: 7500,
-           isClosable: true
-         })
-         this.closeDrawer()
-       })
-     })
-  }
-
-  updateCandidate = async (initialPosition, index, toast, drawerCandidate, newPhoto) => {
-    this.setState({
-      isUpdating: true
-    })
-    let position = drawerCandidate.position
-    let candidateName = `${this.state.candidates[initialPosition][index].first} ${this.state.candidates[initialPosition][index].last}`
-    let candidateID = drawerCandidate.id
-    let photoURL = null
-    if (newPhoto) {
-      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.id)
-    }
-    
-    let updateData = {
-      first: drawerCandidate.first,
-      last: drawerCandidate.last,
-      bio: drawerCandidate.bio,
-      displayPosition: drawerCandidate.position.replace("-", " ").replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
-      email: drawerCandidate.email,
-      facebook: drawerCandidate.facebook,
-      instagram: drawerCandidate.instagram,
-      snapchat: drawerCandidate.snapchat,
-      photoURL: newPhoto ? photoURL : drawerCandidate.photoURL,
-      grade: drawerCandidate.grade,
-      position: firebase.firestore().collection("positions").doc(drawerCandidate.position),
-      videoURL: drawerCandidate.videoURL,
-      id: drawerCandidate.id
-    }
-
-    for (var field in updateData) {
-      if (updateData[field] == undefined) {
-        delete updateData[field]
-      }
-    }
-
-    firebase.firestore().collection("candidates").doc(candidateID).update(updateData).then(() => {
-      if (initialPosition === position) {
-        this.setState(prevState => {
-          prevState.candidates[position][index] = updateData
-          return {
-          isUpdating: false,
-          candidates: {
-            ...prevState.candidates,
-            [position]: prevState.candidates[position]
-          }
-        }})
-      } else {
-        this.setState(prevState => {
-          prevState.candidates[initialPosition].splice(index, 1)
-          prevState.candidates[position].push(updateData)
-          return {
-          isUpdating: false,
-          candidates: {
-            ...prevState.candidates,
-            [initialPosition]: prevState.candidates[initialPosition].length > 0 ? prevState.candidates[initialPosition] : [],
-            [position]: prevState.candidates[position]
-          }
-        }})
-      }
-      this.closeDrawer()
-      toast({
-        title: "Candidate Updated",
-        description: `Updated ${candidateName}'s profile`,
-        status: 'success',
-        duration: 7500,
-        isClosable: true
-      })
-    })
-  }
-
-  addCandidate = async (drawerCandidate, toast, newPhoto) => {
-    this.setState({
-      isAdding: true
-    })
-    let position = drawerCandidate.position
-    let candidateName = `${drawerCandidate.first} ${drawerCandidate.last}`
-    let candidateID = drawerCandidate.id
-    let photoURL = null
-    if (newPhoto) {
-      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, drawerCandidate.id)
-    }
-    
-    let updateData = {
-      first: drawerCandidate.first,
-      last: drawerCandidate.last,
-      bio: drawerCandidate.bio,
-      displayPosition: drawerCandidate.position.replace("-", " ").replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
-      email: drawerCandidate.email,
-      facebook: drawerCandidate.facebook,
-      instagram: drawerCandidate.instagram,
-      snapchat: drawerCandidate.snapchat,
-      photoURL: newPhoto ? photoURL : undefined,
-      grade: drawerCandidate.grade,
-      position: firebase.firestore().collection("positions").doc(drawerCandidate.position),
-      videoURL: drawerCandidate.videoURL,
-      id: drawerCandidate.id
-    }
-
-    for (var field in updateData) {
-      if (updateData[field] == undefined) {
-        delete updateData[field]
-      }
-    }
-
-    firebase.firestore().collection("candidates").add(updateData).then((docRef) => {
-      this.setState(prevState => {
-        prevState.candidates[drawerCandidate.position].push(Object.assign(updateData, {id: docRef.id}))
-        return {
-            candidates: {
-              ...prevState.candidates
-            },
-            isAdding: false,
-            isAddCandidateDrawerOpen: false
-        }
-      }, () => {
-        toast({
-          title: "Candidate Added",
-          description: `Added ${candidateName}`,
-          status: "success",
-          duration: 7500,
-          isClosable: true
-        })
-      })
-    })
-
-  }
-
-  // returns a firebase storage ref to the photo
-  uploadCandidatePhoto = async (photoObj, id) => {
-    let refName = `candidates/${id ? id : Date.now()}`
-    let childName = id
-    try {
-      const uploadTask = await firebase.storage().ref(refName).put(photoObj);
-      const photoURL = await uploadTask.ref.getDownloadURL()
-      return photoURL
-    } catch (err) {
-      throw new Error(err)
-    }
-
-  }
-
-  getCandidates = async () => {
-    const db = firebase.firestore()
-    const candidateRef = db.collection("candidates")
-    const candidates = {}
-
-    try {
-        const positions = await db.collection("positions").get()
-        for (const position of positions.docs) {
-            candidates[position.id] = []
-            var positionDocRef = db.collection("positions").doc(position.id)
-            const res = await candidateRef.where("position", "==", positionDocRef).get()
-            res.forEach(doc => {
-                candidates[position.id].push({ ...doc.data(), id: doc.id })
-            })
-        }
-        this.setState({
-            candidates: candidates,
-            dataLoading: false
-        })
-        return true
-    } catch (err) {
-        console.log(err)
-        return false
-    } 
+    );
   }
 }

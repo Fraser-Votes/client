@@ -1,27 +1,29 @@
-import React from "react"
-import PropTypes from "prop-types"
-import { navigate } from "gatsby"
-import { isLoggedIn, isAdmin, isBrowser } from "../utils/auth"
+import React from 'react';
+import PropTypes from 'prop-types';
+import { navigate } from 'gatsby';
+import { isLoggedIn, isAdmin, isBrowser } from '../utils/auth';
 
-const PrivateRoute = ({ component: Component, admin, location, ...rest }) => {
+const PrivateRoute = ({
+  component: Component, admin, location, ...rest
+}) => {
   if (admin) {
-    if (!isAdmin() && isBrowser() && location.pathname !== `/app/login`) {
-      navigate(`app/login`)
-      return null
+    if (!isAdmin() && isBrowser() && location.pathname !== '/app/login') {
+      navigate('app/login');
+      return null;
     }
-  }
-  else if (!isLoggedIn() && isBrowser() && location.pathname !== `/app/login`) {
+  } else if (!isLoggedIn() && isBrowser() && location.pathname !== '/app/login') {
     // If we’re not logged in, redirect to the home page.
-    navigate(`/app/login`)
-    return null
+    navigate('/app/login');
+    return null;
   }
 
-  return <Component {...rest} />
-}
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <Component {...rest} />;
+};
 
 PrivateRoute.propTypes = {
-  component: PropTypes.any.isRequired,
-  admin: PropTypes.bool.isRequired
-}
+  component: PropTypes.elementType.isRequired,
+  admin: PropTypes.bool.isRequired,
+};
 
-export default PrivateRoute
+export default PrivateRoute;
