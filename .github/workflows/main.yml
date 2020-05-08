@@ -15,10 +15,18 @@ jobs:
       run: npm ci
     - name: Build static files
       run: npm run build
+      env:
+        projectId: ${{ secrets.PROJECT_ID }}
+        authDomain: auth.fraservotes.com
+        databaseUrl: ${{ secrets.DATABASE }}
+        storageBucket: ${{ secrets.STORAGE }}
+        apiKey: ${{ secrets.API_KEY }}
+        messagingSenderId: ${{ secrets.MESSAGING_ID }}
+        appId: ${{ secrets.APP_ID }}
     - name: Deploy to Firebase
       uses: w9jds/firebase-action@master
       with:
         args: deploy --only hosting
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        PROJECT_ID: fraser-votes
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
