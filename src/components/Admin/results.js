@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import Layout from "../Layout"
+import ResultsChart from "./Charting/ResultsChart"
 import { sortByKey } from "../../utils/helpers"
 import { IsMobile } from "../../utils/mediaQueries"
 import { Box, Text, Grid } from "@chakra-ui/core"
@@ -44,10 +45,8 @@ export default class Results extends Component {
         {this.state.resultsLoading ?
           "Loading"
           :
-          <Grid>
-            {this.state.results.map((results) => {
-              // return <ResultsChart results={results.results} position={results.position}/>
-            })}
+          <Grid templateColumns="repeat(auto-fit, minmax(500px, 1fr))">
+            {this.state.results.map(results => <ResultsChart results={results.results} position={results.position} />)}
           </Grid>
         }
       </Layout>
@@ -63,17 +62,17 @@ export default class Results extends Component {
       const positions = positionRef.data().order
 
       const results = await Promise.all(positions.map(async (position) => {
-          const positionResults = await Promise.all(
-            Object.keys(resultData[position]).map(async (id) => {
-              const ref = await db.collection("candidates").doc(id).get()
-              const candidate = ref.data()
-              const name = candidate.first + " " + candidate.last
-              const photoURL = candidate.photoURL
-              return { name, photoURL, count: resultData[position][id] }
-            })
-          )
-          return { position, results: sortByKey(positionResults, "count") }
-        })
+        const positionResults = await Promise.all(
+          Object.keys(resultData[position]).map(async (id) => {
+            const ref = await db.collection("candidates").doc(id).get()
+            const candidate = ref.data()
+            const name = candidate.first + " " + candidate.last
+            const photoURL = candidate.photoURL
+            return { name, photoURL, count: resultData[position][id] }
+          })
+        )
+        return { position, results: sortByKey(positionResults, "count") }
+      })
       )
       this.setState({ results, resultsLoading: false })
     } catch (err) {
