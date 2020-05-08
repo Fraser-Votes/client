@@ -10,3 +10,21 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/functions';
 import 'firebase/storage';
+import React from 'react';
+
+export const onRenderBody = ({ pathname, setPostBodyComponents }) => {
+    if (window.location.href.includes("/app")) {
+        setPostBodyComponents([
+            <script defer data-cfasync="false" type="text/javascript"
+                dangerouslySetInnerHTML={{
+                    __html: `
+                        window.civchat = {
+                            apiKey: "eWKGsg",
+                        };
+                        `
+                }}
+            />,
+            <script defer data-cfasync="false" type="text/javascript" src="https://fraservotes.user.com/widget.js"></script>
+        ])
+    }
+}
