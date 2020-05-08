@@ -69,7 +69,7 @@ export default class Results extends Component {
         {this.state.resultsLoading
           ? 'Loading'
           : (
-            <Grid templateColumns="repeat(auto-fit, minmax(500px, 1fr))">
+            <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
               {this.state.results.map((results) => (
                 <ResultsChart results={results.results} position={results.position} />
               ))}
