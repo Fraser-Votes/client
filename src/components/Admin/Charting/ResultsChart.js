@@ -6,9 +6,11 @@ import './ReferrersChart.css';
 export default class ResultsChart extends Component {
   constructor(props) {
     super(props);
+    let data = this.props.results.map((result) => result.count);
+    let categories = this.props.results.map((result) => result.name)
     this.state = {
       series: [{
-        data: this.props.results.map((result) => result.count),
+        data: data,
       }],
       options: {
         chart: {
@@ -17,7 +19,16 @@ export default class ResultsChart extends Component {
           toolbar: { show: false },
         },
         xaxis: {
-          categories: this.props.results.map((result) => result.name),
+          categories: categories,
+          labels: {
+            show: false,
+          },
+          axisBorder: {
+            show: false,
+          },
+          axisTicks: {
+            show: false,
+          },
         },
         plotOptions: {
           bar: {
@@ -35,11 +46,19 @@ export default class ResultsChart extends Component {
           enabled: true,
           textAnchor: 'start',
           style: { colors: ['#486581'] },
+          offsetY: 6,
+          offsetX: 6,
+          formatter(val, opt) {
+            return opt.w.globals.labels[opt.dataPointIndex];
+          },
         },
         yaxis: {
           opposite: true,
           labels: {
             show: true,
+            formatter(val) {
+              return data[categories.indexOf(val)];
+            },
             style: {
               color: ['#486581'],
               fontSize: '14px',

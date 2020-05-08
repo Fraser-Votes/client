@@ -1097,7 +1097,7 @@ export default class Candidates extends Component {
 
     try {
       const positions = await db.collection('positions').get();
-      snapshotMap(positions.docs, async (position) => {
+      await snapshotMap(positions.docs, async (position) => {
         candidates[position.id] = [];
         const positionDocRef = db.collection('positions').doc(position.id);
         const res = await candidateRef.where('position', '==', positionDocRef).get();
@@ -1106,7 +1106,7 @@ export default class Candidates extends Component {
         });
       });
       this.setState({
-        candidates,
+        candidates: candidates,
         dataLoading: false,
       });
       return true;

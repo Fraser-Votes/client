@@ -7,7 +7,7 @@ import { navigate } from 'gatsby';
 import Header from './Header';
 import Layout from './Layout';
 import { IsDesktop } from '../utils/mediaQueries';
-import snapshotMap from '../utils/helpers';
+import { snapshotMap } from '../utils/helpers';
 import SEO from './seo';
 import PlaceholderImage from '../images/placeholder.jpg';
 
