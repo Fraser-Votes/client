@@ -34,7 +34,6 @@ const Header = ({ title, openDrawer }) => (
       {title}
     </Text>
     <Button
-      mt="4px"
       borderRadius="8px"
       px="18px"
       py="12px"
