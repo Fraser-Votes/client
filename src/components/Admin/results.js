@@ -73,9 +73,10 @@ export default class Results extends Component {
             const ref = await db.collection('candidates').doc(id).get();
             const candidate = ref.data();
             const name = `${candidate.first} ${candidate.last}`;
+            const { grade } = candidate;
             const { photoURL } = candidate;
             return {
-              name, photoURL, count: resultData[position][id], id,
+              name, photoURL, count: resultData[position][id], id, grade,
             };
           }),
         );
@@ -93,10 +94,19 @@ export default class Results extends Component {
       this.setState({ publishing: true });
 
       this.state.results.map((result) => {
-        publicResults[result.position] = result.results[0].id;
+        const tempResult = result.results[0];
+        publicResults[result.position] = {
+          id: tempResult.id,
+          name: tempResult.name,
+          photoURL: tempResult.photoURL ? tempResult.photoURL : null,
+          grade: tempResult.grade,
+        };
       });
 
       await firebase.firestore().collection('election').doc('public_results').set(publicResults);
+      await firebase.firestore().collection('election').doc('voting').update({
+        resultsPublished: true,
+      });
 
       this.setState({ publishing: false });
       toast({
