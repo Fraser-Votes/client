@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox,
+  Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox, InputGroup, InputRightAddon, Input,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
 import { withPrefix } from 'gatsby';
@@ -97,6 +97,21 @@ const FileCard = ({ name, size, removeKeyFile }) => (
   </Box>
 );
 
+const NeutralButton = ({ onClick, text, isLoading }) => (
+  <Button
+    onClick={onClick}
+    _hover={{ bg: 'rgba(220, 238, 251, 0.5);' }}
+    backgroundColor="blue.50"
+    color="blue.800"
+    px="18px"
+    py="12px"
+    borderRadius="8px"
+    isLoading={isLoading}
+  >
+    {text}
+  </Button>
+);
+
 export default class Settings extends Component {
   constructor(props) {
     super(props);
@@ -110,6 +125,8 @@ export default class Settings extends Component {
       fileSize: null,
       isCounting: false,
       votes: null,
+      adminEmail: null,
+      settingAdmin: false,
     };
   }
 
@@ -285,6 +302,56 @@ export default class Settings extends Component {
     });
   }
 
+  handleInputChange = (event) => {
+    this.setState({
+      adminEmail: event.target.value,
+    });
+  }
+
+  addAdmin = async (toast) => {
+    try {
+      this.setState({
+        settingAdmin: true,
+      });
+
+      await firebase.firestore().collection('users').doc(this.state.adminEmail).update({
+        admin: true,
+      });
+
+      toast({
+        title: 'Added Admin',
+        description: `${this.state.adminEmail} is now an admin.`,
+        status: 'success',
+        duration: 10000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.log('Error creating admin: ', err);
+
+      this.setState({
+        settingAdmin: false,
+      });
+
+      if (err.code === 'not-found') {
+        toast({
+          title: "User doesn't exist",
+          description: 'Please add the user first.',
+          status: 'error',
+          duration: 10000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Error Adding Admin',
+          description: 'Please try again',
+          status: 'error',
+          duration: 10000,
+          isClosable: true,
+        });
+      }
+    }
+  }
+
   render() {
     return (
       <Layout>
@@ -334,7 +401,7 @@ export default class Settings extends Component {
                         </Text>
                       </Box>
                     </Box>
-                    <Box>
+                    <Box mb="32px">
                       <SettingHeader
                         title="Count Votes"
                         description="Please upload this election’s private key. This is required in order to decrypt and  count all the ballots."
@@ -372,18 +439,20 @@ export default class Settings extends Component {
                           </Button>
                         </>
                       ) : (
-                        <Button
-                          onClick={this.uploadKeyFile}
-                          _hover={{ bg: 'rgba(220, 238, 251, 0.5);' }}
-                          backgroundColor="blue.50"
-                          color="blue.800"
-                          px="18px"
-                          py="12px"
-                          borderRadius="8px"
-                        >
-                          Upload Key
-                        </Button>
+                        <NeutralButton onClick={this.uploadKeyFile} text="Upload Key" />
                       )}
+                    </Box>
+                    <Box>
+                      <SettingHeader
+                        title="Add Administrator"
+                        description="This will allow them to view the Admin section of this app and edit all settings. They must have a pdsb.net email to be added."
+                      />
+                      <InputGroup mb="16px" maxWidth="400px">
+                        { /* eslint-disable-next-line react/no-children-prop */ }
+                        <InputRightAddon fontWeight="600" backgroundColor="blue.50" color="blue.700" roundedRight="8px" children="@pdsb.net" />
+                        <Input value={this.state.adminEmail} onChange={this.handleInputChange} color="blueGrey.500" fontWeight="600" roundedLeft="8px" placeholder="Email" />
+                      </InputGroup>
+                      <NeutralButton isLoading={this.state.settingAdmin} onClick={() => this.addAdmin(toast)} text="Add Admin" />
                     </Box>
                   </>
                 )}
