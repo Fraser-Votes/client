@@ -1,11 +1,11 @@
-import React from "react"
-import Login from "../components/Login"
-import { LightMode } from "@chakra-ui/core"
+import React from 'react';
+import { LightMode } from '@chakra-ui/core';
+import Login from '../components/Login';
 
 const IndexPage = () => (
-    <LightMode>
-        <Login/>
-    </LightMode>
-)
+  <LightMode>
+    <Login />
+  </LightMode>
+);
 
-export default IndexPage
+export default IndexPage;

@@ -1,93 +1,170 @@
-import React, { Component } from "react"
-import Layout from "../Layout"
-import { IsMobile } from "../../utils/mediaQueries"
-import { Box, Text, Grid } from "@chakra-ui/core"
-import AdminSEO from "../adminSEO"
-import firebase from "gatsby-plugin-firebase"
-import ResultsChart from "./Charting/ResultsChart"
+import React, { Component } from 'react';
+import {
+  Box, Text, Grid, Button, useToast, Skeleton,
+} from '@chakra-ui/core';
+import firebase from 'gatsby-plugin-firebase';
+import Layout from '../Layout';
+import ResultsChart from './Charting/ResultsChart';
+import { sortByKey } from '../../utils/helpers';
+import { IsMobile } from '../../utils/mediaQueries';
+import AdminSEO from '../adminSEO';
 
-const Header = ({ title }) => {
-  return (
-    <Box
-      mt={IsMobile() ? "46px" : "12px"}
-      h="76px"
-      display="flex"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-    >
-      <Text fontSize="2xl" fontWeight="bold" color="blueGray.900">
-        {title}
-      </Text>
-    </Box>
-  )
+const ToastContext = React.createContext(() => { });
+function ToastProvider({ children }) {
+  const toast = useToast();
+  return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>;
 }
+
+const Header = ({
+  title, publishResults, loading, toast,
+}) => (
+  <Box
+    mt={IsMobile() ? '46px' : '12px'}
+    h="76px"
+    display="flex"
+    flexDirection="row"
+    justifyContent="space-between"
+    alignItems="center"
+    mb="4px"
+  >
+    <Text fontSize="2xl" fontWeight="bold" color="blueGray.900">
+      {title}
+    </Text>
+    <Button
+      borderRadius="8px"
+      px="18px"
+      py="12px"
+      fontSize="14px"
+      fontWeight="600"
+      variantColor="blue"
+      onClick={() => publishResults(toast)}
+      isLoading={loading}
+    >
+      Publish Results
+    </Button>
+  </Box>
+);
 
 export default class Results extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       results: null,
       resultsLoading: true,
-    }
+      publishing: false,
+    };
   }
 
   componentDidMount() {
-      this.getResults()
+    this.getResults();
+  }
+
+  getResults = async () => {
+    const db = firebase.firestore();
+    try {
+      const resultsRef = await db.collection('election').doc('results').get();
+      const resultData = resultsRef.data();
+      const positionRef = await db.collection('election').doc('positions').get();
+      const positions = positionRef.data().order;
+
+      const results = await Promise.all(positions.map(async (position) => {
+        const positionResults = await Promise.all(
+          Object.keys(resultData[position]).map(async (id) => {
+            const ref = await db.collection('candidates').doc(id).get();
+            const candidate = ref.data();
+            const name = `${candidate.first} ${candidate.last}`;
+            const { grade } = candidate;
+            const { photoURL } = candidate;
+            return {
+              name, photoURL, count: resultData[position][id], id, grade,
+            };
+          }),
+        );
+        return { position, results: sortByKey(positionResults, 'count') };
+      }));
+      this.setState({ results, resultsLoading: false });
+    } catch (err) {
+      console.error('Error getting results: ', err);
+    }
+  }
+
+  publishResults = async (toast) => {
+    try {
+      const publicResults = {};
+      this.setState({ publishing: true });
+
+      this.state.results.map((result) => {
+        const tempResult = result.results[0];
+        publicResults[result.position] = {
+          id: tempResult.id,
+          name: tempResult.name,
+          photoURL: tempResult.photoURL ? tempResult.photoURL : null,
+          grade: tempResult.grade,
+        };
+      });
+
+      await firebase.firestore().collection('election').doc('public_results').set(publicResults);
+      await firebase.firestore().collection('election').doc('voting').update({
+        resultsPublished: true,
+      });
+
+      this.setState({ publishing: false });
+      toast({
+        title: 'Results Published',
+        description: 'Results have been published to the results page.',
+        status: 'success',
+        duration: 10000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.log('Error publishing results: ', err);
+      this.setState({
+        publishing: false,
+      });
+      toast({
+        title: 'Error publishing results',
+        description: err,
+        status: 'error',
+        duration: 10000,
+        isClosable: true,
+      });
+    }
   }
 
   render() {
     return (
       <Layout>
-        <AdminSEO title="Results" />
-        <Header title="Results" />
-        {this.state.resultsLoading ? 
-        "Loading" 
-        : 
-        <Grid>
-            {this.state.results.map((results) => {
-                return <ResultsChart results={results.results} position={results.position}/>
-            })}
-        </Grid>
-        }
+        <ToastProvider>
+          <ToastContext.Consumer>
+            {(toast) => (
+              <>
+                <>
+                  <AdminSEO title="Results" />
+                  <Header toast={toast} loading={this.state.publishing} title="Results" publishResults={this.publishResults} />
+                </>
+                <>
+                  {this.state.resultsLoading
+                    ? (
+                      <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
+                        <Skeleton height="35vh" borderRadius="12px" />
+                        <Skeleton height="35vh" borderRadius="12px" />
+                        <Skeleton height="35vh" borderRadius="12px" />
+                        <Skeleton height="35vh" borderRadius="12px" />
+                      </Grid>
+                    )
+                    : (
+                      <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
+                        {this.state.results.map((results) => (
+                          <ResultsChart results={results.results} position={results.position} />
+                        ))}
+                      </Grid>
+                    )}
+                </>
+              </>
+            )}
+          </ToastContext.Consumer>
+        </ToastProvider>
       </Layout>
-    )
+    );
   }
-
-  getResults = async () => {
-      try {
-
-        let resultsRef = await firebase.firestore().collection("election").doc("results").get()
-        let results = resultsRef.data()
-
-        let positionOrderRef = await firebase.firestore().collection("election").doc("positions").get()
-        let positions = positionOrderRef.data().order
-        console.log(positions)
-
-        let parsedResults = []
-        for (var index in positions) {
-            let position = positions[index]
-            let tempResultsObj = []
-            Object.keys(results[position]).forEach( async (candidateID) => {
-                let candidateRef = await firebase.firestore().collection("candidates").doc(candidateID).get()
-                let candidate = candidateRef.data()
-                let name = candidate.first + " " + candidate.last
-                tempResultsObj.push({x: name, y: results[position][candidateID]})
-            })
-            parsedResults.push({
-                position: position,
-                results: tempResultsObj
-            })
-        }
-
-        console.log(parsedResults)
-        this.setState({
-            results: parsedResults,
-            resultsLoading: false
-        })
-      } catch(err) {
-          console.error("Error getting results: ", err)
-      }
-  }
-
 }
