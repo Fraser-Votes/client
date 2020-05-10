@@ -189,6 +189,7 @@ export default class Settings extends Component {
         }),
       ));
 
+      await db.collection('election').doc('voting').update({ votesCounted: true });
       await db.collection('election').doc('results').set(votes);
       this.setState({
         isCounting: false,

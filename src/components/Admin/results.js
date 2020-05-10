@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Box, Text, Grid, Button, useToast, Skeleton,
+  Box, Text, Grid, Button, useToast, Skeleton, Image,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
 import Layout from '../Layout';
@@ -8,6 +8,7 @@ import ResultsChart from './Charting/ResultsChart';
 import { sortByKey } from '../../utils/helpers';
 import { IsMobile } from '../../utils/mediaQueries';
 import AdminSEO from '../adminSEO';
+import EmptyStateImage from '../../images/empty-state.svg';
 
 const ToastContext = React.createContext(() => { });
 function ToastProvider({ children }) {
@@ -15,8 +16,31 @@ function ToastProvider({ children }) {
   return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>;
 }
 
+const Empty = () => (
+  <>
+    <Box
+      h="80vh"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      paddingBottom="4vh"
+    >
+      <Image h="45%" src={EmptyStateImage} />
+      <Text marginTop="16px" fontWeight="bold" fontSize="20px" color="blueGray.500">
+        No results available.
+      </Text>
+      <Text marginTop="8px" textAlign="center" fontWeight="regular" fontSize="16px" color="blueGray.500">
+        The votes haven&apos;t been counted yet.
+        <br />
+        Please go into settings to close voting and count votes.
+      </Text>
+    </Box>
+  </>
+);
+
 const Header = ({
-  title, publishResults, loading, toast, resultsPublished, unpublishResults,
+  title, publishResults, loading, toast, resultsPublished, unpublishResults, disabled,
 }) => (
   <Box
     mt={IsMobile() ? '46px' : '12px'}
@@ -34,6 +58,7 @@ const Header = ({
       borderRadius="8px"
       px="18px"
       py="12px"
+      disabled={disabled}
       fontSize="14px"
       fontWeight="600"
       variantColor="blue"
@@ -53,6 +78,7 @@ export default class Results extends Component {
       resultsLoading: true,
       publishing: false,
       resultStatus: false,
+      votesCounted: false,
     };
   }
 
@@ -63,29 +89,42 @@ export default class Results extends Component {
   getResults = async () => {
     const db = firebase.firestore();
     try {
-      const resultsRef = await db.collection('election').doc('results').get();
-      const resultData = resultsRef.data();
-      const positionRef = await db.collection('election').doc('positions').get();
-      const positions = positionRef.data().order;
-      const resultStatusRef = await db.collection('election').doc('voting').get();
-      const resultStatus = resultStatusRef.data().resultsPublished;
+      const electionStatusRef = await db.collection('election').doc('voting').get();
+      const electionStatus = electionStatusRef.data();
 
-      const results = await Promise.all(positions.map(async (position) => {
-        const positionResults = await Promise.all(
-          Object.keys(resultData[position]).map(async (id) => {
-            const ref = await db.collection('candidates').doc(id).get();
-            const candidate = ref.data();
-            const name = `${candidate.first} ${candidate.last}`;
-            const { grade } = candidate;
-            const { photoURL } = candidate;
-            return {
-              name, photoURL, count: resultData[position][id], id, grade,
-            };
-          }),
-        );
-        return { position, results: sortByKey(positionResults, 'count') };
-      }));
-      this.setState({ results, resultsLoading: false, resultStatus });
+      if (electionStatus.votesCounted) {
+        const resultsRef = await db.collection('election').doc('results').get();
+        const resultData = resultsRef.data();
+        const positionRef = await db.collection('election').doc('positions').get();
+        const positions = positionRef.data().order;
+
+        const results = await Promise.all(positions.map(async (position) => {
+          const positionResults = await Promise.all(
+            Object.keys(resultData[position]).map(async (id) => {
+              const ref = await db.collection('candidates').doc(id).get();
+              const candidate = ref.data();
+              const name = `${candidate.first} ${candidate.last}`;
+              const { grade } = candidate;
+              const { photoURL } = candidate;
+              return {
+                name, photoURL, count: resultData[position][id], id, grade,
+              };
+            }),
+          );
+          return { position, results: sortByKey(positionResults, 'count') };
+        }));
+        this.setState({
+          results,
+          resultsLoading: false,
+          resultStatus: electionStatus.resultStatus,
+          votesCounted: electionStatus.votesCounted,
+        });
+      } else {
+        this.setState({
+          votesCounted: electionStatus.votesCounted,
+          resultsLoading: false,
+        });
+      }
     } catch (err) {
       console.error('Error getting results: ', err);
     }
@@ -176,7 +215,7 @@ export default class Results extends Component {
               <>
                 <>
                   <AdminSEO title="Results" />
-                  <Header toast={toast} loading={this.state.publishing || this.state.resultsLoading} unpublishResults={this.unpublishResults} resultsPublished={this.state.resultStatus} title="Results" publishResults={this.publishResults} />
+                  <Header toast={toast} disabled={!this.state.votesCounted} loading={this.state.publishing || this.state.resultsLoading} unpublishResults={this.unpublishResults} resultsPublished={this.state.resultStatus} title="Results" publishResults={this.publishResults} />
                 </>
                 <>
                   {this.state.resultsLoading
@@ -188,13 +227,15 @@ export default class Results extends Component {
                         <Skeleton height="35vh" borderRadius="12px" />
                       </Grid>
                     )
-                    : (
-                      <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
-                        {this.state.results.map((results) => (
-                          <ResultsChart results={results.results} position={results.position} />
-                        ))}
-                      </Grid>
-                    )}
+                    : this.state.votesCounted
+                      ? (
+                        <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
+                          {this.state.results.map((results) => (
+                            <ResultsChart results={results.results} position={results.position} />
+                          ))}
+                        </Grid>
+                      )
+                      : <Empty />}
                 </>
               </>
             )}
