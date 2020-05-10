@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox, InputGroup, InputRightAddon, Input,
+  Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox, InputGroup, InputRightAddon, Input, Skeleton,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
 import { withPrefix } from 'gatsby';
@@ -189,6 +189,7 @@ export default class Settings extends Component {
         }),
       ));
 
+      await db.collection('election').doc('voting').update({ votesCounted: true });
       await db.collection('election').doc('results').set(votes);
       this.setState({
         isCounting: false,
@@ -366,7 +367,11 @@ export default class Settings extends Component {
         </Helmet>
         <Grid gridTemplateRows="auto fit-content(50%) auto">
           {this.state.loading ? (
-            'Loading'
+            <>
+              <Skeleton mb="16px" width="120px" height="24px" borderRadius="8px" />
+              <Skeleton mb="16px" width="200px" height="20px" borderRadius="8px" />
+              <Skeleton width="300px" height="40px" borderRadius="8px" />
+            </>
           ) : (
             <ToastProvider>
               <ToastContext.Consumer>
