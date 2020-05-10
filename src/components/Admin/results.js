@@ -116,7 +116,7 @@ export default class Results extends Component {
         this.setState({
           results,
           resultsLoading: false,
-          resultStatus: electionStatus.resultStatus,
+          resultStatus: electionStatus.resultsPublished,
           votesCounted: electionStatus.votesCounted,
         });
       } else {
