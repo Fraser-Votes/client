@@ -16,7 +16,7 @@ function ToastProvider({ children }) {
 }
 
 const Header = ({
-  title, publishResults, loading, toast,
+  title, publishResults, loading, toast, resultsPublished, unpublishResults,
 }) => (
   <Box
     mt={IsMobile() ? '46px' : '12px'}
@@ -37,10 +37,10 @@ const Header = ({
       fontSize="14px"
       fontWeight="600"
       variantColor="blue"
-      onClick={() => publishResults(toast)}
+      onClick={() => (resultsPublished ? unpublishResults(toast) : publishResults(toast))}
       isLoading={loading}
     >
-      Publish Results
+      { resultsPublished ? 'Unpublish Results' : 'Publish Results' }
     </Button>
   </Box>
 );
@@ -52,6 +52,7 @@ export default class Results extends Component {
       results: null,
       resultsLoading: true,
       publishing: false,
+      resultStatus: false,
     };
   }
 
@@ -66,6 +67,8 @@ export default class Results extends Component {
       const resultData = resultsRef.data();
       const positionRef = await db.collection('election').doc('positions').get();
       const positions = positionRef.data().order;
+      const resultStatusRef = await db.collection('election').doc('voting').get();
+      const resultStatus = resultStatusRef.data().resultsPublished;
 
       const results = await Promise.all(positions.map(async (position) => {
         const positionResults = await Promise.all(
@@ -82,7 +85,7 @@ export default class Results extends Component {
         );
         return { position, results: sortByKey(positionResults, 'count') };
       }));
-      this.setState({ results, resultsLoading: false });
+      this.setState({ results, resultsLoading: false, resultStatus });
     } catch (err) {
       console.error('Error getting results: ', err);
     }
@@ -108,7 +111,7 @@ export default class Results extends Component {
         resultsPublished: true,
       });
 
-      this.setState({ publishing: false });
+      this.setState({ publishing: false, resultStatus: true });
       toast({
         title: 'Results Published',
         description: 'Results have been published to the results page.',
@@ -131,6 +134,39 @@ export default class Results extends Component {
     }
   }
 
+  unpublishResults = async (toast) => {
+    try {
+      this.setState({
+        publishing: true,
+      });
+      await firebase.firestore().collection('election').doc('voting').update({
+        resultsPublished: false,
+      });
+      this.setState({
+        publishing: false,
+        resultStatus: false,
+      });
+      toast({
+        title: 'Results unpublished',
+        description: 'Results are no longer publicly visible',
+        status: 'success',
+        duration: 10000,
+        isClosable: true,
+      });
+    } catch (err) {
+      this.setState({
+        publishing: false,
+      });
+      toast({
+        title: 'Error unpublishing results',
+        description: 'Please try again',
+        status: 'error',
+        duration: 10000,
+        isClosable: true,
+      });
+    }
+  }
+
   render() {
     return (
       <Layout>
@@ -140,7 +176,7 @@ export default class Results extends Component {
               <>
                 <>
                   <AdminSEO title="Results" />
-                  <Header toast={toast} loading={this.state.publishing} title="Results" publishResults={this.publishResults} />
+                  <Header toast={toast} loading={this.state.publishing || this.state.resultsLoading} unpublishResults={this.unpublishResults} resultsPublished={this.state.resultStatus} title="Results" publishResults={this.publishResults} />
                 </>
                 <>
                   {this.state.resultsLoading
