@@ -43,7 +43,7 @@ const CandidateRow = ({ position, children }) => (
 const CandidateCard = ({
   first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection, votingClosed, id,
 }) => {
-  const currSelect = currentSelection === `${first.toLowerCase()}-${last.toLowerCase()}`;
+  const currSelect = currentSelection === id;
 
   return (
     <Box
@@ -70,7 +70,8 @@ const CandidateCard = ({
       </Text>
       <Checkbox
         onChange={() => { onChecked(position, id, currSelect, first, last, photoURL); }}
-        isDisabled={(isDisabled && currentSelection !== id) || voted || votingClosed}
+        isChecked={currSelect}
+        isDisabled={voted || votingClosed}
         variantColor="teal"
         ml="auto"
         mr="12px"
@@ -101,8 +102,9 @@ const ModalCandidateCard = ({
         fontWeight="600"
         fontSize="16px"
         color="blueGray.700"
+        textTransform="capitalize"
       >
-        {position}
+        {position.replace('-', ' ')}
       </Text>
       <Text
         fontWeight="600"
@@ -203,12 +205,12 @@ export default class Candidates extends Component {
   }
 
   createCandidateCards = () => {
-    const cards = Object.values(this.state.votes).map((candidate) => (
+    const cards = Object.keys(this.state.votes).map((position) => (
       <ModalCandidateCard
-        position={candidate[0]?.displayPosition}
-        first={candidate.first}
-        last={candidate.last}
-        photoURL={candidate.photoURL}
+        position={position}
+        first={this.state.votes[position].first}
+        last={this.state.votes[position].last}
+        photoURL={this.state.votes[position].photoURL}
       />
     ));
 
