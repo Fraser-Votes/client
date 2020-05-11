@@ -948,6 +948,12 @@ export default class Candidates extends Component {
       });
   }
 
+  youtubeParser = (url) => {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[7].length === 11 ? match[7] : false;
+  };
+
   updateCandidate = async (initialPosition, index, toast, drawerCandidate, newPhoto) => {
     this.setState({
       isUpdating: true,
@@ -955,71 +961,87 @@ export default class Candidates extends Component {
     const db = firebase.firestore();
     const { position, id: candidateID } = drawerCandidate;
     const candidateName = `${this.state.candidates[initialPosition][index].first} ${this.state.candidates[initialPosition][index].last}`;
-    let photoURL = null;
-    if (newPhoto) {
-      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, candidateID);
-    }
 
-    const updateData = {
-      first: drawerCandidate.first,
-      last: drawerCandidate.last,
-      bio: drawerCandidate.bio,
-      displayPosition: drawerCandidate.position
-        .replace('-', ' ')
-        .replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
-      email: drawerCandidate.email,
-      facebook: drawerCandidate.facebook,
-      instagram: drawerCandidate.instagram,
-      snapchat: drawerCandidate.snapchat,
-      photoURL: newPhoto ? photoURL : drawerCandidate.photoURL,
-      grade: drawerCandidate.grade,
-      position: db.collection('positions').doc(drawerCandidate.position),
-      videoURL: drawerCandidate.videoURL,
-      id: candidateID,
-    };
-
-    Object.keys(updateData)
-      .forEach((key) => updateData[key] === undefined && delete updateData[key]);
-
-    db.collection('candidates').doc(candidateID).update(updateData)
-      .then(() => {
-        if (initialPosition === position) {
-          this.setState((prevState) => ({
-            isUpdating: false,
-            candidates: {
-              ...prevState.candidates,
-              [position]: {
-                ...prevState.candidates[position],
-                [index]: updateData,
-              },
-            },
-          }));
-        } else {
-          this.setState((prevState) => {
-            // TODO: don't modify prevState
-            prevState.candidates[initialPosition].splice(index, 1);
-            prevState.candidates[position].push(updateData);
-            return {
-              isUpdating: false,
-              candidates: {
-                ...prevState.candidates,
-                [initialPosition]: prevState.candidates[initialPosition].length > 0
-                  ? prevState.candidates[initialPosition]
-                  : [],
-                [position]: prevState.candidates[position],
-              },
-            };
-          });
-        }
-        this.closeDrawer();
+    if (drawerCandidate.videoURL) {
+      if (!this.youtubeParser(drawerCandidate.videoURL)) {
         toast({
-          title: 'Candidate Updated',
-          description: `Updated ${candidateName}'s profile`,
-          status: 'success',
-          duration: 7500,
+          title: 'Youtube link invalid',
+          description: 'Use a valid youtube video link',
+          status: 'error',
+          duration: 10000,
           isClosable: true,
         });
-      });
+        this.setState({ isUpdating: false });
+      } else {
+        console.log(this.youtubeParser(drawerCandidate.videoURL));
+        let photoURL = null;
+        if (newPhoto) {
+          photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, candidateID);
+        }
+
+        const updateData = {
+          first: drawerCandidate.first,
+          last: drawerCandidate.last,
+          bio: drawerCandidate.bio,
+          displayPosition: drawerCandidate.position
+            .replace('-', ' ')
+            .replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
+          email: drawerCandidate.email,
+          facebook: drawerCandidate.facebook,
+          instagram: drawerCandidate.instagram,
+          snapchat: drawerCandidate.snapchat,
+          photoURL: newPhoto ? photoURL : drawerCandidate.photoURL,
+          grade: drawerCandidate.grade,
+          position: db.collection('positions').doc(drawerCandidate.position),
+          videoURL: drawerCandidate.videoURL,
+          id: candidateID,
+        };
+
+        Object.keys(updateData)
+          .forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+        db.collection('candidates').doc(candidateID).update(updateData)
+          .then(() => {
+            if (initialPosition === position) {
+              this.setState((prevState) => {
+                // eslint-disable-next-line no-param-reassign
+                prevState.candidates[position][index] = updateData;
+                return {
+                  isUpdating: false,
+                  candidates: {
+                    ...prevState.candidates,
+                    [position]: prevState.candidates[position],
+                  },
+                };
+              });
+            } else {
+              this.setState((prevState) => {
+                // TODO: don't modify prevState
+                prevState.candidates[initialPosition].splice(index, 1);
+                prevState.candidates[position].push(updateData);
+                return {
+                  isUpdating: false,
+                  candidates: {
+                    ...prevState.candidates,
+                    [initialPosition]: prevState.candidates[initialPosition].length > 0
+                      ? prevState.candidates[initialPosition]
+                      : [],
+                    [position]: prevState.candidates[position],
+                  },
+                };
+              });
+            }
+            this.closeDrawer();
+            toast({
+              title: 'Candidate Updated',
+              description: `Updated ${candidateName}'s profile`,
+              status: 'success',
+              duration: 7500,
+              isClosable: true,
+            });
+          });
+      }
+    }
   }
 
   addCandidate = async (drawerCandidate, toast, newPhoto) => {
@@ -1028,53 +1050,64 @@ export default class Candidates extends Component {
     });
     const db = firebase.firestore();
     const candidateName = `${drawerCandidate.first} ${drawerCandidate.last}`;
-    let photoURL = null;
-    if (newPhoto) {
-      photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject,
-        drawerCandidate.id);
-    }
+    if (!this.youtubeParser(drawerCandidate.videoURL)) {
+      toast({
+        title: 'Youtube link invalid',
+        description: 'Use a valid youtube video link',
+        status: 'error',
+        duration: 10000,
+        isClosable: true,
+      });
+      this.setState({ isAdding: false });
+    } else {
+      let photoURL = null;
+      if (newPhoto) {
+        photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject,
+          drawerCandidate.id);
+      }
 
-    const updateData = {
-      first: drawerCandidate.first,
-      last: drawerCandidate.last,
-      bio: drawerCandidate.bio,
-      displayPosition: drawerCandidate.position
-        .replace('-', ' ')
-        .replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
-      email: drawerCandidate.email,
-      facebook: drawerCandidate.facebook,
-      instagram: drawerCandidate.instagram,
-      snapchat: drawerCandidate.snapchat,
-      photoURL: newPhoto ? photoURL : undefined,
-      grade: drawerCandidate.grade,
-      position: db.collection('positions').doc(drawerCandidate.position),
-      videoURL: drawerCandidate.videoURL,
-      id: drawerCandidate.id,
-    };
+      const updateData = {
+        first: drawerCandidate.first,
+        last: drawerCandidate.last,
+        bio: drawerCandidate.bio,
+        displayPosition: drawerCandidate.position
+          .replace('-', ' ')
+          .replace(/\w{3,}/g, (match) => match.replace(/\w/, (m) => m.toUpperCase())),
+        email: drawerCandidate.email,
+        facebook: drawerCandidate.facebook,
+        instagram: drawerCandidate.instagram,
+        snapchat: drawerCandidate.snapchat,
+        photoURL: newPhoto ? photoURL : undefined,
+        grade: drawerCandidate.grade,
+        position: db.collection('positions').doc(drawerCandidate.position),
+        videoURL: drawerCandidate.videoURL,
+        id: drawerCandidate.id,
+      };
 
-    Object.keys(updateData)
-      .forEach((key) => updateData[key] === undefined && delete updateData[key]);
+      Object.keys(updateData)
+        .forEach((key) => updateData[key] === undefined && delete updateData[key]);
 
-    db.collection('candidates').add(updateData).then((docRef) => {
-      this.setState((prevState) => {
-        prevState.candidates[drawerCandidate.position].push({ ...updateData, id: docRef.id });
-        return {
-          candidates: {
-            ...prevState.candidates,
-          },
-          isAdding: false,
-          isAddCandidateDrawerOpen: false,
-        };
-      }, () => {
-        toast({
-          title: 'Candidate Added',
-          description: `Added ${candidateName}`,
-          status: 'success',
-          duration: 7500,
-          isClosable: true,
+      db.collection('candidates').add(updateData).then((docRef) => {
+        this.setState((prevState) => {
+          prevState.candidates[drawerCandidate.position].push({ ...updateData, id: docRef.id });
+          return {
+            candidates: {
+              ...prevState.candidates,
+            },
+            isAdding: false,
+            isAddCandidateDrawerOpen: false,
+          };
+        }, () => {
+          toast({
+            title: 'Candidate Added',
+            description: `Added ${candidateName}`,
+            status: 'success',
+            duration: 7500,
+            isClosable: true,
+          });
         });
       });
-    });
+    }
   }
 
   // returns a firebase storage ref to the photo
@@ -1105,7 +1138,7 @@ export default class Candidates extends Component {
         });
       });
       this.setState({
-        candidates: candidates,
+        candidates,
         dataLoading: false,
       });
       return true;
