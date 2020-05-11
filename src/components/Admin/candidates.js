@@ -174,7 +174,6 @@ const CandidateDrawer = ({
   const isRequired = ['first', 'last', 'grade', 'position', 'email', 'bio', 'videoURL'];
 
   useEffect(() => {
-    console.log('effect');
     setDrawerState({
       first: candidate.first,
       last: candidate.last,
@@ -213,7 +212,6 @@ const CandidateDrawer = ({
     e.preventDefault();
     const file = e.target.files[0];
     photoForm.append('file', file);
-    console.log(file);
     setDrawerState({
       ...drawerState,
       photoFileObject: file,
@@ -602,7 +600,6 @@ const AddCandidateDrawer = ({
     e.preventDefault();
     const file = e.target.files[0];
     photoForm.append('file', file);
-    console.log(file);
     setDrawerState({
       ...drawerState,
       photoFileObject: file,
@@ -973,7 +970,6 @@ export default class Candidates extends Component {
         });
         this.setState({ isUpdating: false });
       } else {
-        console.log(this.youtubeParser(drawerCandidate.videoURL));
         let photoURL = null;
         if (newPhoto) {
           photoURL = await this.uploadCandidatePhoto(drawerCandidate.photoFileObject, candidateID);
