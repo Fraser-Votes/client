@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Box, Text, Image, Divider, Grid,
+  Box, Text, Image, Divider, Grid, Skeleton,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
 import { navigate } from 'gatsby';
@@ -135,7 +135,16 @@ export default class Results extends Component {
         <SEO title="Results" />
         {/* eslint-disable-next-line no-nested-ternary */}
         {this.state.loading
-          ? 'Loading'
+          ? (
+            <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(250px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
+              <Skeleton minHeight="250px" borderRadius="12px" />
+              <Skeleton minHeight="250px" borderRadius="12px" />
+              <Skeleton minHeight="250px" borderRadius="12px" />
+              <Skeleton minHeight="250px" borderRadius="12px" />
+              <Skeleton minHeight="250px" borderRadius="12px" />
+              <Skeleton minHeight="250px" borderRadius="12px" />
+            </Grid>
+          )
           : this.state.resultsPublished
             ? (
               <Grid mb="40px" templateColumns="repeat(auto-fit, minmax(250px, 1fr))" gridColumnGap="40px" gridRowGap="40px">
