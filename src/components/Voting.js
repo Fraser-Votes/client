@@ -208,8 +208,8 @@ export default class Candidates extends Component {
     const cards = Object.keys(this.state.votes).map((position) => (
       <ModalCandidateCard
         position={position}
-        first={this.state.votes[position].first}
-        last={this.state.votes[position].last}
+        first={this.state.votes[position].first ? this.state.votes[position].first : 'No Candidate Selected'}
+        last={this.state.votes[position].last ? this.state.votes[position].last : ''}
         photoURL={this.state.votes[position].photoURL}
       />
     ));
@@ -230,45 +230,66 @@ export default class Candidates extends Component {
         },
       },
     }), () => {
+      console.log(this.voteValidator());
       this.setState({
         validated: this.voteValidator(),
       });
     });
   }
 
-  confirmVote = () => {
+  confirmVote = (toast) => {
     const votesValid = this.voteValidator();
     if (votesValid) {
       this.setState({
         confirmationOpen: true,
       });
+    } else {
+      toast({
+        title: 'No candidates selected',
+        description: 'Please select at least one candidate',
+        status: 'error',
+        duration: 10000,
+        isClosable: true,
+      });
     }
   }
 
   // TODO: allow incomplete ballot
-  voteValidator = () => Object.values(this.state.votes).every((vote) => vote.candidateID !== null)
+  voteValidator = () => {
+    let validated = false;
+    Object.values(this.state.votes).map((vote) => {
+      if (vote.candidateID) {
+        validated = true;
+      }
+    });
+    return validated;
+  }
 
   getPublicKey = async () => {
     const keyDoc = await firebase.firestore().collection('admin').doc('keys').get();
     this.setState({ publicKey: keyDoc.data().public });
   }
 
-  encryptCandidate = async (candidateID, position) => {
-    const { openpgp } = window;
-    await openpgp.initWorker({ path: withPrefix('../js/openpgp.worker.min.js') });
-    const res = await openpgp.key.readArmored(this.state.publicKey);
-    const { data: encrypted } = await openpgp.encrypt({
-      message: openpgp.message.fromText(candidateID),
-      publicKeys: res.keys,
-    });
-    await new Promise((resolve) => this.setState((prevState) => ({
-      parsedVotes: {
-        ...prevState.parsedVotes,
-        [position]: encrypted,
-      },
-    }), () => {
-      resolve();
-    }));
+  encryptCandidate = async (position) => {
+    if (position[1].candidateID) {
+      const { openpgp } = window;
+      await openpgp.initWorker({ path: withPrefix('../js/openpgp.worker.min.js') });
+      const res = await openpgp.key.readArmored(this.state.publicKey);
+      const { data: encrypted } = await openpgp.encrypt({
+        message: openpgp.message.fromText(position[1].candidateID),
+        publicKeys: res.keys,
+      });
+      await new Promise((resolve) => this.setState((prevState) => ({
+        parsedVotes: {
+          ...prevState.parsedVotes,
+          [position[0]]: encrypted,
+        },
+      }), () => {
+        resolve();
+      }));
+    } else {
+      return true;
+    }
   }
 
   submitVote = async (toast) => {
@@ -279,12 +300,15 @@ export default class Candidates extends Component {
     const functions = firebase.functions();
     const addVote = functions.httpsCallable('vote');
     const ops = Object.entries(this.state.votes)
-      .map((position, vote) => this.encryptCandidate(vote.candidateID, position));
+      .map((position) => this.encryptCandidate(position));
     Promise.all(ops).then(() => {
       const parsedVotes = {};
       Object.keys(this.state.votes).forEach((position) => {
-        parsedVotes[position] = this.state.parsedVotes[position];
+        if (this.state.parsedVotes[position]) {
+          parsedVotes[position] = this.state.parsedVotes[position];
+        }
       });
+      console.log(parsedVotes);
       this.setState({ voteSubmitting: true });
       addVote({ votes: parsedVotes }).then(() => {
         this.setState({
@@ -405,24 +429,24 @@ export default class Candidates extends Component {
           {this.state.dataLoading
             ? <Skeleton margin="auto" width="140px" height="48px" borderRadius="12px" />
             : (
-              <>
-                <Box width="100%" display="flex" alignItems="center">
-                  <Button
-                    onClick={() => this.confirmVote()}
-                    margin="auto"
-                    size="lg"
-                    variantColor="teal"
-                    borderRadius="12px"
-                    px="64px"
-                    py="16px"
-                    marginBottom="24px"
-                    isDisabled={!this.state.validated || this.state.voted}
-                  >
-                    Confirm
-                  </Button>
-                </Box>
-                <ToastContext.Consumer>
-                  {(toast) => (
+              <ToastContext.Consumer>
+                {(toast) => (
+                  <>
+                    <Box width="100%" display="flex" alignItems="center">
+                      <Button
+                        onClick={() => this.confirmVote(toast)}
+                        margin="auto"
+                        size="lg"
+                        variantColor="teal"
+                        borderRadius="12px"
+                        px="64px"
+                        py="16px"
+                        marginBottom="24px"
+                        isDisabled={!this.state.validated || this.state.voted}
+                      >
+                        Confirm
+                      </Button>
+                    </Box>
                     <Modal
                       isOpen={this.state.confirmationOpen}
                       onClose={() => this.setState({
@@ -454,9 +478,9 @@ export default class Candidates extends Component {
                         </ModalFooter>
                       </ModalContent>
                     </Modal>
-                  )}
-                </ToastContext.Consumer>
-              </>
+                  </>
+                )}
+              </ToastContext.Consumer>
             )}
         </Layout>
       </ToastProvider>
