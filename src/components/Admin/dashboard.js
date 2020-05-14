@@ -40,7 +40,7 @@ const StatItem = ({
   </Box>
 );
 
-const Stats = ({ stats, mobile }) => (
+const Stats = ({ topStats, newUserStats, votingStats, mobile }) => (
   <Box
     borderRadius="12px"
     border="2px solid rgba(217, 226, 236, 0.55)"
@@ -58,7 +58,7 @@ const Stats = ({ stats, mobile }) => (
     <StatItem
       mobile={mobile}
       first
-      stat={stats[1]}
+      stat={topStats[1]}
       title="Page Views"
     />
     <Divider
@@ -67,7 +67,7 @@ const Stats = ({ stats, mobile }) => (
       borderColor="blueGray.100"
       orientation="vertical"
     />
-    <StatItem mobile={mobile} stat={stats[4]} title="Votes Casted" />
+    <StatItem mobile={mobile} stat={votingStats} title="Votes Casted" />
     <Divider
       display={mobile ? 'none' : ''}
       height="85%"
@@ -78,7 +78,7 @@ const Stats = ({ stats, mobile }) => (
     <StatItem
       mobile={mobile}
       bounce
-      stat={stats[2]}
+      stat={topStats[2]}
       title="Bounce Rate"
     />
     <Divider
@@ -87,7 +87,7 @@ const Stats = ({ stats, mobile }) => (
       borderColor="blueGray.100"
       orientation="vertical"
     />
-    <StatItem mobile={mobile} stat={stats[3]} title="New Users" />
+    <StatItem mobile={mobile} stat={newUserStats} title="New Users" />
   </Box>
 );
 
@@ -97,7 +97,9 @@ export default class Dashboard extends Component {
     this.state = {
       labels: [],
       plot: [],
-      stats: [],
+      topStats: [],
+      newUserStats: {},
+      votingStats: {},
       referrerNames: [],
       referrerCounts: [],
       topPagesCounts: [],
@@ -139,6 +141,8 @@ export default class Dashboard extends Component {
       mode: 'cors',
       credentials: 'omit',
     };
+
+    // get the 3 main stats
     fetch(`https://plausible.io/api/stats/fraservotes.com/main-graph?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D`, fetchOptions)
       .then((res) => res.json())
       .then((data) => {
@@ -146,34 +150,37 @@ export default class Dashboard extends Component {
           labels: data.labels,
           plot: data.plot,
           present_index: data.present_index,
-          stats: data.top_stats,
+          topStats: data.top_stats,
           loading2: false,
         });
       });
 
+    // get new user signups
     fetch(`https://plausible.io/api/stats/fraservotes.com/main-graph?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3A%22New%20User%22%7D`, fetchOptions)
       .then((res) => res.json())
       .then((data) => {
         const topStat = { ...data.top_stats[1], name: 'new users' };
-        this.setState((prevState) => ({
-          stats: [...prevState.stats, topStat],
+        this.setState({
+          newUserStats: topStat,
           loading1: false,
-        }));
+        });
       });
 
+    // get voting stats
     fetch(`https://plausible.io/api/stats/fraservotes.com/main-graph?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3A%22Vote%22%7D`, fetchOptions)
       .then((res) => res.json())
       .then((data) => {
         const topStat = { ...data.top_stats[1], name: 'votes' };
-        this.setState((prevState) => ({
-          stats: [...prevState.stats, topStat],
-        }), () => {
+        this.setState({
+          votingStats: topStat,
+        }, () => {
           this.setState({
             loading3: false,
           });
         });
       });
 
+    // get top referrers
     fetch(`https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=8`, fetchOptions)
       .then((res) => res.json())
       .then((data) => {
@@ -192,6 +199,7 @@ export default class Dashboard extends Component {
         });
       });
 
+    // get top pages
     fetch(`https://plausible.io/api/stats/fraservotes.com/pages?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=30`, fetchOptions)
       .then((res) => res.json())
       .then((data) => {
@@ -214,6 +222,7 @@ export default class Dashboard extends Component {
         });
       });
 
+    // get main graph of audience
     fetch(
       `https://plausible.io/api/stats/fraservotes.com/main-graph?period=7d&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D`, fetchOptions,
     )
@@ -321,7 +330,7 @@ export default class Dashboard extends Component {
                     gridRowGap="40px"
                   >
                     <Box gridArea="1 / 1 / 2 / 2">
-                      <Stats stats={this.state.stats} />
+                      <Stats topStats={this.state.topStats} newUserStats={this.state.newUserStats} votingStats={this.state.votingStats} />
                     </Box>
                     <Box gridArea="2 / 1 / 3 / 2">
                       <LiveUsersChart
@@ -351,9 +360,9 @@ export default class Dashboard extends Component {
               ) : (
                 <>
                   {this.innerWidth < 700 ? (
-                    <Stats mobile stats={this.state.stats} />
+                    <Stats mobile topStats={this.state.topStats} newUserStats={this.state.newUserStats} votingStats={this.state.votingStats} />
                   ) : (
-                    <Stats stats={this.state.stats} />
+                    <Stats topStats={this.state.topStats} newUserStats={this.state.newUserStats} votingStats={this.state.votingStats} />
                   )}
                   <LiveUsersChart
                     presentIndex={this.state.present_index}
