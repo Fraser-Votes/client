@@ -67,7 +67,7 @@ const Stats = ({ topStats, newUserStats, votingStats, mobile }) => (
       borderColor="blueGray.100"
       orientation="vertical"
     />
-    <StatItem mobile={mobile} stat={votingStats} title="Votes Casted" />
+    <StatItem mobile={mobile} stat={votingStats} title="Votes Cast" />
     <Divider
       display={mobile ? 'none' : ''}
       height="85%"
