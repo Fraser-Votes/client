@@ -18,6 +18,7 @@
     "gatsby-plugin-create-client-paths": "^2.1.24",
     "gatsby-plugin-firebase": "^0.2.0-beta.4",
     "gatsby-plugin-react-helmet": "^3.1.21",
+    "gatsby-plugin-sentry": "^1.0.1",
     "gatsby-plugin-sharp": "^2.5.3",
     "gatsby-plugin-web-font-loader": "^1.0.4",
     "gatsby-source-filesystem": "^2.1.46",

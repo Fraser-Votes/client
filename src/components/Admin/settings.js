@@ -365,7 +365,7 @@ export default class Settings extends Component {
             src={withPrefix('../js/openpgp.worker.min.js')}
           />
         </Helmet>
-        <Grid gridTemplateRows="auto fit-content(50%) auto">
+        <Grid mb="40px" gridTemplateRows="auto fit-content(50%) auto">
           {this.state.loading ? (
             <>
               <Skeleton mb="16px" width="120px" height="24px" borderRadius="8px" />
