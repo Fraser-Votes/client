@@ -5,7 +5,7 @@ require('dotenv').config({
 module.exports = {
   siteMetadata: {
     title: 'Fraser Votes',
-    description: 'An online voting platform for John Fraser Secondary School. Made by students for students.',
+    description: 'An online voting platform for student elections. Made by students for students.',
     author: 'Fraser Votes Team',
   },
   plugins: [
