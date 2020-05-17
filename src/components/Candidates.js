@@ -67,8 +67,9 @@ const CandidateRow = ({ position, children }) => (
       fontWeight="bold"
       color="blueGray.900"
       mb="18px"
+      textTransform="capitalize"
     >
-      {position}
+      {position.replace('-', ' ')}
     </Text>
     <Grid gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 210px)' : '1fr'} gridColumnGap="40px" gridRowGap="24px">
       {children}
@@ -83,17 +84,7 @@ export default class Candidates extends Component {
     this.state = {
       candidates: null,
       dataLoading: true,
-      positions: [
-        // slightly janky - but for now, it works.
-        // TODO: replace with a server-side solution
-        { display: 'President', raw: 'president' },
-        { display: 'Vice President', raw: 'vice-president' },
-        { display: 'Secretary', raw: 'secretary' },
-        { display: 'Treasurer', raw: 'treasurer' },
-        { display: 'Social Convenor', raw: 'social-convenor' },
-        { display: 'Communications Manager', raw: 'communications-manager' },
-        { display: 'Design Manager', raw: 'design-manager' },
-      ],
+      positions: [],
     };
   }
 
@@ -109,6 +100,9 @@ export default class Candidates extends Component {
 
       try {
         const positions = await db.collection('positions').get();
+        const positionOrderRef = await db.collection('election').doc('positions').get();
+        const positionOrder = positionOrderRef.data().order;
+
         await snapshotMap(positions.docs, async (position) => {
           candidates[position.id] = [];
           const positionDocRef = db.collection('positions').doc(position.id);
@@ -120,6 +114,7 @@ export default class Candidates extends Component {
         this.setState({
           candidates,
           dataLoading: false,
+          positions: positionOrder,
         });
         return true;
       } catch (err) {
@@ -146,8 +141,8 @@ export default class Candidates extends Component {
               </>
             )
             : this.state.positions.map((position) => (
-              <CandidateRow position={position.display}>
-                {this.state.candidates[position.raw].map((candidate) => (
+              <CandidateRow position={position}>
+                {this.state.candidates[position].map((candidate) => (
                   <CandidateCard
                     first={candidate.first}
                     last={candidate.last}

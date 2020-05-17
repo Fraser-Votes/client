@@ -31,8 +31,9 @@ const CandidateRow = ({ position, children }) => (
       fontWeight="bold"
       color="blueGray.900"
       mb="18px"
+      textTransform="capitalize"
     >
-      {position}
+      {position.replace('-', ' ')}
     </Text>
     <Grid gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'} gridColumnGap="24px" gridRowGap="24px">
       {children}
@@ -132,68 +133,8 @@ export default class Candidates extends Component {
       voted: false,
       votingEnded: false,
       votingOpen: false,
-      votes: {
-        president: {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-        'vice-president': {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-        secretary: {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-        treasurer: {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-        'communications-manager': {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-        'social-convenor': {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-        'design-manager': {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
-        },
-      },
-      positions: [
-        // slightly janky - but for now, it works.
-        // TODO: replace with a server-side solution later
-        { display: 'President', raw: 'president' },
-        { display: 'Vice President', raw: 'vice-president' },
-        { display: 'Secretary', raw: 'secretary' },
-        { display: 'Treasurer', raw: 'treasurer' },
-        { display: 'Social Convenor', raw: 'social-convenor' },
-        { display: 'Communications Manager', raw: 'communications-manager' },
-        { display: 'Design Manager', raw: 'design-manager' },
-      ],
+      votes: {},
+      positions: [],
       confirmationOpen: false,
     };
   }
@@ -366,6 +307,20 @@ export default class Candidates extends Component {
 
     try {
       const positions = await db.collection('positions').get();
+      const positionOrderRef = await db.collection('election').doc('positions').get();
+      const positionOrder = positionOrderRef.data().order;
+
+      const votes = {};
+      positionOrder.map((position) => {
+        votes[position] = {
+          candidateID: null,
+          first: null,
+          last: null,
+          photoURL: null,
+          selected: false,
+        };
+      });
+
       await snapshotMap(positions.docs, async (position) => {
         candidates[position.id] = [];
         const positionDocRef = db.collection('positions').doc(position.id);
@@ -377,6 +332,8 @@ export default class Candidates extends Component {
       this.setState({
         candidates,
         dataLoading: false,
+        positions: positionOrder,
+        votes,
       });
       return true;
     } catch (err) {
@@ -408,19 +365,19 @@ export default class Candidates extends Component {
             )
             : this.state.positions.map((position) => (
               <>
-                <CandidateRow position={position.display}>
-                  {this.state.candidates[position.raw].map((candidate) => (
+                <CandidateRow position={position}>
+                  {this.state.candidates[position].map((candidate) => (
                     <CandidateCard
                       id={candidate.id}
                       onChecked={this.createVote}
-                      currentSelection={this.state.votes[position.raw].candidateID}
-                      isDisabled={this.state.votes[position.raw].selected}
+                      currentSelection={this.state.votes[position].candidateID}
+                      isDisabled={this.state.votes[position].selected}
                       voted={this.state.voted}
                       votingClosed={!this.state.votingOpen}
                       photoURL={candidate.photoURL}
                       first={candidate.first}
                       last={candidate.last}
-                      position={position.raw}
+                      position={position}
                     />
                   ))}
                 </CandidateRow>
