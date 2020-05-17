@@ -158,24 +158,28 @@ const CandidateDescription = ({ candidate }) => {
       py={isDesktop ? '60px' : '40px'}
       mx={isDesktop ? '120px' : '40px'}
     >
-      <AspectRatioBox
-        borderRadius="24px"
-        overflow="hidden"
-        maxW="100%"
-        ratio={isDesktop ? 16 / 8 : 16 / 12}
-      >
-        <Box
-          as="iframe"
-          title={`${candidate.first} ${candidate.last}'s Campaign Video`}
-          src={`${candidate.videoURL.replace('watch?v=', 'embed/')}?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&`}
-          allowFullScreen
-          frameborde="0"
-          scrolling="no"
-          marginheight="0"
-          marginwidth="0"
-          type="text/html"
-        />
-      </AspectRatioBox>
+      {candidate.videoURL
+        ? (
+          <AspectRatioBox
+            borderRadius="24px"
+            overflow="hidden"
+            maxW="100%"
+            ratio={isDesktop ? 16 / 8 : 16 / 12}
+          >
+            <Box
+              as="iframe"
+              title={`${candidate.first} ${candidate.last}'s Campaign Video`}
+              src={`${candidate.videoURL?.replace('watch?v=', 'embed/')}?autoplay=0&fs=0&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0&`}
+              allowFullScreen
+              frameborde="0"
+              scrolling="no"
+              marginheight="0"
+              marginwidth="0"
+              type="text/html"
+            />
+          </AspectRatioBox>
+        )
+        : <></>}
     </Box>
   );
 };
