@@ -1,13 +1,13 @@
 import React, { Component, useState, useEffect } from 'react';
 import {
-  Box, Text, Button, Icon, PseudoBox, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter,
+  Box, Text, Button, Icon, PseudoBox, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Skeleton
 } from '@chakra-ui/core';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import firebase from 'gatsby-plugin-firebase';
 import Layout from '../Layout';
 import { IsMobile, IsDesktop } from '../../utils/mediaQueries';
 
-const Header = ({ title, description, addPosition }) => (
+const Header = ({ title, description, addPosition, loading, }) => (
   <Box
     mt={IsMobile() ? '46px' : '12px'}
     h={IsDesktop() ? '76px' : '160px'}
@@ -38,6 +38,7 @@ const Header = ({ title, description, addPosition }) => (
       fontWeight="600"
       variantColor="blue"
       onClick={addPosition}
+      isLoading={loading}
     >
       Add Position
     </Button>
@@ -133,6 +134,10 @@ const AddPositionModal = ({ toggleModal, addPosition, isOpen }) => {
   );
 };
 
+const SkeletonCard = () => (
+  <Skeleton mb="16px" width={IsDesktop() ? '400px' : '100%'} borderRadius="12px" height="60px" />
+);
+
 export default class Positions extends Component {
   constructor(props) {
     super(props);
@@ -216,10 +221,6 @@ export default class Positions extends Component {
           modalOpen: false,
         });
       });
-    //   await firebase.firestore().collection('election').doc('positions').update({ order: updatedPositions });
-    //   await firebase.firestore().collection('positions').doc(parsedPosition).set({
-    //     name: parsedPosition.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-    //   });
     } catch (err) {
       console.log(err);
     }
@@ -235,24 +236,35 @@ export default class Positions extends Component {
     return (
       <>
         <Layout>
-          <Header title="Positions" description="Change the order that positions are displayed in by dragging them." addPosition={this.toggleModal} />
-          <DragDropContext onDragEnd={this.onDragEnd}>
-            <Droppable droppableId="droppable">
-              {(provided, snapshot) => (
-                <Box
+          <Header loading={this.state.positionsLoading} title="Positions" description="Change the order that positions are displayed in by dragging them." addPosition={this.toggleModal} />
+          {this.state.positionsLoading
+            ? (
+              <>
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
+            )
+            : (
+              <DragDropContext onDragEnd={this.onDragEnd}>
+                <Droppable droppableId="droppable">
+                  {(provided, snapshot) => (
+                    <Box
                 // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  width={IsDesktop() ? '400px' : '100%'}
-                >
-                  {this.state.positions.map((item, index) => (
-                    <PositionCard item={item} index={index} onDelete={this.deletePosition} />
-                  ))}
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-          </DragDropContext>
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      width={IsDesktop() ? '400px' : '100%'}
+                    >
+                      {this.state.positions.map((item, index) => (
+                        <PositionCard item={item} index={index} onDelete={this.deletePosition} />
+                      ))}
+                      {provided.placeholder}
+                    </Box>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            )}
         </Layout>
         <AddPositionModal isOpen={this.state.modalOpen} toggleModal={this.toggleModal} addPosition={this.addPosition} />
       </>
