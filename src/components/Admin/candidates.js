@@ -49,8 +49,8 @@ const Header = ({ title, openDrawer }) => (
 
 const CandidateRow = ({ position, children }) => (
   <Box mb="32px">
-    <Text fontSize="xl" fontWeight="bold" color="blueGray.900" mb="18px">
-      {position}
+    <Text textTransform="capitalize" fontSize="xl" fontWeight="bold" color="blueGray.900" mb="18px">
+      {position.replace('-', ' ')}
     </Text>
     <Grid
       gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'}
@@ -147,6 +147,7 @@ const CandidateDrawer = ({
   toast,
   isDeleting,
   isUpdating,
+  positions,
 }) => {
   const photoForm = new FormData();
 
@@ -308,16 +309,9 @@ const CandidateDrawer = ({
                 value={drawerState.position}
                 fontWeight="600"
                 color="blueGray.700"
+                textTransform="capitalize"
               >
-                <option value="president">President</option>
-                <option value="vice-president">Vice President</option>
-                <option value="secretary">Secretary</option>
-                <option value="treasurer">Treasurer</option>
-                <option value="social-convenor">Social Convenor</option>
-                <option value="communications-manager">
-                  Communications Manager
-                </option>
-                <option value="design-manager">Design Manager</option>
+                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replace('-', ' ')}</option>)}
               </Select>
             </FormControl>
             <InputGroup
@@ -538,6 +532,7 @@ const AddCandidateDrawer = ({
   addCandidate,
   toast,
   isAdding,
+  positions,
 }) => {
   const photoForm = new FormData();
 
@@ -692,16 +687,9 @@ const AddCandidateDrawer = ({
                 value={drawerState.position}
                 fontWeight="600"
                 color="blueGray.700"
+                textTransform="capitalize"
               >
-                <option value="president">President</option>
-                <option value="vice-president">Vice President</option>
-                <option value="secretary">Secretary</option>
-                <option value="treasurer">Treasurer</option>
-                <option value="social-convenor">Social Convenor</option>
-                <option value="communications-manager">
-                  Communications Manager
-                </option>
-                <option value="design-manager">Design Manager</option>
+                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replace('-', ' ')}</option>)}
               </Select>
             </FormControl>
             <InputGroup
@@ -877,17 +865,7 @@ export default class Candidates extends Component {
       isUpdating: false,
       isAddCandidateDrawerOpen: false,
       isAdding: false,
-      positions: [
-        // slightly janky - but for now, it works.
-        // TODO: replace with a server-side solution
-        { display: 'President', raw: 'president' },
-        { display: 'Vice President', raw: 'vice-president' },
-        { display: 'Secretary', raw: 'secretary' },
-        { display: 'Treasurer', raw: 'treasurer' },
-        { display: 'Social Convenor', raw: 'social-convenor' },
-        { display: 'Communications Manager', raw: 'communications-manager' },
-        { display: 'Design Manager', raw: 'design-manager' },
-      ],
+      positions: [],
     };
   }
 
@@ -908,6 +886,7 @@ export default class Candidates extends Component {
   }
 
   editCandidate = (activePosition, activeIndex) => {
+    console.log(activePosition, activeIndex);
     this.setState({
       isDrawerOpen: true,
       activePosition,
@@ -1125,6 +1104,9 @@ export default class Candidates extends Component {
 
     try {
       const positions = await db.collection('positions').get();
+      const positionOrderRef = await db.collection('election').doc('positions').get();
+      const positionOrder = positionOrderRef.data().order;
+
       await snapshotMap(positions.docs, async (position) => {
         candidates[position.id] = [];
         const positionDocRef = db.collection('positions').doc(position.id);
@@ -1136,6 +1118,7 @@ export default class Candidates extends Component {
       this.setState({
         candidates,
         dataLoading: false,
+        positions: positionOrder,
       });
       return true;
     } catch (err) {
@@ -1182,14 +1165,14 @@ export default class Candidates extends Component {
           <>
             {this.state.positions.map((position) => (
               <>
-                <CandidateRow position={position.display}>
-                  {this.state.candidates[position.raw].map(
+                <CandidateRow position={position}>
+                  {this.state.candidates[position].map(
                     (candidate, index) => (
                       <CandidateCard
                         photoURL={candidate.photoURL}
                         first={candidate.first}
                         last={candidate.last}
-                        position={position.raw}
+                        position={position}
                         index={index}
                         editCandidate={this.editCandidate}
                       />
@@ -1222,6 +1205,7 @@ export default class Candidates extends Component {
                       toast={toast}
                       isDeleting={this.state.isDeleting}
                       isUpdating={this.state.isUpdating}
+                      positions={this.state.positions}
                     />
                     <AddCandidateDrawer
                       isOpen={this.state.isAddCandidateDrawerOpen}
@@ -1229,6 +1213,7 @@ export default class Candidates extends Component {
                       onClose={this.closeAddCandidateDrawer}
                       toast={toast}
                       isAdding={this.state.isAdding}
+                      positions={this.state.positions}
                     />
                   </>
                 )}

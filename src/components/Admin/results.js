@@ -99,20 +99,25 @@ export default class Results extends Component {
         const positions = positionRef.data().order;
 
         const results = await Promise.all(positions.map(async (position) => {
-          const positionResults = await Promise.all(
-            Object.keys(resultData[position]).map(async (id) => {
-              const ref = await db.collection('candidates').doc(id).get();
-              const candidate = ref.data();
-              const name = `${candidate.first} ${candidate.last}`;
-              const { grade } = candidate;
-              const { photoURL } = candidate;
-              return {
-                name, photoURL, count: resultData[position][id], id, grade,
-              };
-            }),
-          );
-          return { position, results: sortByKey(positionResults, 'count') };
+          if (resultData[position]) {
+            console.log(resultData[position]);
+            const positionResults = await Promise.all(
+              Object.keys(resultData[position]).map(async (id) => {
+                const ref = await db.collection('candidates').doc(id).get();
+                const candidate = ref.data();
+                const name = `${candidate.first} ${candidate.last}`;
+                const { grade } = candidate;
+                const { photoURL } = candidate;
+                return {
+                  name, photoURL, count: resultData[position][id], id, grade,
+                };
+              }),
+            );
+            return { position, results: sortByKey(positionResults, 'count') };
+          }
+          return { position, results: [] };
         }));
+        console.log(results);
         this.setState({
           results,
           resultsLoading: false,
