@@ -319,6 +319,11 @@ export default class Settings extends Component {
         admin: true,
       });
 
+      this.setState({
+        adminEmail: '',
+        settingAdmin: false,
+      });
+
       toast({
         title: 'Added Admin',
         description: `${this.state.adminEmail} is now an admin.`,
