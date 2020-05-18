@@ -24,8 +24,12 @@ export const setUser = async (user) => {
   if (isBrowser()) {
     window.localStorage.setItem('user', JSON.stringify(user));
     if (user.email) {
-      const res = await firebase.firestore().collection('users').doc(user.email.split('@')[0]).get();
-      window.localStorage.setItem('isAdmin', res.data().admin);
+      try {
+        const res = await firebase.firestore().collection('users').doc(user.email.split('@')[0]).get();
+        window.localStorage.setItem('isAdmin', res.data().admin);
+      } catch (err) {
+        navigate('/authentication_error');
+      }
     }
   }
 };
