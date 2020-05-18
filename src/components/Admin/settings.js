@@ -414,7 +414,7 @@ export default class Settings extends Component {
                     <Box mb="32px">
                       <SettingHeader
                         title="Count Votes"
-                        description="Please upload this election’s private key. This is required in order to decrypt and  count all the ballots."
+                        description="Please select this election’s private key. This is required in order to decrypt and count all the ballots. Your key will never be uploaded to our servers."
                       />
                       <input
                         onChange={this.onKeyFileChange}
@@ -449,7 +449,7 @@ export default class Settings extends Component {
                           </Button>
                         </>
                       ) : (
-                        <NeutralButton onClick={this.uploadKeyFile} text="Upload Key" />
+                        <NeutralButton onClick={this.uploadKeyFile} text="Select Key" />
                       )}
                     </Box>
                     <Box>
