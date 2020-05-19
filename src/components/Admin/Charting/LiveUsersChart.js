@@ -10,7 +10,7 @@ export default class LiveUsersChart extends Component {
     this.state = {
       series: [{
         name: 'Live Users',
-        data: props.data.splice(props.presentIndex - 5, props.presentIndex + 1),
+        data: props.data.splice(props.presentIndex - 12, props.presentIndex + 1),
       }],
       options: {
         chart: {
@@ -32,7 +32,7 @@ export default class LiveUsersChart extends Component {
         },
         xaxis: {
           type: 'datetime',
-          categories: props.labels.splice(props.presentIndex - 5, props.presentIndex + 1),
+          categories: props.labels.splice(props.presentIndex - 12, props.presentIndex + 1),
           labels: {
             formatter(val, timestamp) {
               const date = new Date(timestamp);
