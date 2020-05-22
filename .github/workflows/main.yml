@@ -40,7 +40,7 @@ jobs:
       run: |
         export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
         export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-        VERSION=$(./node_modules/.bin/sentry-cli releases propose-version)
+        VERSION=$(git log -n1 --format="%H")
         ./node_modules/.bin/sentry-cli releases new -p client $VERSION
         ./node_modules/.bin/sentry-cli releases set-commits --auto $VERSION
 
