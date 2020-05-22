@@ -84,7 +84,7 @@ const CandidateCard = ({
 };
 
 const ModalCandidateCard = ({
-  position, first, last, photoURL,
+  position, first, last, photoURL, id,
 }) => (
   <Box
     display="flex"
@@ -112,7 +112,7 @@ const ModalCandidateCard = ({
         fontSize="16px"
         color="blueGray.500"
         as="a"
-        href={`/app/candidates/${first.toLowerCase()}-${last.toLowerCase()}`}
+        href={first !== 'No Candidate Selected' ? `/app/candidates/${id}` : ''}
       >
         {`${first} ${last}`}
       </Text>
@@ -152,6 +152,7 @@ export default class Candidates extends Component {
         first={this.state.votes[position].first ? this.state.votes[position].first : 'No Candidate Selected'}
         last={this.state.votes[position].last ? this.state.votes[position].last : ''}
         photoURL={this.state.votes[position].photoURL}
+        id={this.state.votes[position].candidateID}
       />
     ));
 
