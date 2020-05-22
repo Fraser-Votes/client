@@ -40,9 +40,10 @@ jobs:
       run: |
         export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
         export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-        VERSION=$(git log -n1 --format="%H")
+        VERSION=$(./node_modules/.bin/sentry-cli releases propose-version)
         ./node_modules/.bin/sentry-cli releases new -p client $VERSION
         ./node_modules/.bin/sentry-cli releases set-commits --auto $VERSION
+        echo "::set-env name=VERSION::$VERSION"
 
     - name: Cache Firebase tools
       id: cache-firebase
