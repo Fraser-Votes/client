@@ -24,6 +24,7 @@ jobs:
     - name: Install dependencies
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: npm install
+
     - name: Build static files
       run: npm run build
       env:
@@ -34,6 +35,14 @@ jobs:
         apiKey: ${{ secrets.API_KEY }}
         messagingSenderId: ${{ secrets.MESSAGING_ID }}
         appId: ${{ secrets.APP_ID }}
+
+    - name: Create Sentry release
+      run: |
+        export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+        export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+        VERSION=$(./node_modules/.bin/sentry-cli releases propose-version)
+        ./node_modules/.bin/sentry-cli releases new -p client $VERSION
+        ./node_modules/.bin/sentry-cli releases set-commits --auto $VERSION
 
     - name: Cache Firebase tools
       id: cache-firebase

@@ -2,6 +2,8 @@ require('dotenv').config({
   path: `.env.${process.env.NODE_ENV}`,
 });
 
+const git = require('git-rev-sync');
+
 module.exports = {
   siteMetadata: {
     title: 'Fraser Votes',
@@ -57,6 +59,7 @@ module.exports = {
       resolve: 'gatsby-plugin-sentry',
       options: {
         dsn: 'https://2a9c0bdcdce5408688daf4c8e99f3a16@o386570.ingest.sentry.io/5221055',
+        version: git.long(),
       },
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality
