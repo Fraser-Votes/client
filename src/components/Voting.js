@@ -112,7 +112,7 @@ const ModalCandidateCard = ({
         fontSize="16px"
         color="blueGray.500"
         as="a"
-        href={first !== 'No Candidate Selected' ? `/app/candidates/${id}` : ''}
+        href={first !== 'No Candidate Selected' ? `/app/candidates/${id}` : '#'}
       >
         {`${first} ${last}`}
       </Text>
