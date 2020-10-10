@@ -181,7 +181,7 @@ export default class Dashboard extends Component {
       });
 
     // get top referrers
-    fetch(`https://plausible.io/api/stats/fraservotes.com/referrers?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=8`, fetchOptions)
+    fetch(`https://plausible.io/api/stats/fraservotes.com/sources?period=day&date=${date}&from=undefined&to=undefined&filters=%7B%22goal%22%3Anull%7D&limit=8`, fetchOptions)
       .then((res) => res.json())
       .then((data) => {
         const counts = [];
