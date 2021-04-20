@@ -80,7 +80,7 @@ function SEO({
         },
       ].concat(meta)}
     >
-      <script async defer data-domain="fraservotes.com" src="https://plausible.io/js/plausible.js" />
+    <script async defer data-domain="fraservotes.com" src="https://s.fraservotes.com/js/index.js"></script>
     </Helmet>
   );
 }
