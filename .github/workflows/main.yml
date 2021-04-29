@@ -37,6 +37,8 @@ jobs:
         appId: ${{ secrets.APP_ID }}
 
     - name: Create Sentry release
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       run: |
         export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
         export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
