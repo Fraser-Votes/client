@@ -105,6 +105,7 @@ const NeutralButton = ({ onClick, text, isLoading }) => (
     color="blue.800"
     px="18px"
     py="12px"
+    mr="16px"
     borderRadius="8px"
     isLoading={isLoading}
   >
@@ -127,6 +128,8 @@ export default class Settings extends Component {
       votes: null,
       adminEmail: null,
       settingAdmin: false,
+      loadingAdmins: false,
+      admins: [],
     };
   }
 
@@ -358,6 +361,24 @@ export default class Settings extends Component {
     }
   }
 
+  viewAdmins = async () => {
+    const db = firebase.firestore();
+
+    this.setState({
+      loadingAdmins: true,
+    });
+
+    const adminSnapshot = await db.collection('users').where('admin', '==', true).get();
+    const admins = [];
+    adminSnapshot.forEach((admin) => {
+      admins.push(admin.id);
+    });
+    this.setState({
+      admins,
+      loadingAdmins: false,
+    });
+  }
+
   render() {
     return (
       <Layout>
@@ -463,6 +484,7 @@ export default class Settings extends Component {
                         <Input value={this.state.adminEmail} onChange={this.handleInputChange} color="blueGrey.500" fontWeight="600" roundedLeft="8px" placeholder="Email" />
                       </InputGroup>
                       <NeutralButton isLoading={this.state.settingAdmin} onClick={() => this.addAdmin(toast)} text="Add Admin" />
+                      <NeutralButton isLoading={this.state.loadingAdmins} onClick={() => this.viewAdmins()} text="View Admins" />
                     </Box>
                   </>
                 )}

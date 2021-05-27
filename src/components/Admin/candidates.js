@@ -292,6 +292,7 @@ const CandidateDrawer = ({
                 <option value={9}>9</option>
                 <option value={10}>10</option>
                 <option value={11}>11</option>
+                <option value={12}>12</option>
               </Select>
             </FormControl>
             <FormControl isRequired>
@@ -668,6 +669,7 @@ const AddCandidateDrawer = ({
                 <option value={9}>9</option>
                 <option value={10}>10</option>
                 <option value={11}>11</option>
+                <option value={12}>12</option>
               </Select>
             </FormControl>
             <FormControl isRequired>

@@ -56,6 +56,8 @@ const CandidateCard = ({
       borderRadius="12px"
       alignItems="center"
       boxShadow={currSelect ? '' : '0px 2.08325px 5.34398px rgba(0, 0, 0, 0.0174206), 0px 5.75991px 14.7754px rgba(0, 0, 0, 0.025), 0px 13.8677px 35.5735px rgba(0, 0, 0, 0.0325794), 0px 46px 118px rgba(0, 0, 0, 0.05);'}
+      onClick={() => { onChecked(position, id, currSelect, first, last, photoURL); }}
+      cursor="pointer"
     >
       <Image objectFit="cover" ml="12px" mr="20px" borderRadius="12px" w="40px" h="40px" src={photoURL} fallbackSrc={PlaceholderImage} />
       <Text
@@ -352,7 +354,7 @@ export default class Candidates extends Component {
             <script defer src={withPrefix('../js/openpgp.worker.min.js')} />
           </Helmet>
           <SEO title="Voting" />
-          <Header title="Voting" description={this.state.votingEnded ? 'Voting has ended. Please check the results page.' : this.state.voted ? 'You already voted! Results will be released when the election ends.' : this.state.votingOpen ? 'Please select the candidates that you want to vote for.' : 'Voting is currently closed.'} />
+          <Header title="Voting" description={this.state.votingEnded ? 'Voting has ended. Please check the results page.' : this.state.voted ? 'You already voted! Results will be released when the election ends.' : this.state.votingOpen ? 'Please select the candidates that you want to vote for. \n You do not need to select a candidate for each position' : 'Voting is currently closed.'} />
           {this.state.dataLoading
             ? (
               <>
