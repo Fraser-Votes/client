@@ -1,13 +1,15 @@
 import React, { Component, useState, useEffect } from 'react';
 import {
-  Box, Text, Button, Icon, PseudoBox, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Skeleton
+  Box, Text, Button, Icon, PseudoBox, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Skeleton,
 } from '@chakra-ui/core';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import firebase from 'gatsby-plugin-firebase';
 import Layout from '../Layout';
 import { IsMobile, IsDesktop } from '../../utils/mediaQueries';
 
-const Header = ({ title, description, addPosition, loading, }) => (
+const Header = ({
+  title, description, addPosition, loading,
+}) => (
   <Box
     mt={IsMobile() ? '46px' : '12px'}
     h={IsDesktop() ? '76px' : '160px'}
@@ -81,7 +83,7 @@ const PositionCard = ({ item, index, onDelete }) => (
         borderRadius="12px"
       >
         <Icon name="drag-handle" color="blue.900" mr="16px" />
-        {item.replace('-', ' ')}
+        {item.replaceAll('-', ' ')}
         <PseudoBox as="button" onClick={() => onDelete(index)} ml="auto">
           <Icon size="20px" mt="-2px" name="trash" />
         </PseudoBox>
@@ -190,6 +192,9 @@ export default class Positions extends Component {
       const positionsRef = firebase.firestore().collection('positions').doc(parsedPosition);
       batch.delete(positionsRef);
 
+      const candidatesInPositionRef = await firebase.firestore().collection('candidates').where('position', '==', positionsRef).get();
+      candidatesInPositionRef.forEach((candidate) => batch.delete(candidate.ref));
+
       batch.commit().then(() => {
         const updatedPositions = this.state.positions;
         delete updatedPositions[index];
@@ -202,7 +207,7 @@ export default class Positions extends Component {
 
   addPosition = async (position) => {
     const updatedPositions = this.state.positions;
-    const parsedPosition = position.replace(' ', '-').toLowerCase();
+    const parsedPosition = position.replaceAll(' ', '-').toLowerCase();
     updatedPositions.push(parsedPosition);
     try {
       const batch = firebase.firestore().batch();
@@ -212,7 +217,7 @@ export default class Positions extends Component {
 
       const positionsRef = firebase.firestore().collection('positions').doc(parsedPosition);
       batch.set(positionsRef, {
-        name: parsedPosition.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        name: parsedPosition.replaceAll('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
       });
 
       batch.commit().then(() => {
