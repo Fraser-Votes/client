@@ -59,6 +59,7 @@ const CandidateCard = ({
       alignItems="center"
       boxShadow={currSelect ? '' : '0px 2.08325px 5.34398px rgba(0, 0, 0, 0.0174206), 0px 5.75991px 14.7754px rgba(0, 0, 0, 0.025), 0px 13.8677px 35.5735px rgba(0, 0, 0, 0.0325794), 0px 46px 118px rgba(0, 0, 0, 0.05);'}
       cursor="pointer"
+      key={id}
     >
       <Image objectFit="cover" ml="12px" mr="20px" borderRadius="12px" w="40px" h="40px" src={photoURL} fallbackSrc={PlaceholderImage} />
       <Text
@@ -99,6 +100,7 @@ const ModalCandidateCard = ({
     borderRadius="12px"
     alignItems="center"
     boxShadow="0px 2.08325px 5.34398px rgba(0, 0, 0, 0.0174206), 0px 5.75991px 14.7754px rgba(0, 0, 0, 0.025), 0px 13.8677px 35.5735px rgba(0, 0, 0, 0.0325794), 0px 46px 118px rgba(0, 0, 0, 0.05);"
+    key={id}
   >
     <Image objectFit="cover" ml="16px" mr="24px" borderRadius="12px" w="48px" h="48px" src={photoURL} fallbackSrc={PlaceholderImage} />
     <Box>

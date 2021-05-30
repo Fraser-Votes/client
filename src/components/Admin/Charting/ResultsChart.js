@@ -104,7 +104,7 @@ export default class ResultsChart extends Component {
             color="blueGray.500"
             textTransform="capitalize"
           >
-            {this.props.position.replace("-", " ")}
+            {this.props.position.replaceAll("-", " ")}
           </Text>
           <Text
             fontWeight="600"
