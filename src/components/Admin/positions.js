@@ -94,7 +94,9 @@ const PositionCard = ({ item, index, onDelete }) => (
 
 const AddPositionModal = ({ toggleModal, addPosition, isOpen }) => {
   const [positionVal, setPositionVal] = useState('');
+  const [positionWinners, setPositionWinners] = useState(1);
   const handleChange = (event) => setPositionVal(event.target.value);
+  const handlePositionWinnersChange = (event) => setPositionWinners(event.target.value);
 
   useEffect(() => {
     setPositionVal('');
@@ -120,6 +122,19 @@ const AddPositionModal = ({ toggleModal, addPosition, isOpen }) => {
               value={positionVal}
               onChange={handleChange}
             />
+            <FormLabel fontSize="16px" fontWeight="600" color="blue.900" mb="4px" mt="16px">
+              Number of Winners
+            </FormLabel>
+            <Input
+              color="blueGray.700"
+              borderRadius="6px"
+              borderColor="#D9E2EC"
+              fontWeight="600"
+              placeholder="1"
+              value={positionWinners}
+              onChange={handlePositionWinnersChange}
+              type="number"
+            />
           </FormControl>
         </ModalBody>
 
@@ -127,7 +142,7 @@ const AddPositionModal = ({ toggleModal, addPosition, isOpen }) => {
           <Button borderRadius="8px" mr="16px" onClick={toggleModal}>
             Cancel
           </Button>
-          <Button variantColor="teal" borderRadius="8px" onClick={() => addPosition(positionVal)}>
+          <Button variantColor="teal" borderRadius="8px" onClick={() => addPosition(positionVal, positionWinners)}>
             Add
           </Button>
         </ModalFooter>
@@ -205,7 +220,7 @@ export default class Positions extends Component {
     }
   }
 
-  addPosition = async (position) => {
+  addPosition = async (position, numWinners) => {
     const updatedPositions = this.state.positions;
     const parsedPosition = position.replaceAll(' ', '-').toLowerCase();
     updatedPositions.push(parsedPosition);
@@ -218,6 +233,7 @@ export default class Positions extends Component {
       const positionsRef = firebase.firestore().collection('positions').doc(parsedPosition);
       batch.set(positionsRef, {
         name: parsedPosition.replaceAll('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        numWinners: parseInt(numWinners, 10),
       });
 
       batch.commit().then(() => {
