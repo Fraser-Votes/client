@@ -180,17 +180,20 @@ export default class Settings extends Component {
       await snapshotMap(snapshot, async (doc) => Promise.all(
         Object.keys(doc.data().votes).map(async (key) => {
           const vote = doc.data().votes[key];
-          const decryptedVote = await this.decrypt(vote);
-          if (votes[key]) {
-            if (votes[key][decryptedVote]) {
-              votes[key][decryptedVote]++;
+          const decryptedVote = (await this.decrypt(vote)).split(','); // array
+          console.log(decryptedVote)
+          decryptedVote.forEach(vote => {
+            if (votes[key]) {
+              if (votes[key][vote]) {
+                votes[key][vote]++;
+              } else {
+                votes[key][vote] = 1;
+              }
             } else {
-              votes[key][decryptedVote] = 1;
+              votes[key] = {};
+              votes[key][vote] = 1;
             }
-          } else {
-            votes[key] = {};
-            votes[key][decryptedVote] = 1;
-          }
+          });
         }),
       ));
 

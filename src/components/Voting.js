@@ -282,7 +282,6 @@ export default class Candidates extends Component {
     Promise.all(ops).then(() => {
       const parsedVotes = {};
       Object.keys(this.state.votes).forEach((position) => {
-        console.log(this.state.parsedVotes)
         if (this.state.parsedVotes[position]) {
           parsedVotes[position] = this.state.parsedVotes[position];
         }
