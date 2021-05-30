@@ -50,7 +50,7 @@ const Header = ({ title, openDrawer }) => (
 const CandidateRow = ({ position, children }) => (
   <Box mb="32px">
     <Text textTransform="capitalize" fontSize="xl" fontWeight="bold" color="blueGray.900" mb="18px">
-      {position.replace('-', ' ')}
+      {position.replaceAll('-', ' ')}
     </Text>
     <Grid
       gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'}
@@ -312,7 +312,7 @@ const CandidateDrawer = ({
                 color="blueGray.700"
                 textTransform="capitalize"
               >
-                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replace('-', ' ')}</option>)}
+                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replaceAll('-', ' ')}</option>)}
               </Select>
             </FormControl>
             <InputGroup
@@ -689,7 +689,7 @@ const AddCandidateDrawer = ({
                 color="blueGray.700"
                 textTransform="capitalize"
               >
-                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replace('-', ' ')}</option>)}
+                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replaceAll('-', ' ')}</option>)}
               </Select>
             </FormControl>
             <InputGroup
