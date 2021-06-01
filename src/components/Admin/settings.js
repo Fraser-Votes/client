@@ -114,6 +114,22 @@ const NeutralButton = ({ onClick, text, isLoading }) => (
   </Button>
 );
 
+const DangerButton = ({ onClick, text, isLoading }) => (
+  <Button
+    onClick={onClick}
+    _hover={{ bg: 'rgba(250, 205, 205, 0.75);' }}
+    backgroundColor="red.100"
+    color="red.700"
+    px="18px"
+    py="12px"
+    mr="16px"
+    borderRadius="8px"
+    isLoading={isLoading}
+  >
+    {text}
+  </Button>
+);
+
 export default class Settings extends Component {
   constructor(props) {
     super(props);
@@ -541,7 +557,7 @@ export default class Settings extends Component {
                         <NeutralButton onClick={this.uploadKeyFile} text="Select Key" />
                       )}
                     </Box>
-                    <Box>
+                    <Box mb="32px">
                       <SettingHeader
                         title="Add Administrator"
                         description="This will allow them to view the Admin section of this app and edit all settings. They must have a pdsb.net email to be added."
@@ -553,6 +569,16 @@ export default class Settings extends Component {
                       </InputGroup>
                       <NeutralButton isLoading={this.state.settingAdmin} onClick={() => this.addAdmin(toast)} text="Add Admin" />
                       <NeutralButton isLoading={this.state.loadingAdmins} onClick={() => this.viewAdmins()} text="View Admins" />
+                    </Box>
+                    <Box>
+                      <SettingHeader
+                        title="Manage Election"
+                        description="Use this section to start new elections and manage users."
+                        badge="Danger Zone"
+                      />
+                      <NeutralButton text="New Election" />
+                      <NeutralButton text="Manage Users" />
+                      <DangerButton text="Delete All Ballots" />
                     </Box>
                     <Modal
                       isOpen={this.state.adminModalOpen}
