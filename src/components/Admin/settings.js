@@ -527,12 +527,19 @@ export default class Settings extends Component {
                         />
                       )}
                     </Box>
-                    <Box>
+                    <Box mb="32px">
                       <SettingHeader
-                        title="Generate Key"
-                        description="Generate a new encryption key"
+                        title="Generate Keys"
+                        description="Generate a new encryption keypair"
                       />
-                      <Button onClick={{genKeys()}}>Generate Keys</Button>
+                      <Input maxWidth="400px" mb="16px" placeholder="Name"/>
+                      <Input maxWidth="400px" mb="16px" placeholder="Email"/>
+                      <NeutralButton
+                        onClick={() => {
+                          genKeys();
+                        }}
+                        text="Generate Keys"
+                      ></NeutralButton>
                     </Box>
                     <Box>
                       <SettingHeader
