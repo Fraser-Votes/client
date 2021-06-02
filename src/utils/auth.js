@@ -26,7 +26,7 @@ export const setUser = async (user) => {
     if (user.email) {
       try {
         const res = await firebase.firestore().collection('users').doc(user.email.split('@')[0]).get();
-        window.localStorage.setItem('isAdmin', res.data().admin);
+        window.localStorage.setItem('isAdmin', res.data().admin || false);
       } catch (err) {
         navigate('/authentication_error');
       }
