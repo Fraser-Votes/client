@@ -10,6 +10,7 @@ import { IsMobile } from '../../utils/mediaQueries';
 import { snapshotMap } from '../../utils/helpers';
 import AdminSEO from '../adminSEO';
 import { getUser } from '../../utils/auth';
+import ManageUsersDrawer from './Settings/manageUsers';
 
 const ToastContext = React.createContext(() => { });
 const ToastProvider = ({ children }) => {
@@ -148,6 +149,9 @@ export default class Settings extends Component {
       loadingAdmins: false,
       admins: [],
       adminModalOpen: false,
+      manageUsersDrawer: {
+        open: false,
+      },
     };
   }
 
@@ -197,8 +201,8 @@ export default class Settings extends Component {
         Object.keys(doc.data().votes).map(async (key) => {
           const vote = doc.data().votes[key];
           const decryptedVote = (await this.decrypt(vote)).split(','); // array
-          console.log(decryptedVote)
-          decryptedVote.forEach(vote => {
+          console.log(decryptedVote);
+          decryptedVote.forEach((vote) => {
             if (votes[key]) {
               if (votes[key][vote]) {
                 votes[key][vote]++;
@@ -577,7 +581,7 @@ export default class Settings extends Component {
                         badge="Danger Zone"
                       />
                       <NeutralButton text="New Election" />
-                      <NeutralButton text="Manage Users" />
+                      <NeutralButton text="Manage Users" onClick={() => this.setState({ manageUsersDrawer: { open: true } })} />
                       <DangerButton text="Delete All Ballots" />
                     </Box>
                     <Modal
@@ -598,6 +602,7 @@ export default class Settings extends Component {
                         <ModalFooter display="flex" flexDir="row" alignItems="center" justifyContent="center" />
                       </ModalContent>
                     </Modal>
+                    <ManageUsersDrawer toast={toast} isOpen={this.state.manageUsersDrawer.open} onClose={() => this.setState({ manageUsersDrawer: { open: false } })} />
                   </>
                 )}
               </ToastContext.Consumer>
