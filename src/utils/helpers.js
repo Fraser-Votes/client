@@ -34,3 +34,16 @@ export const asyncForEach = async (array, callback) => {
     await callback(array[index], index, array);
   }
 };
+/**
+ * Chunks an array into N arrays of a given size. Useful for firebase batch ops
+ * @param {array} arr 
+ * @param {number} chunkSize 
+ * @returns 
+ */
+export const chunk = (arr, chunkSize) => {
+  // eslint-disable-next-line no-throw-literal
+  if (chunkSize <= 0) throw 'Invalid chunk size';
+  const R = [];
+  for (let i = 0, len = arr.length; i < len; i += chunkSize) R.push(arr.slice(i, i + chunkSize));
+  return R;
+};

@@ -7,10 +7,11 @@ import { withPrefix } from 'gatsby';
 import Helmet from 'react-helmet';
 import Layout from '../Layout';
 import { IsMobile } from '../../utils/mediaQueries';
-import { snapshotMap } from '../../utils/helpers';
+import { chunk, snapshotMap } from '../../utils/helpers';
 import AdminSEO from '../adminSEO';
 import { getUser } from '../../utils/auth';
 import ManageUsersDrawer from './Settings/manageUsers';
+import ConfirmationModal from './Settings/confirmationModal';
 
 const ToastContext = React.createContext(() => { });
 const ToastProvider = ({ children }) => {
@@ -152,7 +153,15 @@ export default class Settings extends Component {
       manageUsersDrawer: {
         open: false,
       },
+      isDeleteBallotsModalOpen: false,
+      deletingBallots: false,
     };
+  }
+
+  setIsDeleteBallotsModalOpen = (isOpen) => {
+    this.setState({
+      isDeleteBallotsModalOpen: isOpen
+    })
   }
 
   componentDidMount() {
@@ -467,6 +476,41 @@ export default class Settings extends Component {
     }
   })
 
+  deleteBallots = async (toast) => {
+    console.log('deleting ballots')
+    this.setState({ deletingBallots: true })
+    try {
+      const documents = await firebase.firestore().collection('ballots').get();
+      const batches = chunk(documents.docs, 500).map((ballotDocs) => {
+        const batch = firebase.firestore().batch();
+        ballotDocs.forEach((doc) => {
+          batch.delete(firebase.firestore().collection('ballots').doc(doc.id))
+        });
+
+        return batch.commit();
+      });
+      await Promise.all(batches);
+      this.setState({ deletingBallots: false, isDeleteBallotsModalOpen: false });
+      toast({
+        title: 'Deleted all ballots',
+        status: 'success',
+        duration: 10000,
+        isClosable: true
+      })
+
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: 'Error deleting ballots',
+        description: JSON.stringify(e),
+        status: 'error',
+        duration: 10000,
+        isClosable: true
+      })
+      this.setState({ deletingBallots: false, isDeleteBallotsModalOpen: false });
+    }
+  }
+
   render() {
     return (
       <Layout>
@@ -582,7 +626,7 @@ export default class Settings extends Component {
                       />
                       <NeutralButton text="New Election" />
                       <NeutralButton text="Manage Users" onClick={() => this.setState({ manageUsersDrawer: { open: true } })} />
-                      <DangerButton text="Delete All Ballots" />
+                      <DangerButton text="Delete All Ballots" onClick={() => this.setState({ isDeleteBallotsModalOpen: true })} />
                     </Box>
                     <Modal
                       isOpen={this.state.adminModalOpen}
@@ -603,6 +647,27 @@ export default class Settings extends Component {
                       </ModalContent>
                     </Modal>
                     <ManageUsersDrawer toast={toast} isOpen={this.state.manageUsersDrawer.open} onClose={() => this.setState({ manageUsersDrawer: { open: false } })} />
+                    <ConfirmationModal
+                      isOpen={this.state.isDeleteBallotsModalOpen}
+                      onClose={() => this.setIsDeleteBallotsModalOpen(false)}
+                      actionName="Delete All Ballots"
+                      confirmPassword="delete all ballots"
+                      onConfirm={() => this.deleteBallots(toast)}
+                      title="Confirm Deletion of all Ballots"
+                      actionLoading={this.state.deletingBallots}
+                      body={(
+                        <Text>
+                          Type
+                          <Text as="span" fontWeight="bold">
+                            {' '}
+                            delete all ballots
+                            {' '}
+                          </Text>
+                          into the field below to confirm this action.
+                          Please do this after you have counted all the votes, as the ballots will not be recoverable.
+                        </Text>
+                      )}
+                    />
                   </>
                 )}
               </ToastContext.Consumer>

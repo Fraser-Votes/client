@@ -5,15 +5,7 @@ import {
 } from '@chakra-ui/core';
 import { IsDesktop } from '../../../utils/mediaQueries';
 import ConfirmationModal from './confirmationModal';
-import { asyncForEach } from '../../../utils/helpers';
-
-const chunk = (arr, chunkSize) => {
-  // eslint-disable-next-line no-throw-literal
-  if (chunkSize <= 0) throw 'Invalid chunk size';
-  const R = [];
-  for (let i = 0, len = arr.length; i < len; i += chunkSize) R.push(arr.slice(i, i + chunkSize));
-  return R;
-};
+import { chunk } from '../../../utils/helpers'
 
 const SettingHeader = ({
   title, description, badge, badgeStatus,
@@ -172,6 +164,7 @@ const ManageUsersDrawer = ({ isOpen, onClose, toast }) => {
         duration: 10000,
         isClosable: true,
       });
+      setDeletingUsers(false);
     }
   };
 
@@ -228,6 +221,7 @@ const ManageUsersDrawer = ({ isOpen, onClose, toast }) => {
         confirmPassword="delete users"
         onConfirm={deleteUsers}
         title="Confirm User Deletion"
+        actionLoading={deletingUsers}
         body={(
           <Text>
             Type

@@ -4,7 +4,7 @@ import {
 import React, { useState } from 'react';
 
 const ConfirmationModal = ({
-  isOpen, title, body, actionName, confirmPassword, onClose, onConfirm,
+  isOpen, title, body, actionName, confirmPassword, onClose, onConfirm, actionLoading,
 }) => {
   const [password, setPassword] = useState('');
 
@@ -36,7 +36,7 @@ const ConfirmationModal = ({
           <Button onClick={onClose} variantColor="gray" mr="16px">
             Cancel
           </Button>
-          <Button disabled={password !== confirmPassword} onClick={onConfirm} variantColor="red">
+          <Button disabled={password !== confirmPassword} onClick={onConfirm} variantColor="red" isLoading={actionLoading}>
             {actionName || 'Delete'}
           </Button>
         </ModalFooter>
