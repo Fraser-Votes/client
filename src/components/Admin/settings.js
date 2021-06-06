@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox, InputGroup, InputRightAddon, Input, Skeleton,
+  Box, Text, Grid, Switch, useToast, Button, Icon, PseudoBox, InputGroup, InputRightAddon, Input, Skeleton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
 import { withPrefix } from 'gatsby';
@@ -9,6 +9,8 @@ import Layout from '../Layout';
 import { IsMobile } from '../../utils/mediaQueries';
 import { snapshotMap } from '../../utils/helpers';
 import AdminSEO from '../adminSEO';
+import { getUser } from '../../utils/auth';
+import ManageUsersDrawer from './Settings/manageUsers';
 
 const ToastContext = React.createContext(() => { });
 const ToastProvider = ({ children }) => {
@@ -113,6 +115,22 @@ const NeutralButton = ({ onClick, text, isLoading }) => (
   </Button>
 );
 
+const DangerButton = ({ onClick, text, isLoading }) => (
+  <Button
+    onClick={onClick}
+    _hover={{ bg: 'rgba(250, 205, 205, 0.75);' }}
+    backgroundColor="red.100"
+    color="red.700"
+    px="18px"
+    py="12px"
+    mr="16px"
+    borderRadius="8px"
+    isLoading={isLoading}
+  >
+    {text}
+  </Button>
+);
+
 export default class Settings extends Component {
   constructor(props) {
     super(props);
@@ -130,6 +148,10 @@ export default class Settings extends Component {
       settingAdmin: false,
       loadingAdmins: false,
       admins: [],
+      adminModalOpen: false,
+      manageUsersDrawer: {
+        open: false,
+      },
     };
   }
 
@@ -178,17 +200,20 @@ export default class Settings extends Component {
       await snapshotMap(snapshot, async (doc) => Promise.all(
         Object.keys(doc.data().votes).map(async (key) => {
           const vote = doc.data().votes[key];
-          const decryptedVote = await this.decrypt(vote);
-          if (votes[key]) {
-            if (votes[key][decryptedVote]) {
-              votes[key][decryptedVote]++;
+          const decryptedVote = (await this.decrypt(vote)).split(','); // array
+          console.log(decryptedVote);
+          decryptedVote.forEach((vote) => {
+            if (votes[key]) {
+              if (votes[key][vote]) {
+                votes[key][vote]++;
+              } else {
+                votes[key][vote] = 1;
+              }
             } else {
-              votes[key][decryptedVote] = 1;
+              votes[key] = {};
+              votes[key][vote] = 1;
             }
-          } else {
-            votes[key] = {};
-            votes[key][decryptedVote] = 1;
-          }
+          });
         }),
       ));
 
@@ -322,17 +347,17 @@ export default class Settings extends Component {
         admin: true,
       });
 
-      this.setState({
-        adminEmail: '',
-        settingAdmin: false,
-      });
-
       toast({
         title: 'Added Admin',
         description: `${this.state.adminEmail} is now an admin.`,
         status: 'success',
         duration: 10000,
         isClosable: true,
+      });
+
+      this.setState({
+        adminEmail: '',
+        settingAdmin: false,
       });
     } catch (err) {
       console.log('Error creating admin: ', err);
@@ -376,8 +401,71 @@ export default class Settings extends Component {
     this.setState({
       admins,
       loadingAdmins: false,
+      adminModalOpen: true,
     });
   }
+
+  removeAdmin = async (toast, admin) => {
+    try {
+      await firebase.firestore().collection('users').doc(admin).update({
+        admin: false,
+      });
+      this.setState((prevState) => ({
+        admins: prevState.admins.filter((adminID) => adminID !== admin),
+      }));
+      toast({
+        title: 'Removed admin',
+        description: admin,
+        status: 'success',
+        duration: 10000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'Something went wrong with removing an admin',
+        description: err,
+        status: 'error',
+        duration: 10000,
+        isClosable: true,
+      });
+    }
+  }
+
+  generateAdminModalCards = (toast) => this.state.admins.map((admin) => {
+    if (admin !== getUser().email.split('@')[0]) {
+      return (
+        <Box
+          display="flex"
+          flexDirection="row"
+          h="48px"
+          w="100%"
+          mb="16px"
+          px="16px"
+          backgroundColor="white"
+          borderRadius="6px"
+          alignItems="center"
+          boxShadow="0px 2.08325px 5.34398px rgba(0, 0, 0, 0.0174206), 0px 5.75991px 14.7754px rgba(0, 0, 0, 0.025), 0px 13.8677px 35.5735px rgba(0, 0, 0, 0.0325794), 0px 46px 118px rgba(0, 0, 0, 0.05);"
+        >
+          <Text
+            fontWeight="600"
+            fontSize="16px"
+            color="blueGray.700"
+          >
+            {admin}
+          </Text>
+          <PseudoBox as="button" onClick={() => this.removeAdmin(toast, admin)} ml="auto">
+            <Icon
+              color="blueGray.700"
+              size="20px"
+              mt="-2px"
+              name="trash"
+            />
+          </PseudoBox>
+        </Box>
+      );
+    }
+  })
 
   render() {
     return (
@@ -473,7 +561,7 @@ export default class Settings extends Component {
                         <NeutralButton onClick={this.uploadKeyFile} text="Select Key" />
                       )}
                     </Box>
-                    <Box>
+                    <Box mb="32px">
                       <SettingHeader
                         title="Add Administrator"
                         description="This will allow them to view the Admin section of this app and edit all settings. They must have a pdsb.net email to be added."
@@ -486,6 +574,35 @@ export default class Settings extends Component {
                       <NeutralButton isLoading={this.state.settingAdmin} onClick={() => this.addAdmin(toast)} text="Add Admin" />
                       <NeutralButton isLoading={this.state.loadingAdmins} onClick={() => this.viewAdmins()} text="View Admins" />
                     </Box>
+                    <Box>
+                      <SettingHeader
+                        title="Manage Election"
+                        description="Use this section to start new elections and manage users."
+                        badge="Danger Zone"
+                      />
+                      <NeutralButton text="New Election" />
+                      <NeutralButton text="Manage Users" onClick={() => this.setState({ manageUsersDrawer: { open: true } })} />
+                      <DangerButton text="Delete All Ballots" />
+                    </Box>
+                    <Modal
+                      isOpen={this.state.adminModalOpen}
+                      onClose={() => this.setState({
+                        adminModalOpen: false,
+                      })}
+                    >
+                      <ModalOverlay />
+                      <ModalContent backgroundColor="blueGray.50" maxHeight="85vh" borderRadius="12px">
+                        <ModalHeader fontWeight="bold" color="blueGray.900">
+                          Election Administrators
+                        </ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody overflowY="auto">
+                          {this.generateAdminModalCards(toast)}
+                        </ModalBody>
+                        <ModalFooter display="flex" flexDir="row" alignItems="center" justifyContent="center" />
+                      </ModalContent>
+                    </Modal>
+                    <ManageUsersDrawer toast={toast} isOpen={this.state.manageUsersDrawer.open} onClose={() => this.setState({ manageUsersDrawer: { open: false } })} />
                   </>
                 )}
               </ToastContext.Consumer>

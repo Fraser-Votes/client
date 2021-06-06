@@ -33,7 +33,7 @@ const CandidateRow = ({ position, children }) => (
       mb="18px"
       textTransform="capitalize"
     >
-      {position.replace('-', ' ')}
+      {position.replaceAll('-', ' ')}
     </Text>
     <Grid gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'} gridColumnGap="24px" gridRowGap="24px">
       {children}
@@ -42,9 +42,11 @@ const CandidateRow = ({ position, children }) => (
 );
 
 const CandidateCard = ({
-  first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection, votingClosed, id,
+  first, last, position, photoURL, onChecked, isDisabled, voted, currentSelection, votingClosed, id, numWinners, numSelected,
 }) => {
-  const currSelect = currentSelection === id;
+  const included = currentSelection.includes(id);
+  const currSelect = included;
+  const tempDisable = !included && numWinners === numSelected && numWinners > 1;
 
   return (
     <Box
@@ -56,8 +58,8 @@ const CandidateCard = ({
       borderRadius="12px"
       alignItems="center"
       boxShadow={currSelect ? '' : '0px 2.08325px 5.34398px rgba(0, 0, 0, 0.0174206), 0px 5.75991px 14.7754px rgba(0, 0, 0, 0.025), 0px 13.8677px 35.5735px rgba(0, 0, 0, 0.0325794), 0px 46px 118px rgba(0, 0, 0, 0.05);'}
-      onClick={() => { onChecked(position, id, currSelect, first, last, photoURL); }}
       cursor="pointer"
+      key={id}
     >
       <Image objectFit="cover" ml="12px" mr="20px" borderRadius="12px" w="40px" h="40px" src={photoURL} fallbackSrc={PlaceholderImage} />
       <Text
@@ -74,7 +76,7 @@ const CandidateCard = ({
       <Checkbox
         onChange={() => { onChecked(position, id, currSelect, first, last, photoURL); }}
         isChecked={currSelect}
-        isDisabled={voted || votingClosed}
+        isDisabled={voted || votingClosed || tempDisable}
         variantColor="teal"
         ml="auto"
         mr="12px"
@@ -98,6 +100,7 @@ const ModalCandidateCard = ({
     borderRadius="12px"
     alignItems="center"
     boxShadow="0px 2.08325px 5.34398px rgba(0, 0, 0, 0.0174206), 0px 5.75991px 14.7754px rgba(0, 0, 0, 0.025), 0px 13.8677px 35.5735px rgba(0, 0, 0, 0.0325794), 0px 46px 118px rgba(0, 0, 0, 0.05);"
+    key={id}
   >
     <Image objectFit="cover" ml="16px" mr="24px" borderRadius="12px" w="48px" h="48px" src={photoURL} fallbackSrc={PlaceholderImage} />
     <Box>
@@ -107,7 +110,7 @@ const ModalCandidateCard = ({
         color="blueGray.700"
         textTransform="capitalize"
       >
-        {position.replace('-', ' ')}
+        {position.replaceAll('-', ' ')}
       </Text>
       <Text
         fontWeight="600"
@@ -138,6 +141,7 @@ export default class Candidates extends Component {
       votes: {},
       positions: [],
       confirmationOpen: false,
+      rawCandidates: {},
     };
   }
 
@@ -148,37 +152,66 @@ export default class Candidates extends Component {
   }
 
   createCandidateCards = () => {
-    const cards = Object.keys(this.state.votes).map((position) => (
-      <ModalCandidateCard
-        position={position}
-        first={this.state.votes[position].first ? this.state.votes[position].first : 'No Candidate Selected'}
-        last={this.state.votes[position].last ? this.state.votes[position].last : ''}
-        photoURL={this.state.votes[position].photoURL}
-        id={this.state.votes[position].candidateID}
-      />
+    const cards = Object.keys(this.state.votes)?.map((position) => (
+      this.state.votes[position].selectedCandidates.length > 0 ? this.state.votes[position].selectedCandidates.map((id) => {
+        const candidate = this.state.rawCandidates[id];
+        return (
+          <ModalCandidateCard
+            position={position}
+            first={candidate.first}
+            last={candidate.last}
+            photoURL={candidate.photoURL}
+            id={id}
+          />
+        );
+      }) : (
+        <ModalCandidateCard
+          position={position}
+          first="No Candidate Selected"
+          last=""
+          photoURL=""
+          id=""
+        />
+      )
     ));
-
     return cards;
   }
 
-  createVote = (position, candidateID, currentlySelected, first, last, photoURL) => {
-    this.setState((prevState) => ({
-      votes: {
-        ...prevState.votes,
-        [position]: {
-          candidateID: currentlySelected ? null : candidateID,
-          first: currentlySelected ? null : first,
-          last: currentlySelected ? null : last,
-          photoURL: currentlySelected ? null : photoURL,
-          selected: !prevState.votes[position].selected,
+  createVote = (position, candidateID, currentlySelected) => {
+    // max winners reached and not currently selected
+    if (this.state.votes[position].numSelected === this.state.votes[position].numWinners && !currentlySelected) {
+      this.setState((prevState) => ({
+        votes: {
+          ...prevState.votes,
+          [position]: {
+            numSelected: prevState.votes[position].numSelected - 1,
+            numWinners: prevState.votes[position].numWinners,
+            selectedCandidates: [candidateID],
+          },
         },
-      },
-    }), () => {
-      console.log(this.voteValidator());
-      this.setState({
-        validated: this.voteValidator(),
+      }), () => {
+        console.log(this.voteValidator());
+        this.setState({
+          validated: this.voteValidator(),
+        });
       });
-    });
+    } else {
+      this.setState((prevState) => ({
+        votes: {
+          ...prevState.votes,
+          [position]: {
+            numSelected: currentlySelected ? prevState.votes[position].numSelected - 1 : prevState.votes[position].numSelected + 1,
+            numWinners: prevState.votes[position].numWinners,
+            selectedCandidates: currentlySelected ? prevState.votes[position].selectedCandidates.filter((id) => id !== candidateID) : prevState.votes[position].selectedCandidates.concat(candidateID),
+          },
+        },
+      }), () => {
+        console.log(this.voteValidator());
+        this.setState({
+          validated: this.voteValidator(),
+        });
+      });
+    }
   }
 
   confirmVote = (toast) => {
@@ -201,8 +234,8 @@ export default class Candidates extends Component {
   // TODO: allow incomplete ballot
   voteValidator = () => {
     let validated = false;
-    Object.values(this.state.votes).map((vote) => {
-      if (vote.candidateID) {
+    Object.values(this.state.votes).forEach((vote) => {
+      if (vote.numSelected > 0) {
         validated = true;
       }
     });
@@ -215,12 +248,12 @@ export default class Candidates extends Component {
   }
 
   encryptCandidate = async (position) => {
-    if (position[1].candidateID) {
+    if (position[1].selectedCandidates.length > 0) {
       const { openpgp } = window;
       await openpgp.initWorker({ path: withPrefix('../js/openpgp.worker.min.js') });
       const res = await openpgp.key.readArmored(this.state.publicKey);
       const { data: encrypted } = await openpgp.encrypt({
-        message: openpgp.message.fromText(position[1].candidateID),
+        message: openpgp.message.fromText(position[1].selectedCandidates),
         publicKeys: res.keys,
       });
       await new Promise((resolve) => this.setState((prevState) => ({
@@ -237,6 +270,7 @@ export default class Candidates extends Component {
   }
 
   submitVote = async (toast) => {
+    this.setState({ voteSubmitting: true });
     if (process.env.NODE_ENV === 'development') {
       // firebase.functions().useFunctionsEmulator('http://localhost:5001')
     }
@@ -253,7 +287,6 @@ export default class Candidates extends Component {
         }
       });
       console.log(parsedVotes);
-      this.setState({ voteSubmitting: true });
       addVote({ votes: parsedVotes }).then(() => {
         this.setState({
           voteSuccessful: true,
@@ -307,6 +340,7 @@ export default class Candidates extends Component {
     const db = firebase.firestore();
     const candidateRef = db.collection('candidates');
     const candidates = {};
+    const rawCandidates = {};
 
     try {
       const positions = await db.collection('positions').get();
@@ -314,14 +348,15 @@ export default class Candidates extends Component {
       const positionOrder = positionOrderRef.data().order;
 
       const votes = {};
-      positionOrder.map((position) => {
+      positionOrder.forEach((position) => {
         votes[position] = {
-          candidateID: null,
-          first: null,
-          last: null,
-          photoURL: null,
-          selected: false,
+          numSelected: 0,
+          selectedCandidates: [],
         };
+      });
+
+      positions.forEach((position) => {
+        votes[position.id].numWinners = position.data().numWinners || 1;
       });
 
       await snapshotMap(positions.docs, async (position) => {
@@ -330,6 +365,9 @@ export default class Candidates extends Component {
         const res = await candidateRef.where('position', '==', positionDocRef).get();
         res.forEach((doc) => {
           candidates[position.id].push({ ...doc.data(), id: doc.id });
+          rawCandidates[doc.id] = {
+            ...doc.data(),
+          };
         });
       });
       this.setState({
@@ -337,6 +375,7 @@ export default class Candidates extends Component {
         dataLoading: false,
         positions: positionOrder,
         votes,
+        rawCandidates,
       });
       return true;
     } catch (err) {
@@ -373,7 +412,7 @@ export default class Candidates extends Component {
                     <CandidateCard
                       id={candidate.id}
                       onChecked={this.createVote}
-                      currentSelection={this.state.votes[position].candidateID}
+                      currentSelection={this.state.votes[position].selectedCandidates}
                       isDisabled={this.state.votes[position].selected}
                       voted={this.state.voted}
                       votingClosed={!this.state.votingOpen}
@@ -381,6 +420,8 @@ export default class Candidates extends Component {
                       first={candidate.first}
                       last={candidate.last}
                       position={position}
+                      numWinners={this.state.votes[position].numWinners}
+                      numSelected={this.state.votes[position].numSelected}
                     />
                   ))}
                 </CandidateRow>

@@ -8,6 +8,7 @@ import {
   useToast,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
+import reduceImage from 'image-blob-reduce';
 import Layout from '../Layout/index';
 import { IsDesktop, IsMobile } from '../../utils/mediaQueries';
 import { snapshotMap } from '../../utils/helpers';
@@ -19,6 +20,14 @@ function ToastProvider({ children }) {
   const toast = useToast();
   return <ToastContext.Provider value={toast}>{children}</ToastContext.Provider>;
 }
+
+const blobToFile = (rawBlobObject, originalFile) => {
+  const blobObject = rawBlobObject;
+  blobObject.lastModifiedDate = new Date();
+  blobObject.name = originalFile.name;
+
+  return blobObject;
+};
 
 const Header = ({ title, openDrawer }) => (
   <Box
@@ -50,7 +59,7 @@ const Header = ({ title, openDrawer }) => (
 const CandidateRow = ({ position, children }) => (
   <Box mb="32px">
     <Text textTransform="capitalize" fontSize="xl" fontWeight="bold" color="blueGray.900" mb="18px">
-      {position.replace('-', ' ')}
+      {position.replaceAll('-', ' ')}
     </Text>
     <Grid
       gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'}
@@ -212,13 +221,17 @@ const CandidateDrawer = ({
     e.stopPropagation();
     e.preventDefault();
     const file = e.target.files[0];
-    photoForm.append('file', file);
-    setDrawerState({
-      ...drawerState,
-      photoFileObject: file,
-      photoURL: URL.createObjectURL(file),
+    // resizes image
+    reduceImage().toBlob(file, { max: 500 }).then((blob) => {
+      const resizedBlob = blobToFile(blob, file);
+      photoForm.append('file', resizedBlob);
+      setDrawerState({
+        ...drawerState,
+        photoFileObject: resizedBlob,
+        photoURL: URL.createObjectURL(resizedBlob),
+      });
+      setNewPhoto(true);
     });
-    setNewPhoto(true);
   };
 
   const validateFields = () => {
@@ -312,7 +325,7 @@ const CandidateDrawer = ({
                 color="blueGray.700"
                 textTransform="capitalize"
               >
-                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replace('-', ' ')}</option>)}
+                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replaceAll('-', ' ')}</option>)}
               </Select>
             </FormControl>
             <InputGroup
@@ -554,7 +567,6 @@ const AddCandidateDrawer = ({
     photoFileObject: null,
   });
 
-
   const isRequired = ['first', 'last', 'grade', 'position', 'bio'];
 
   useEffect(() => {
@@ -593,13 +605,16 @@ const AddCandidateDrawer = ({
     e.stopPropagation();
     e.preventDefault();
     const file = e.target.files[0];
-    photoForm.append('file', file);
-    setDrawerState({
-      ...drawerState,
-      photoFileObject: file,
-      photoURL: URL.createObjectURL(file),
+    reduceImage().toBlob(file, { max: 500 }).then((blob) => {
+      const resizedBlob = blobToFile(blob, file);
+      photoForm.append('file', resizedBlob);
+      setDrawerState({
+        ...drawerState,
+        photoFileObject: resizedBlob,
+        photoURL: URL.createObjectURL(resizedBlob),
+      });
+      setNewPhoto(true);
     });
-    setNewPhoto(true);
   };
 
   const validateFields = () => {
@@ -689,7 +704,7 @@ const AddCandidateDrawer = ({
                 color="blueGray.700"
                 textTransform="capitalize"
               >
-                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replace('-', ' ')}</option>)}
+                {positions.map((mapPosition) => <option value={mapPosition}>{mapPosition.replaceAll('-', ' ')}</option>)}
               </Select>
             </FormControl>
             <InputGroup
