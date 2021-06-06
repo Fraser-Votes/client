@@ -8,7 +8,7 @@ import {
   useToast,
 } from '@chakra-ui/core';
 import firebase from 'gatsby-plugin-firebase';
-import reduceImage from 'image-blob-reduce';
+import Resizer from 'react-image-file-resizer';
 import Layout from '../Layout/index';
 import { IsDesktop, IsMobile } from '../../utils/mediaQueries';
 import { snapshotMap } from '../../utils/helpers';
@@ -222,16 +222,25 @@ const CandidateDrawer = ({
     e.preventDefault();
     const file = e.target.files[0];
     // resizes image
-    reduceImage().toBlob(file, { max: 500 }).then((blob) => {
-      const resizedBlob = blobToFile(blob, file);
-      photoForm.append('file', resizedBlob);
-      setDrawerState({
-        ...drawerState,
-        photoFileObject: resizedBlob,
-        photoURL: URL.createObjectURL(resizedBlob),
-      });
-      setNewPhoto(true);
-    });
+    Resizer.imageFileResizer(
+      file,
+      500,
+      3000,
+      'JPEG',
+      90,
+      0,
+      (blob) => {
+        const resizedBlob = blobToFile(blob, file);
+        photoForm.append('file', resizedBlob);
+        setDrawerState({
+          ...drawerState,
+          photoFileObject: resizedBlob,
+          photoURL: URL.createObjectURL(resizedBlob),
+        });
+        setNewPhoto(true);
+      },
+      'blob',
+    );
   };
 
   const validateFields = () => {
@@ -605,16 +614,25 @@ const AddCandidateDrawer = ({
     e.stopPropagation();
     e.preventDefault();
     const file = e.target.files[0];
-    reduceImage().toBlob(file, { max: 500 }).then((blob) => {
-      const resizedBlob = blobToFile(blob, file);
-      photoForm.append('file', resizedBlob);
-      setDrawerState({
-        ...drawerState,
-        photoFileObject: resizedBlob,
-        photoURL: URL.createObjectURL(resizedBlob),
-      });
-      setNewPhoto(true);
-    });
+    Resizer.imageFileResizer(
+      file,
+      500,
+      3000,
+      'JPEG',
+      90,
+      0,
+      (blob) => {
+        const resizedBlob = blobToFile(blob, file);
+        photoForm.append('file', resizedBlob);
+        setDrawerState({
+          ...drawerState,
+          photoFileObject: resizedBlob,
+          photoURL: URL.createObjectURL(resizedBlob),
+        });
+        setNewPhoto(true);
+      },
+      'blob',
+    );
   };
 
   const validateFields = () => {
