@@ -69,7 +69,7 @@ const CandidateRow = ({ position, children }) => (
       mb="18px"
       textTransform="capitalize"
     >
-      {position.replace('-', ' ')}
+      {position.replaceAll('-', ' ')}
     </Text>
     <Grid gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 210px)' : '1fr'} gridColumnGap="40px" gridRowGap="24px">
       {children}
