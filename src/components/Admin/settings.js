@@ -20,7 +20,7 @@ import Layout from '../Layout';
 import { IsMobile } from '../../utils/mediaQueries';
 import { snapshotMap } from '../../utils/helpers';
 import AdminSEO from '../adminSEO';
-import { genKeys } from '../../utils/keygen';
+import KeygenUI from './keygen-ui';
 
 const ToastContext = React.createContext(() => {});
 const ToastProvider = ({ children }) => {
@@ -108,7 +108,7 @@ const FileCard = ({ name, size, removeKeyFile }) => (
   </Box>
 );
 
-const NeutralButton = ({ onClick, text, isLoading }) => (
+export const NeutralButton = ({ onClick, text, isLoading, children, ref }) => (
   <Button
     onClick={onClick}
     _hover={{ bg: 'rgba(220, 238, 251, 0.5);' }}
@@ -119,8 +119,9 @@ const NeutralButton = ({ onClick, text, isLoading }) => (
     mr="16px"
     borderRadius="8px"
     isLoading={isLoading}
+    ref={ref}
   >
-    {text}
+    {text ? text : children}
   </Button>
 );
 
@@ -532,14 +533,22 @@ export default class Settings extends Component {
                         title="Generate Keys"
                         description="Generate a new encryption keypair"
                       />
-                      <Input maxWidth="400px" mb="16px" placeholder="Name"/>
-                      <Input maxWidth="400px" mb="16px" placeholder="Email"/>
-                      <NeutralButton
-                        onClick={() => {
-                          genKeys();
+                      {/* <NeutralButton
+                        onClick={async () => {
+                          console.log(this.state.keyName);
+                          console.log(this.state.keyEmail);
+                          this.setState({
+                            key: await genKeys(
+                              this.state.keyName,
+                              this.state.keyEmail
+                            ),
+                          });
+
+                          
                         }}
                         text="Generate Keys"
-                      ></NeutralButton>
+                      ></NeutralButton> */}
+                      <KeygenUI />
                     </Box>
                     <Box>
                       <SettingHeader
