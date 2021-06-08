@@ -24,17 +24,27 @@ function ToastProvider({ children }) {
   );
 }
 
-const CandidateRow = ({ position, children }) => (
+const CandidateRow = ({ position, numWinners, children }) => (
   <Box mb="32px">
     <Text
       fontSize="xl"
       fontWeight="bold"
       color="blueGray.900"
-      mb="18px"
       textTransform="capitalize"
+      mb={numWinners > 1 ? 0 : "18px"}
     >
       {position.replaceAll('-', ' ')}
     </Text>
+    {numWinners > 1 && (
+      <Text
+        fontSize="16px"
+        fontWeight="600"
+        color="blueGray.500"
+        mb="18px"
+      >
+        Select up to {numWinners} candidates
+      </Text>
+    )}
     <Grid gridTemplateColumns={IsDesktop() ? 'repeat(auto-fill, 310px)' : '1fr'} gridColumnGap="24px" gridRowGap="24px">
       {children}
     </Grid>
@@ -142,6 +152,7 @@ export default class Candidates extends Component {
       positions: [],
       confirmationOpen: false,
       rawCandidates: {},
+      rawPositions: {},
     };
   }
 
@@ -348,6 +359,7 @@ export default class Candidates extends Component {
       const positionOrder = positionOrderRef.data().order;
 
       const votes = {};
+      const rawPositions = {};
       positionOrder.forEach((position) => {
         votes[position] = {
           numSelected: 0,
@@ -357,6 +369,9 @@ export default class Candidates extends Component {
 
       positions.forEach((position) => {
         votes[position.id].numWinners = position.data().numWinners || 1;
+        rawPositions[position.id] = {
+          numWinners: position.data().numWinners || 1
+        }
       });
 
       await snapshotMap(positions.docs, async (position) => {
@@ -374,6 +389,7 @@ export default class Candidates extends Component {
         candidates,
         dataLoading: false,
         positions: positionOrder,
+        rawPositions,
         votes,
         rawCandidates,
       });
@@ -407,7 +423,7 @@ export default class Candidates extends Component {
             )
             : this.state.positions.map((position) => (
               <>
-                <CandidateRow position={position}>
+                <CandidateRow position={position} numWinners={this.state.rawPositions[position].numWinners}>
                   {this.state.candidates[position].map((candidate) => (
                     <CandidateCard
                       id={candidate.id}
