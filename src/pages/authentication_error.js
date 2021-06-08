@@ -20,11 +20,11 @@ const AuthError = () => (
           <br />
           If you are a teacher that would like to view Fraser Votes, please email us at
           {' '}
-          <Link color="blue.700" textDecoration="underline" href="mailto:hello@fraservotes.com">hello@fraservotes.com</Link>
+          <Link color="blue.700" textDecoration="underline" href="mailto:david.li@fraserhacks.ca">david.li@fraserhacks.ca</Link>
           <br />
           If you feel that this was a mistake, please email us at
           {' '}
-          <Link color="blue.700" textDecoration="underline" href="mailto:hello@fraservotes.com">hello@fraservotes.com</Link>
+          <Link color="blue.700" textDecoration="underline" href="mailto:david.li@fraserhacks.ca">david.li@fraserhacks.ca</Link>
           .
         </Text>
         <br />

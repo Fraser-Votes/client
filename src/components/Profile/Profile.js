@@ -101,7 +101,7 @@ const ProfileHeader = ({ candidate }) => {
           mt="4px"
         >
           <Text color="blueGray.400" fontSize="14px" fontWeight="600" mr="12px">
-            {candidate.displayPosition}
+            {candidate.displayPosition.replaceAll('-', ' ')}
           </Text>
           <Text lineHeight="18px" fontSize="20px" color="blueGray.900" mr="12px">
             •
