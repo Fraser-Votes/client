@@ -70,7 +70,7 @@ const Login = () => {
           color="blueGray.600"
           fontSize={IsMobile() ? 'md' : 'lg'}
         >
-          Student Activity Council Elections 2020
+          Student Activity Council Elections 2021
         </Text>
       </Box>
       <Mobile>
