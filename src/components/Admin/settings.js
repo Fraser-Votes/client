@@ -210,7 +210,6 @@ export default class Settings extends Component {
         Object.keys(doc.data().votes).map(async (key) => {
           const vote = doc.data().votes[key];
           const decryptedVote = (await this.decrypt(vote)).split(','); // array
-          console.log(decryptedVote);
           decryptedVote.forEach((vote) => {
             if (votes[key]) {
               if (votes[key][vote]) {
