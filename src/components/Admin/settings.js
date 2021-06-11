@@ -202,15 +202,23 @@ export default class Settings extends Component {
 
     const votes = {};
     const db = firebase.firestore();
+    const positionData = {};
 
     try {
       const snapshot = await db.collection('ballots').get();
+      const positions = await db.collection('positions').get();
+      positions.forEach(position => {
+        positionData[position.id] = position.data().numWinners || 1
+      });
 
       await snapshotMap(snapshot, async (doc) => Promise.all(
         Object.keys(doc.data().votes).map(async (key) => {
           const vote = doc.data().votes[key];
           const decryptedVote = (await this.decrypt(vote)).split(','); // array
           decryptedVote.forEach((vote) => {
+            if (positionData[key] < 2) {
+              decryptedVote.shift();
+            }
             if (votes[key]) {
               if (votes[key][vote]) {
                 votes[key][vote]++;
