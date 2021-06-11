@@ -190,12 +190,29 @@ export default class Candidates extends Component {
 
   createVote = (position, candidateID, currentlySelected) => {
     // max winners reached and not currently selected
-    if (this.state.votes[position].numSelected === this.state.votes[position].numWinners && !currentlySelected) {
+    if (this.state.votes[position].numSelected === this.state.votes[position].numWinners && !currentlySelected && this.state.votes[position].numWinners > 1) {
       this.setState((prevState) => ({
         votes: {
           ...prevState.votes,
           [position]: {
             numSelected: prevState.votes[position].numSelected - 1,
+            numWinners: prevState.votes[position].numWinners,
+            selectedCandidates: [candidateID],
+          },
+        },
+      }), () => {
+        console.log(this.voteValidator());
+        this.setState({
+          validated: this.voteValidator(),
+        });
+      });
+    }
+    else if (this.state.votes[position].numSelected === this.state.votes[position].numWinners && !currentlySelected) {
+      this.setState((prevState) => ({
+        votes: {
+          ...prevState.votes,
+          [position]: {
+            numSelected: 1,
             numWinners: prevState.votes[position].numWinners,
             selectedCandidates: [candidateID],
           },
