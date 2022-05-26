@@ -29,7 +29,7 @@ const CandidateCard = ({
       alignItems="center"
       mx="14px"
       justifyContent="space-between"
-      h="35px"
+      h="50px"
       flexDirection="row"
       display="flex"
     >
@@ -52,7 +52,7 @@ const CandidateCard = ({
       display="flex"
       flexDirection="row"
       alignItems="center"
-      h="50px"
+      h="35px"
     >
       <Text fontWeight="bold" fontSize="12px" color="blue.800">View Profile</Text>
       <Icon ml="8px" color="blue.800" name="forward" />
