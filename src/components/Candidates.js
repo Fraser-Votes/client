@@ -38,7 +38,7 @@ const CandidateCard = ({
         {' '}
         {last}
       </Text>
-      <Text fontWeight="bold" fontSize="12px" color="blueGray.500">
+      <Text fontWeight="bold" fontSize="12px" color="blueGray.500" w="50%" align="right">
         Grade
         {' '}
         {grade}
