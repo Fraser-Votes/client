@@ -52,7 +52,7 @@ const CandidateCard = ({
       display="flex"
       flexDirection="row"
       alignItems="center"
-      h="35px"
+      h="50px"
     >
       <Text fontWeight="bold" fontSize="12px" color="blue.800">View Profile</Text>
       <Icon ml="8px" color="blue.800" name="forward" />
